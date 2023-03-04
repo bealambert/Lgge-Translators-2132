@@ -1,14 +1,34 @@
 package compiler.Lexer;
 
-public class Comment extends Token{
+public class Comment implements Symbol{
 
-    private final String comments;
-    public Comment(String attribute) {
-        super("Comment");
-        this.comments = attribute;
+    private final String attribute;
+    private final Token token;
+    private final String tokenName = "Comment";
+
+    public Comment(Token token, String attribute) {
+        this.attribute = attribute;
+        this.token = token;
     }
 
-    public String getComments() {
-        return comments;
+
+    @Override
+    public String getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public Token getToken() {
+        return this.token;
+    }
+
+    @Override
+    public String getName() {
+        return this.tokenName;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.getName() + ">";
     }
 }

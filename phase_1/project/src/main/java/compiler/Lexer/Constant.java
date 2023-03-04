@@ -1,14 +1,29 @@
 package compiler.Lexer;
 
-public class Constant extends Token{
+public class Constant implements Symbol{
 
-    private final String constant_variable;
-    public Constant(String attribute) {
-        super("Constant");
-        this.constant_variable = attribute;
+    private final String attribute;
+    private final Token token;
+    private final String tokenName = "Constant";
+
+    public Constant(Token token , String attribute) {
+        this.token = token;
+        this.attribute = attribute;
     }
 
-    public String getConstant_variable() {
-        return getConstant_variable();
+
+    @Override
+    public String getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public Token getToken() {
+        return this.token;
+    }
+
+    @Override
+    public String getName() {
+        return this.tokenName;
     }
 }

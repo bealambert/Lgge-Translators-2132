@@ -1,14 +1,29 @@
 package compiler.Lexer;
 
-public class Identifier extends Token{
+public class Identifier implements Symbol{
 
-    private final String identifier;
-    public Identifier(String attribute) {
-        super("Identifier");
-        this.identifier = attribute;
+    private final String attribute;
+    private final Token token;
+    private final String tokenName = "Identifier";
+
+    public Identifier(Token token , String attribute) {
+        this.token = token;
+        this.attribute = attribute;
     }
 
-    public String getIdentifier() {
-        return this.identifier;
+
+    @Override
+    public String getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public Token getToken() {
+        return this.token;
+    }
+
+    @Override
+    public String getName() {
+        return this.tokenName;
     }
 }

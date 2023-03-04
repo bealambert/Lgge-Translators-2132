@@ -2,13 +2,17 @@ package compiler.Lexer;
 
 public class Token {
 
-    private final String token;
+    private final String tokenValue;
     public Token(String input){
-        this.token = input;
+        this.tokenValue = input;
     }
 
-    public String getToken() {
-        return token;
+    public Token getToken() {
+        return this;
+    }
+
+    public String getTokenValue() {
+        return tokenValue;
     }
 
     @Override
