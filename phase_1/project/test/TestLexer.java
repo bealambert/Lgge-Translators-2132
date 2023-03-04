@@ -1,17 +1,17 @@
-import static org.junit.Assert.assertNotNull;
+import compiler.Lexer.Boolean;
+import compiler.Lexer.Symbol;
 import org.junit.Test;
 
 import java.io.StringReader;
 import compiler.Lexer.Lexer;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
+import static org.junit.Assert.*;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({TestBoolean.class, TestNormal.class})
 public class TestLexer {
-    
-    @Test
-    public void test() {
-        String input = "var x int = 2;";
-        StringReader reader = new StringReader(input);
-        Lexer lexer = new Lexer(reader);
-        assertNotNull(lexer.getNextSymbol());
-    }
+
 
 }
