@@ -9,6 +9,10 @@ public class Boolean extends Token{
         super("Boolean");
         this.attribute = attribute;
     }
+    public Boolean( String attribute) {
+        super("Boolean");
+        this.attribute = attribute;
+    }
 
     public String getAttribute() {
         return attribute;
