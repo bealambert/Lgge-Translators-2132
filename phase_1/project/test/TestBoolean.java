@@ -76,6 +76,4 @@ public class TestBoolean {
             assertEquals(nextSymbol.getAttribute(), s);
         }
     }
-
-
 }
