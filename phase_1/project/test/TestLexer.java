@@ -25,9 +25,43 @@ public class TestLexer {
     }
     @Test
     public void test_float() {
-        String input = "1.12";
+        String input = "    1.12";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
+        assertNotNull(lexer.getNextSymbol());
+    }
+    @Test
+    public void test_special_char_comment() {
+        String input = "  //   =1";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        assertNotNull(lexer.getNextSymbol());
+    }
+    @Test
+    public void test_special_keyword_identifier() {
+        String input = "  const ";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        assertNotNull(lexer.getNextSymbol());
+    }
+    @Test
+    public void test_special_str() {
+        String input = "  \"onst .32/*à\"";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        assertNotNull(lexer.getNextSymbol());
+    }
+    @Test
+    public void test_special_multSymbols() {
+        String input = "  const 92+1.19>=\"onst .32/*à\"abx1//bizouille\n ";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        int i = 0;
+        int n = 8;
+        while (i<n-1){
+            lexer.getNextSymbol();
+            i++;
+        }
         assertNotNull(lexer.getNextSymbol());
     }
 
