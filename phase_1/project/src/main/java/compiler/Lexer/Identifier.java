@@ -3,14 +3,11 @@ package compiler.Lexer;
 public class Identifier implements Symbol{
 
     private final String attribute;
-    private final Token token;
-    private final String tokenName = "Identifier";
+    private final String name = "Identifier";
 
-    public Identifier(Token token , String attribute) {
-        this.token = token;
+    public Identifier(String attribute) {
         this.attribute = attribute;
     }
-
 
     @Override
     public String getAttribute() {
@@ -18,12 +15,14 @@ public class Identifier implements Symbol{
     }
 
     @Override
-    public Token getToken() {
-        return this.token;
+    public String getName() {
+        return this.name;
     }
 
     @Override
-    public String getName() {
-        return this.tokenName;
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
+
+
 }

@@ -1,16 +1,19 @@
 package compiler.Lexer;
 
-public class SpecialCharacter implements Symbol{
+public class SpecialCharacter implements Symbol {
 
     private final String attribute;
-    private final Token token;
-    private final String tokenName = "SpecialCharacter";
+    private final String name = "SpecialCharacter";
+    private final String[] acceptedAttributes = new String[]{
+            "=", "+", "-", "*", "/", "%",
+            "==", "<>", "<", ">", "<=", ">="
+            , "(", ")", "{", "}", "[", "]",
+            ".", ";", ","
+    };
 
-    public SpecialCharacter(Token token , String attribute) {
-        this.token = token;
+    public SpecialCharacter(String attribute) {
         this.attribute = attribute;
     }
-
 
     @Override
     public String getAttribute() {
@@ -18,12 +21,16 @@ public class SpecialCharacter implements Symbol{
     }
 
     @Override
-    public Token getToken() {
-        return this.token;
+    public String getName() {
+        return this.name;
+    }
+
+    public String[] getAcceptedAttributes() {
+        return acceptedAttributes;
     }
 
     @Override
-    public String getName() {
-        return this.tokenName;
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
 }

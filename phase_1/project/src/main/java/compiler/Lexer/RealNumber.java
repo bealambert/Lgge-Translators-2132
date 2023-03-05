@@ -3,14 +3,11 @@ package compiler.Lexer;
 public class RealNumber implements Symbol{
 
     private final String attribute;
-    private final Token token;
-    private final String tokenName = "RealNumber";
+    private final String name = "RealNumber";
 
-    public RealNumber(Token token , String attribute) {
-        this.token = token;
+    public RealNumber(String attribute) {
         this.attribute = attribute;
     }
-
 
     @Override
     public String getAttribute() {
@@ -18,12 +15,12 @@ public class RealNumber implements Symbol{
     }
 
     @Override
-    public Token getToken() {
-        return this.token;
+    public String getName() {
+        return this.name;
     }
 
     @Override
-    public String getName() {
-        return this.tokenName;
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
 }

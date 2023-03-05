@@ -2,14 +2,12 @@ package compiler.Lexer;
 
 public class Boolean implements Symbol{
 
-    private final String tokenName = "Boolean";
-    private final String[] acceptedAttributes = new String [] {"true", "false"};
+    private final String name = "Boolean";
+    private final String[] acceptedAttributes = new String[]{"true", "false"};
 
     private final String attribute;
-    private final Token token;
 
-    public Boolean(Token token, String attribute) {
-        this.token = token;
+    public Boolean(String attribute) {
         this.attribute = attribute;
     }
 
@@ -18,17 +16,17 @@ public class Boolean implements Symbol{
     }
 
     @Override
-    public Token getToken() {
-        return this.token;
+    public String getName() {
+        return this.name;
     }
 
-    @Override
-    public String getName() {
-        return this.tokenName;
+    public String[] getAcceptedAttributes() {
+        return acceptedAttributes;
     }
 
     @Override
     public String toString() {
-        return "<" + tokenName + ", " + this.getAttribute() + ">";
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
+
 }

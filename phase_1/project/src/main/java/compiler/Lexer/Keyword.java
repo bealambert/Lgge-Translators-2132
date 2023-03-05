@@ -1,16 +1,18 @@
 package compiler.Lexer;
 
-public class Keyword implements Symbol{
+public class Keyword implements Symbol {
 
     private final String attribute;
-    private final Token token;
-    private final String tokenName = "Keyword";
+    public final String[] acceptedAttributes = new String[]{
+            "const", "record", "var", "val", "proc",
+            "for", "to", "by", "while", "if", "else",
+            "return", "and", "or"
+    };
+    private final String name = "Keyword";
 
-    public Keyword(Token token , String attribute) {
-        this.token = token;
+    public Keyword(String attribute) {
         this.attribute = attribute;
     }
-
 
     @Override
     public String getAttribute() {
@@ -18,12 +20,16 @@ public class Keyword implements Symbol{
     }
 
     @Override
-    public Token getToken() {
-        return this.token;
+    public String getName() {
+        return this.name;
+    }
+
+    public String[] getAcceptedAttributes() {
+        return acceptedAttributes;
     }
 
     @Override
-    public String getName() {
-        return this.tokenName;
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
 }
