@@ -1,11 +1,12 @@
 package compiler.Lexer;
 
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.io.Reader;
 
 
 public class Lexer {
-    Reader inputData;
+    PushbackReader inputData;
     int END_OF_INPUT = 65535;
     char[] special_char_values = new char[]{'=', '+','-', '*', '/', '%','<','>','(', ')', '{','}','[', ']','.',';',','};
     String[] special_str_values = new String[]{"==","<>","<=",">="};
@@ -14,7 +15,7 @@ public class Lexer {
 
 
     public Lexer(Reader input) {
-        this.inputData=input;
+        this.inputData=new PushbackReader(input,2);
     }
     
     public Token getNextSymbol()  {
@@ -22,10 +23,11 @@ public class Lexer {
         StringBuilder s = new StringBuilder();
         StringBuilder s_buffer;
         char c;
+        char peek_c;
         // all is possible :)
         c = getNextChar();
 
-        // ignore firsts withespaces:
+        // ignore firsts whitespaces:
         while (c==' '){
             c=getNextChar();
         }
@@ -38,20 +40,31 @@ public class Lexer {
                 c=getNextChar();
             }
             if (c=='.'){
+                peek_c = getNextChar();
+                if (!(peek_c>='0' && peek_c<='9')){
+                    // natural number
+                    // give back the unconsumed char
+                    unread_handled(peek_c);
+                    unread_handled('.');
+                    // todo here you discovered an int
+                    System.out.println(s);
+                    return new NaturalNumber(s.toString());
+                }
                 s.append(c);
+                s.append(peek_c);
                 c=getNextChar();
                 while (c>='0' && c<='9'){
                     // take the char and get the next one
                     s.append(c);
                     c=getNextChar();
                 }
-                comeBack();
+                unread_handled(c);
                 // todo here you discovered a float
                 System.out.println(s);
                 return new RealNumber(s.toString());
 
             } else {
-                comeBack();
+                unread_handled(c);
                 // todo here you discovered an int
                 System.out.println(s);
                 return new NaturalNumber(s.toString());
@@ -62,28 +75,27 @@ public class Lexer {
         if (isInList(c, special_char_values)){
             // take the char and get the next one
             s.append(c);
-            c = peek();
+            c = getNextChar();
             // is it a special str ?
             s_buffer = new StringBuilder(s.toString());
             s_buffer.append(c);
             if ( s_buffer.toString().equals ( "//")){
+                s.append(c);
                 while (c != '\n' && c != END_OF_INPUT){
                     c = getNextChar();
                     s.append(c);
                 }
                 // todo here you discovered a comment
-                comeBack();
                 System.out.println(s);
                 return new Comment(s.toString());
             } else if (isInList(String.valueOf(s_buffer), special_str_values)) {
-                getNextChar();
                 s.append(c);
                 // todo here you discovered a special str
                 System.out.println(s);
                 return new SpecialCharacter(s.toString());
             } else{
                 // todo here you discovered a special char
-                //comeBack();
+                unread_handled(c);
                 System.out.println(s);
                 return new SpecialCharacter(s.toString());
             }
@@ -97,24 +109,20 @@ public class Lexer {
                 s.append(c);
                 c = getNextChar();
             }
+            unread_handled(c);
             if (isInList(s.toString(), keyword_values)){ // must check if it is a keyword
                 // todo here you discovered a keyword
-                comeBack();
                 System.out.println(s);
                 return new Keyword(s.toString());
             } else if (isInList(s.toString(), boolean_values)){ // must check if it is a boolean
                 // todo here you discovered a boolean
-                comeBack();
                 System.out.println(s);
                 return new Boolean(s.toString());
             }else {
                 // todo here you discovered a identifier
-                comeBack();
                 System.out.println(s);
                 return new Identifier(s.toString());
             }
-
-
         }
 
         // is it a String value ?
@@ -125,9 +133,8 @@ public class Lexer {
                 s.append(c);
                 c=getNextChar();
             }
-            c=getNextChar(); // ignore closing: "
+            // ignore closing: "
             // todo here you discovered a string
-            comeBack();
             System.out.println(s);
             return new Strings(s.toString());
         }
@@ -136,24 +143,18 @@ public class Lexer {
     }
     public char getNextChar(){
         try {
-            inputData.mark(1);
+            //inputData.mark(1);
             char curr_char = (char) inputData.read();
             return curr_char;
         } catch (IOException e){
             return 0;
         }
     }
-    public char peek(){
-        char c = getNextChar();
-        comeBack();
-        return c;
-    }
-    public void comeBack(){
+
+    public void unread_handled(char c){
         try {
-            inputData.reset();
-            return ;
+            inputData.unread(c);
         } catch (IOException e){
-            return ;
         }
     }
     public boolean isInList(char c, char[] reference){

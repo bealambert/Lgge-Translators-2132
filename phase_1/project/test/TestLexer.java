@@ -53,11 +53,13 @@ public class TestLexer {
     }
     @Test
     public void test_special_multSymbols() {
-        String input = "  const 92+1.19>=\"onst .32/*à\"abx1//bizouille\n ";
+//        String input = "  const 92+1.19>=\"onst .32/*à\"abx1//bizouille\n ";
+        String input = "true+-9.0>=//hey\na int= \"Hello\"/2; ";
+
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         int i = 0;
-        int n = 8;
+        int n = 13;
         while (i<n-1){
             lexer.getNextSymbol();
             i++;
