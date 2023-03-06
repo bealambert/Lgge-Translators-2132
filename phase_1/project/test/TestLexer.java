@@ -57,7 +57,7 @@ public class TestLexer {
     public void test_special_multSymbols() {
         //String input = "  const 92+1.19>=\"onst .32/*à\"abx1//bizouille\n ";
         //String input = "t|rue+-9.0>=//hey\na int= \"Hel@lo\"/2; ";
-        String input = ">=\"onst .32/*à\"abx1//bizouille\n";
+        String input = "\n\t>=\"onst .32/*à\"abx1//bizouille\n";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         int i = 0;

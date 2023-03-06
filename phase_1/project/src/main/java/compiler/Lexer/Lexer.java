@@ -28,7 +28,7 @@ public class Lexer {
         c = getNextChar();
 
         // ignore firsts whitespaces:
-        while (c==' '){
+        while (c==' ' || c== '\n' || c == '\t'){
             c=getNextChar();
         }
 
