@@ -176,7 +176,6 @@ public class TestNormal {
         String input = generated_input.toString();
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
-        System.out.println(input);
 
         for (Symbol s : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();

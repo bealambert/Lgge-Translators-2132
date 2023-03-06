@@ -15,7 +15,8 @@ import static org.junit.Assert.*;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({TestBoolean.class,
         TestIdentifier.class, TestKeyword.class, TestNaturalNumber.class,
-        TestRealNumber.class, TestSpecialCharacter.class, TestStrings.class
+        TestRealNumber.class, TestSpecialCharacter.class, TestStrings.class,
+        TestNormal.class
 })
 public class TestLexer {
 

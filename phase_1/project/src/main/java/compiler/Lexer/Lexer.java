@@ -47,7 +47,6 @@ public class Lexer {
                     unread_handled(peek_c);
                     unread_handled('.');
                     // todo here you discovered an int
-                    System.out.println(s);
                     return new NaturalNumber(s.toString());
                 }
                 s.append(c);
@@ -60,13 +59,11 @@ public class Lexer {
                 }
                 unread_handled(c);
                 // todo here you discovered a float
-                System.out.println(s);
                 return new RealNumber(s.toString());
 
             } else {
                 unread_handled(c);
                 // todo here you discovered an int
-                System.out.println(s);
                 return new NaturalNumber(s.toString());
             }
         }
@@ -86,18 +83,15 @@ public class Lexer {
                     s.append(c);
                 }
                 // todo here you discovered a comment
-                System.out.println(s);
                 // ignore comments
                 return this.getNextSymbol();
             } else if (isInList(String.valueOf(s_buffer), special_str_values)) {
                 s.append(c);
                 // todo here you discovered a special str
-                System.out.println(s);
                 return new SpecialCharacter(s.toString());
             } else{
                 // todo here you discovered a special char
                 unread_handled(c);
-                System.out.println(s);
                 return new SpecialCharacter(s.toString());
             }
         }
@@ -113,15 +107,12 @@ public class Lexer {
             unread_handled(c);
             if (isInList(s.toString(), keyword_values)){ // must check if it is a keyword
                 // todo here you discovered a keyword
-                System.out.println(s);
                 return new Keyword(s.toString());
             } else if (isInList(s.toString(), boolean_values)){ // must check if it is a boolean
                 // todo here you discovered a boolean
-                System.out.println(s);
                 return new Boolean(s.toString());
             }else {
                 // todo here you discovered a identifier
-                System.out.println(s);
                 return new Identifier(s.toString());
             }
         }
@@ -139,14 +130,12 @@ public class Lexer {
             }
             // ignore closing: "
             // todo here you discovered a string
-            System.out.println(s);
             return new Strings(s.toString());
         }
 
         // end of file ?
         if (c != END_OF_INPUT) {
             // todo here you discovered an unrecognized char
-            System.out.println("got this value :" + c);
             throw new Error("There is an unrecognized character !");
         }
         // yes end of file

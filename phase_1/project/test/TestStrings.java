@@ -70,7 +70,6 @@ public class TestStrings {
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
 
-        System.out.println(input);
         for (String expected_output : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
 
