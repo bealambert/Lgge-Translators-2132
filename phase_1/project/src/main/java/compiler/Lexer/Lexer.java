@@ -128,7 +128,7 @@ public class Lexer {
         // is it a String value ?
         if (c=='"'){
             c = getNextChar(); // ignore opening: "
-            while (c != '"'){
+            while (c != '"' ){
                 // take the char and get the next one
                 s.append(c);
                 c=getNextChar();
@@ -139,6 +139,12 @@ public class Lexer {
             return new Strings(s.toString());
         }
 
+        // end of file ?
+        if (c != END_OF_INPUT){
+            // todo here you discovered an unrecognized char
+            throw new Error("There is an unrecognized error !");
+        }
+        // yes end of file
         return null;
     }
     public char getNextChar(){
