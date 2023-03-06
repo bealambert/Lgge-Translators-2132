@@ -18,8 +18,7 @@ public class TestBoolean {
         String input = "true";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
-
-        assertEquals(lexer.getNextSymbol().getName(), Boolean.class.getName());
+        assertEquals(lexer.getNextSymbol().getName(), new Boolean("true").getName());
     }
 
     @Test

@@ -18,15 +18,7 @@ import static org.junit.Assert.*;
         TestRealNumber.class, TestSpecialCharacter.class, TestStrings.class
 })
 public class TestLexer {
-    /*
-    @Test
-    public void test() {
-        String input = "var x int = 2;";
-        StringReader reader = new StringReader(input);
-        Lexer lexer = new Lexer(reader);
-        assertNotNull(lexer.getNextSymbol());
-    }
-    */
+
 
     @Test
     public void test_int() {
@@ -71,9 +63,7 @@ public class TestLexer {
         String input = "\n\t>=\"onst .32/*à\"abx1//bizouille\n 42";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
-        int i = 0;
-        int n = 13;
-        Token result = lexer.getNextSymbol();
+        Symbol result = lexer.getNextSymbol();
         while (result !=null){
             System.out.println(result.toString());
             result = lexer.getNextSymbol();

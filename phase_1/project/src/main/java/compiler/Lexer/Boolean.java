@@ -10,10 +10,6 @@ public class Boolean implements Symbol{
     public Boolean(String attribute) {
         this.attribute = attribute;
     }
-    public Boolean( String attribute) {
-        super("Boolean");
-        this.attribute = attribute;
-    }
 
     public String getAttribute() {
         return attribute;

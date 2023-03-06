@@ -18,7 +18,7 @@ public class Lexer {
         this.inputData=new PushbackReader(input,2);
     }
     
-    public Token getNextSymbol()  {
+    public Symbol getNextSymbol()  {
         // init phase
         StringBuilder s = new StringBuilder();
         StringBuilder s_buffer;
