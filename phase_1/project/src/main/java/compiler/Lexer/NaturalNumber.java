@@ -1,14 +1,26 @@
 package compiler.Lexer;
 
-public class NaturalNumber extends Token{
+public class NaturalNumber implements Symbol{
 
-    private final String natural;
+    private final Integer attribute;
+    private final String name = "NaturalNumber";
+
     public NaturalNumber(String attribute) {
-        super("NaturalNumber");
-        this.natural = attribute;
+        this.attribute = Integer.valueOf(attribute);
     }
 
-    public String getNatural() {
-        return natural;
+    @Override
+    public Integer getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
 }
