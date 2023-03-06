@@ -2,15 +2,15 @@ package compiler.Lexer;
 
 public class RealNumber implements Symbol{
 
-    private final String attribute;
+    private final Double attribute;
     private final String name = "RealNumber";
 
     public RealNumber(String attribute) {
-        this.attribute = attribute;
+        this.attribute = Double.valueOf(attribute);
     }
 
     @Override
-    public String getAttribute() {
+    public Double getAttribute() {
         return this.attribute;
     }
 

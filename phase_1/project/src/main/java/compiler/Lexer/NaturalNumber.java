@@ -2,15 +2,15 @@ package compiler.Lexer;
 
 public class NaturalNumber implements Symbol{
 
-    private final String attribute;
+    private final Integer attribute;
     private final String name = "NaturalNumber";
 
     public NaturalNumber(String attribute) {
-        this.attribute = attribute;
+        this.attribute = Integer.valueOf(attribute);
     }
 
     @Override
-    public String getAttribute() {
+    public Integer getAttribute() {
         return this.attribute;
     }
 
