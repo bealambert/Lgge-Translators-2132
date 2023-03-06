@@ -1,4 +1,5 @@
 import compiler.Lexer.Boolean;
+import compiler.Lexer.Identifier;
 import compiler.Lexer.Symbol;
 import org.junit.Test;
 
@@ -48,6 +49,28 @@ public class TestBoolean {
             assertTrue(nextSymbol instanceof Boolean);
             assertEquals(nextSymbol.getAttribute(), s);
         }
+    }
+
+    @Test
+    public void test_recognize_end_of_line() {
+        String input = "\ntrue";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof Boolean);
+        assertEquals(nextSymbol.getAttribute(), "true");
+    }
+
+    @Test
+    public void test_recognize_tabulation() {
+        String input = "\tfalse";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof Boolean);
+        assertEquals(nextSymbol.getAttribute(), "false");
     }
 
     @Test

@@ -24,6 +24,28 @@ public class TestIdentifier {
     }
 
     @Test
+    public void test_recognize_end_of_line() {
+        String input = "\nmy_identifier";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof Identifier);
+        assertEquals(nextSymbol.getAttribute(), "my_identifier");
+    }
+
+    @Test
+    public void test_recognize_tabulation() {
+        String input = "\tmy_identifier";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof Identifier);
+        assertEquals(nextSymbol.getAttribute(), "my_identifier");
+    }
+
+    @Test
     public void test_random_identifier() {
         String[] acceptedValuesForCorrectness = new String[63]; // No whitespace to compare attributes of the Symbol
         String[] acceptedAlphabetAtFirstCharacter = new String[52];

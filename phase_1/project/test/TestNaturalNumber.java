@@ -22,6 +22,28 @@ public class TestNaturalNumber {
     }
 
     @Test
+    public void test_recognize_end_of_line() {
+        String input = "\n812";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof NaturalNumber);
+        assertEquals(nextSymbol.getAttribute(), Integer.valueOf("812"));
+    }
+
+    @Test
+    public void test_recognize_tabulation() {
+        String input = "\t741";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof NaturalNumber);
+        assertEquals(nextSymbol.getAttribute(), Integer.valueOf("741"));
+    }
+
+    @Test
     public void test_random_natural_number() {
         String[] acceptedValuesForCorrectness = new String[10]; // No whitespace to compare attributes of the Symbol
         for (int i = 0; i < 10; i++) {

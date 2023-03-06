@@ -23,6 +23,28 @@ public class TestRealNumber {
         assertTrue(lexer.getNextSymbol() instanceof RealNumber);
     }
 
+    @Test
+    public void test_recognize_end_of_line() {
+        String input = "\n812.23";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof RealNumber);
+        assertEquals(nextSymbol.getAttribute(), Double.valueOf("812.23"));
+    }
+
+    @Test
+    public void test_recognize_tabulation() {
+        String input = "\t741.88";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof RealNumber);
+        assertEquals(nextSymbol.getAttribute(), Double.valueOf("741.88"));
+    }
+
 
     @Test
     public void test_random_real_number() {
