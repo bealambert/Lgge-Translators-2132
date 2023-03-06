@@ -87,7 +87,8 @@ public class Lexer {
                 }
                 // todo here you discovered a comment
                 System.out.println(s);
-                return new Comment(s.toString());
+                // ignore comments
+                return this.getNextSymbol();
             } else if (isInList(String.valueOf(s_buffer), special_str_values)) {
                 s.append(c);
                 // todo here you discovered a special str
