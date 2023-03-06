@@ -8,18 +8,19 @@ import java.io.StringReader;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestRealNumber {
 
     Random random = new Random();
 
     @Test
-    public void test_recognize_natural_number() {
+    public void test_recognize_real_number() {
         String input = "1.642 "; // whitespace otherwise it would be ambiguous (NaturalNumber vs RealNumber)
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
 
-        assertEquals(lexer.getNextSymbol().getName(), NaturalNumber.class.getName());
+        assertTrue(lexer.getNextSymbol() instanceof RealNumber);
     }
 
 
@@ -39,8 +40,8 @@ public class TestRealNumber {
 
         for (int i = 0; i < length_of_input; i++) {
 
-            int random_length_real_number_int_part = random.nextInt(5);
-            int random_length_real_number_decimal_part = random.nextInt(5);
+            int random_length_real_number_int_part = random.nextInt(4) + 1;
+            int random_length_real_number_decimal_part = random.nextInt(4) + 1;
             StringBuilder real_number_generated = new StringBuilder();
             for (int j = 0; j < random_length_real_number_int_part; j++) {
                 int index = random.nextInt(length_of_accepted_values);
@@ -63,8 +64,9 @@ public class TestRealNumber {
 
         for (String expected_output : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), RealNumber.class.getName());
-            assertEquals(nextSymbol.getAttribute(), expected_output);
+
+            assertTrue(nextSymbol instanceof RealNumber);
+            assertEquals(nextSymbol.getAttribute(), Double.valueOf(expected_output));
         }
     }
 }

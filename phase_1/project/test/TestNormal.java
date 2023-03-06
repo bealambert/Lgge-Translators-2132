@@ -27,11 +27,14 @@ public class TestNormal {
         Lexer lexer = new Lexer(reader);
         Symbol[] symbolClasses = new Symbol[]{
                 new Keyword("var"), new Identifier("x"),
-                new Identifier("int"), new Keyword("="),
+                new Identifier("int"), new SpecialCharacter("="),
                 new NaturalNumber("2")
         };
-        Symbol nextSymbol = lexer.getNextSymbol();
+
         for (int i = 0; i < symbolClasses.length; i++) {
+
+            Symbol nextSymbol = lexer.getNextSymbol();
+
             assertEquals(nextSymbol.getName(), symbolClasses[i].getName());
             assertEquals(nextSymbol.getAttribute(), symbolClasses[i].getAttribute());
         }
@@ -53,11 +56,13 @@ public class TestNormal {
         Lexer lexer = new Lexer(reader);
         Symbol[] symbolClasses = new Symbol[]{
                 new Keyword("val"), new Identifier("y"),
-                new Identifier("double"), new Keyword("="),
+                new Identifier("double"), new SpecialCharacter("="),
                 new RealNumber("24.741")
         };
-        Symbol nextSymbol = lexer.getNextSymbol();
         for (int i = 0; i < symbolClasses.length; i++) {
+
+            Symbol nextSymbol = lexer.getNextSymbol();
+
             assertEquals(nextSymbol.getName(), symbolClasses[i].getName());
             assertEquals(nextSymbol.getAttribute(), symbolClasses[i].getAttribute());
         }
@@ -120,11 +125,11 @@ public class TestNormal {
                     }
                     strings_generated.append("\"");
                     String generated_string = String.valueOf(strings_generated);
-                    correct_output[i] = new Strings(generated_string);
-                    generated_input.append(correct_output[i]).append(" ");
+                    correct_output[i] = new Strings(generated_string.substring(1, generated_string.length() - 1));
+                    generated_input.append(generated_string).append(" ");
                     break;
                 case "GENERATE_NATURAL_NUMBER":
-                    int random_length_natural_number = random.nextInt(5);
+                    int random_length_natural_number = random.nextInt(4) + 1;
                     StringBuilder natural_number_generated = new StringBuilder();
 
                     for (int j = 0; j < random_length_natural_number; j++) {
@@ -137,17 +142,17 @@ public class TestNormal {
                     break;
 
                 case "GENERATE_REAL_NUMBER":
-                    int random_length_real_number_int_part = random.nextInt(5);
-                    int random_length_real_number_decimal_part = random.nextInt(5);
+                    int random_length_real_number_int_part = random.nextInt(4) + 1;
+                    int random_length_real_number_decimal_part = random.nextInt(4) + 1;
                     StringBuilder real_number_generated = new StringBuilder();
                     for (int j = 0; j < random_length_real_number_int_part; j++) {
-                        int index_of_numbers = random.nextInt(length_of_accepted_values);
+                        int index_of_numbers = random.nextInt(10);
                         real_number_generated.append(acceptedValues[index_of_numbers]);
                     }
 
                     real_number_generated.append(".");
                     for (int j = 0; j < random_length_real_number_decimal_part; j++) {
-                        int index_of_numbers = random.nextInt(length_of_accepted_values);
+                        int index_of_numbers = random.nextInt(10);
                         real_number_generated.append(acceptedValues[index_of_numbers]);
                     }
 
@@ -171,10 +176,12 @@ public class TestNormal {
         String input = generated_input.toString();
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
+        System.out.println(input);
 
         for (Symbol s : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), s.getName()); // can replace it with instance of
+
+            assertEquals(nextSymbol.getName(), s.getName());
             assertEquals(nextSymbol.getAttribute(), s.getAttribute());
         }
     }

@@ -1,8 +1,5 @@
+import compiler.Lexer.*;
 import compiler.Lexer.Boolean;
-import compiler.Lexer.Keyword;
-import compiler.Lexer.Lexer;
-import compiler.Lexer.NaturalNumber;
-import compiler.Lexer.Symbol;
 import org.junit.Test;
 
 import java.io.StringReader;
@@ -11,6 +8,7 @@ import java.util.Random;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestKeyword {
 
@@ -36,7 +34,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -47,7 +45,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -58,7 +56,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -69,9 +67,10 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
+
 
     @Test
     public void test_recognize_proc() {
@@ -80,7 +79,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -91,7 +90,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -102,7 +101,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -113,7 +112,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -124,7 +123,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -135,7 +134,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -146,7 +145,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -158,7 +157,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -169,7 +168,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -180,7 +179,7 @@ public class TestKeyword {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof Keyword);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -206,7 +205,7 @@ public class TestKeyword {
 
         for (String s : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), Keyword.class.getName()); // can replace it with instance of
+            assertTrue(nextSymbol instanceof Keyword);
             assertEquals(nextSymbol.getAttribute(), s);
         }
     }

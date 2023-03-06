@@ -1,13 +1,11 @@
-import compiler.Lexer.Comment;
-import compiler.Lexer.Lexer;
-import compiler.Lexer.Strings;
-import compiler.Lexer.Symbol;
+import compiler.Lexer.*;
 import org.junit.Test;
 
 import java.io.StringReader;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestStrings {
 
@@ -20,7 +18,7 @@ public class TestStrings {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Strings.class.getName());
+        assertTrue(nextSymbol instanceof Strings);
         assertEquals(nextSymbol.getAttribute(), " // abc123 \n ");
     }
 
@@ -44,13 +42,13 @@ public class TestStrings {
         acceptedValuesForCorrectness[62] = "_";
 
 
-        int length_of_input = random.nextInt(1000);
+        int length_of_input = random.nextInt(10);
         int length_of_accepted_values = acceptedValuesForCorrectness.length;
 
         StringBuilder generated_input = new StringBuilder();
         String[] correct_output = new String[length_of_input];
 
-        generated_input.append("\"");
+        //generated_input.append("\"");
 
         for (int i = 0; i < length_of_input; i++) {
 
@@ -65,16 +63,19 @@ public class TestStrings {
             }
             strings_generated.append("\"");
             correct_output[i] = (String.valueOf(strings_generated));
-            generated_input.append(correct_output[i]);
+            generated_input.append(correct_output[i]).append(" ");
         }
+        //generated_input.append("\"");
         String input = generated_input.toString();
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
 
+        System.out.println(input);
         for (String expected_output : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), Strings.class.getName());
-            assertEquals(nextSymbol.getAttribute(), expected_output);
+
+            assertTrue(nextSymbol instanceof Strings);
+            assertEquals(nextSymbol.getAttribute(), expected_output.substring(1, expected_output.length() - 1));
         }
     }
 

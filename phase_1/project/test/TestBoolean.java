@@ -18,7 +18,10 @@ public class TestBoolean {
         String input = "true";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
-        assertEquals(lexer.getNextSymbol().getName(), new Boolean("true").getName());
+
+        Symbol nextSymbol = lexer.getNextSymbol();
+        assertTrue(nextSymbol instanceof Boolean);
+        assertEquals(nextSymbol.getAttribute(), "true");
     }
 
     @Test
@@ -28,7 +31,7 @@ public class TestBoolean {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Boolean.class.getName());
+        assertTrue(nextSymbol instanceof Boolean);
         assertEquals(nextSymbol.getAttribute(), "false");
     }
 
@@ -42,7 +45,7 @@ public class TestBoolean {
 
         for (String s : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), Boolean.class.getName());
+            assertTrue(nextSymbol instanceof Boolean);
             assertEquals(nextSymbol.getAttribute(), s);
         }
     }
@@ -71,7 +74,7 @@ public class TestBoolean {
 
         for (String s : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), Boolean.class.getName());
+            assertTrue(nextSymbol instanceof Boolean);
             assertEquals(nextSymbol.getAttribute(), s);
         }
     }

@@ -33,15 +33,15 @@ public class Lexer {
         }
 
         // is it a numerical value ?
-        if (c>='1' && c<='9'){ // 0 not included for the first digit
-            while (c>='0' && c<='9'){
+        if (c >= '0' && c <= '9') { // 0 not included for the first digit
+            while (c >= '0' && c <= '9') {
                 // take the char and get the next one
                 s.append(c);
-                c=getNextChar();
+                c = getNextChar();
             }
-            if (c=='.'){
+            if (c == '.') {
                 peek_c = getNextChar();
-                if (!(peek_c>='0' && peek_c<='9')){
+                if (!(peek_c >= '0' && peek_c <= '9')) {
                     // natural number
                     // give back the unconsumed char
                     unread_handled(peek_c);
@@ -127,12 +127,15 @@ public class Lexer {
         }
 
         // is it a String value ?
-        if (c=='"'){
+        if (c=='"') {
             c = getNextChar(); // ignore opening: "
-            while (c != '"' ){
+            while (c != '"' || c == END_OF_INPUT) {
+                if (c == END_OF_INPUT) {
+                    throw new Error("There is an unrecognized character ! (here you have not ended your string)");
+                }
                 // take the char and get the next one
                 s.append(c);
-                c=getNextChar();
+                c = getNextChar();
             }
             // ignore closing: "
             // todo here you discovered a string
@@ -141,9 +144,10 @@ public class Lexer {
         }
 
         // end of file ?
-        if (c != END_OF_INPUT){
+        if (c != END_OF_INPUT) {
             // todo here you discovered an unrecognized char
-            throw new Error("There is an unrecognized error !");
+            System.out.println("got this value :" + c);
+            throw new Error("There is an unrecognized character !");
         }
         // yes end of file
         return null;

@@ -1,13 +1,12 @@
+import compiler.Lexer.*;
 import compiler.Lexer.Boolean;
-import compiler.Lexer.Lexer;
-import compiler.Lexer.NaturalNumber;
-import compiler.Lexer.Symbol;
 import org.junit.Test;
 
 import java.io.StringReader;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestNaturalNumber {
 
@@ -19,7 +18,7 @@ public class TestNaturalNumber {
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
 
-        assertEquals(lexer.getNextSymbol().getName(), NaturalNumber.class.getName());
+        assertTrue(lexer.getNextSymbol() instanceof NaturalNumber);
     }
 
     @Test
@@ -38,7 +37,7 @@ public class TestNaturalNumber {
 
         for (int i = 0; i < length_of_input; i++) {
 
-            int random_length_natural_number = random.nextInt(5);
+            int random_length_natural_number = random.nextInt(4) + 1;
             StringBuilder natural_number_generated = new StringBuilder();
             for (int j = 0; j < random_length_natural_number; j++) {
                 int index = random.nextInt(length_of_accepted_values);
@@ -56,8 +55,8 @@ public class TestNaturalNumber {
 
         for (String expected_output : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), NaturalNumber.class.getName());
-            assertEquals(nextSymbol.getAttribute(), expected_output);
+            assertTrue(nextSymbol instanceof NaturalNumber);
+            assertEquals(nextSymbol.getAttribute(), Integer.valueOf(expected_output));
         }
     }
 }

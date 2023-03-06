@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestSpecialCharacter {
 
@@ -33,7 +34,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -44,7 +45,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -55,7 +56,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -67,7 +68,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -78,7 +79,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -90,7 +91,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -101,7 +102,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -112,7 +113,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -123,7 +124,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -134,7 +135,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -145,7 +146,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -156,7 +157,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -167,7 +168,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -178,7 +179,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -189,7 +190,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -200,7 +201,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -211,7 +212,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -222,7 +223,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -233,7 +234,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -244,7 +245,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), SpecialCharacter.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -255,7 +256,7 @@ public class TestSpecialCharacter {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Keyword.class.getName());
+        assertTrue(nextSymbol instanceof SpecialCharacter);
         assertEquals(nextSymbol.getAttribute(), input.substring(0, input.length() - 1));
     }
 
@@ -281,7 +282,7 @@ public class TestSpecialCharacter {
 
         for (String s : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), SpecialCharacter.class.getName()); // can replace it with instance of
+            assertTrue(nextSymbol instanceof SpecialCharacter);
             assertEquals(nextSymbol.getAttribute(), s);
         }
     }

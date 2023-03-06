@@ -1,10 +1,12 @@
 import compiler.Lexer.*;
+import compiler.Lexer.Boolean;
 import org.junit.Test;
 
 import java.io.StringReader;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestIdentifier {
 
@@ -17,7 +19,7 @@ public class TestIdentifier {
         Lexer lexer = new Lexer(reader);
 
         Symbol nextSymbol = lexer.getNextSymbol();
-        assertEquals(nextSymbol.getName(), Identifier.class.getName());
+        assertTrue(nextSymbol instanceof Identifier);
         assertEquals(nextSymbol.getAttribute(), "my_identifier");
     }
 
@@ -71,7 +73,7 @@ public class TestIdentifier {
 
         for (String expected_output : correct_output) {
             Symbol nextSymbol = lexer.getNextSymbol();
-            assertEquals(nextSymbol.getName(), Identifier.class.getName());
+            assertTrue(nextSymbol instanceof Identifier);
             assertEquals(nextSymbol.getAttribute(), expected_output);
         }
     }
