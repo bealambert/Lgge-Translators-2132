@@ -3,45 +3,30 @@ package compiler.Parser;
 import compiler.AST;
 import compiler.ASTNode;
 import compiler.Lexer.*;
-import compiler.Lexer.Boolean;
 import compiler.Token;
-import org.checkerframework.checker.units.qual.A;
-
-import java.io.PushbackReader;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
 
 public class Parser {
 
     HashMap<Symbol, HashSet<Symbol>> follow_set;
-    private Lexer lexer;
+    private final Lexer lexer;
     private Symbol lookahead;
-    private Token[] types = new Token[]{Token.IntIdentifier, Token.Strings, Token.BooleanIdentifier, Token.RealIdentifier};
+    private final Token[] types = new Token[]{Token.IntIdentifier, Token.StringIdentifier, Token.BooleanIdentifier, Token.RealIdentifier};
 
-    private Token[] values = new Token[]{Token.Boolean, Token.NaturalNumber, Token.RealNumber, Token.Strings};
-    private Token[] operatorValues = new Token[]{
+    private final Token[] values = new Token[]{Token.Boolean, Token.NaturalNumber, Token.RealNumber, Token.Strings};
+    private final Token[] operatorValues = new Token[]{
             Token.PlusOperator, Token.MinusOperator, Token.DivideOperator,
             Token.MultiplyOperator, Token.ModuloOperator, Token.IsDifferentOperator,
             Token.IsLessOperator, Token.IsEqualOperator, Token.IsGreaterOperator,
-            Token.IsLessOrEqualOperator, Token.IsGreaterOrEqualOperator
+            Token.IsLessOrEqualOperator, Token.IsGreaterOrEqualOperator, Token.AndKeyword, Token.OrKeyword
     };
-    private String[] mutable_immutable = new String[]{"var", "val", "const"};
+    private final Token[] mutable_immutable = new Token[]{Token.VarKeyword, Token.ValKeyword, Token.ConstKeyword};
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
         lookahead = lexer.getNextSymbol();
         follow_set = new HashMap<>();
-    }
-
-    public static void main(String[] args) {
-        String input = "var a int = 2;";
-        StringReader reader = new StringReader(input);
-        Lexer lexer = new Lexer(reader);
-        Parser parser = new Parser(lexer);
-
-        ASTNode root = parser.getAST();
-        System.out.println(root);
     }
 
     public ASTNode getAST() {
@@ -64,25 +49,18 @@ public class Parser {
         return ast.getRoot();
     }
 
-    public ASTNode parse() {
-        if (isSymbol(Token.Keyword)) {
-            // check creation of variable : var a int = 2 ;
-            // it is the only case
-            if (isSymbol(Token.VarKeyword) || isSymbol(Token.ValKeyword) || isSymbol(Token.ConstKeyword)) {
-                Keyword create_variable_identifier = parseCreationStateVariable();
-                Identifier identifier = (Identifier) match(Token.Identifier);
-                Type type = parseType();
-                AssignmentOperator assignmentOperator = new AssignmentOperator(match(Token.Assignment));
-                Expression expression = parseExpression();
-                match(Token.Semicolon);
-                return new CreateVariable(create_variable_identifier, identifier, type, assignmentOperator, expression);
-            }
+    public static void main(String[] args) {
+        //String input = "var a int = 2;";
+        String input = "record Point{\n" +
+                "    x int;\n" +
+                "    y int;\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
 
-            if (isSymbol(Token.RecordKeyword)) {
-
-            }
-        }
-        return null;
+        ASTNode root = parser.getAST();
+        System.out.println(root);
     }
 
     public Symbol parseValue() {
@@ -161,6 +139,33 @@ public class Parser {
         return new Block(new ArrayList<>());
     }
 
+    public ASTNode parse() {
+        if (isSymbol(Token.Keyword)) {
+            // check creation of variable : var a int = 2 ;
+            // it is the only case
+            if (isSymbol(Token.VarKeyword) || isSymbol(Token.ValKeyword) || isSymbol(Token.ConstKeyword)) {
+                Keyword create_variable_identifier = parseCreationStateVariable();
+                Identifier identifier = (Identifier) match(Token.Identifier);
+                Type type = parseType();
+                AssignmentOperator assignmentOperator = new AssignmentOperator(match(Token.Assignment));
+                Expression expression = parseExpression();
+                match(Token.Semicolon);
+                return new CreateVariable(create_variable_identifier, identifier, type, assignmentOperator, expression);
+            }
+
+            if (isSymbol(Token.RecordKeyword)) {
+                Keyword keyword = (Keyword) match(Token.Keyword);
+                Identifier identifier = (Identifier) match(Token.Identifier);
+                SpecialCharacter openBracket = (SpecialCharacter) match(Token.OpeningCurlyBracket);
+                ArrayList<RecordVariable> recordVariable = parseRecordVariables();
+                SpecialCharacter closeBracket = (SpecialCharacter) match(Token.ClosingCurlyBracket);
+                return new Record(keyword, identifier, openBracket, recordVariable, closeBracket);
+
+            }
+        }
+        return null;
+    }
+
     public Symbol match(Token token) {
         // match of either class name or attribute
         if (lookahead.getName().equals(token.getName()) || lookahead.getAttribute().equals(token.getName())) {
@@ -195,5 +200,23 @@ public class Parser {
         return null;
     }
 
+    public ArrayList<RecordVariable> parseRecordVariables() {
+        ArrayList<RecordVariable> arrayList = new ArrayList<>();
+        while (isSymbol(Token.Identifier)) {
+            Identifier identifier = (Identifier) match(Token.Identifier);
+            Identifier type_identifier = (Identifier) match(whichToken(types));
+            Type type = new Type(type_identifier.getAttribute());
+            SpecialCharacter semicolon = (SpecialCharacter) match(Token.Semicolon);
+            arrayList.add(new RecordVariable(identifier, type, semicolon));
+        }
+        return arrayList;
+    }
 
+    public Token whichToken(Token[] tokenArray) {
+        for (Token token : tokenArray) {
+            if (isSymbol(token))
+                return token;
+        }
+        return null;
+    }
 }
