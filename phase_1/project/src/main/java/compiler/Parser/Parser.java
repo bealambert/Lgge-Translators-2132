@@ -4,6 +4,8 @@ import compiler.AST;
 import compiler.ASTNode;
 import compiler.Lexer.*;
 import compiler.Token;
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.StringReader;
 import java.util.*;
 
@@ -49,12 +51,34 @@ public class Parser {
         return ast.getRoot();
     }
 
+
+    /*public ArrayList<Symbol> parseFunctionCall(){
+        match(Token.Identifier);
+        match(Token.OpeningParenthesis);
+
+        if (isSymbol(Token.Identifier)){
+            // Either expression or f()
+            match(Token.Identifier);
+            Token operator = whichToken(operatorValues);
+            if (operator != null){
+
+            }
+        }
+
+
+    }*/
     public static void main(String[] args) {
         //String input = "var a int = 2;";
-        String input = "record Point{\n" +
+        // String input = "azea_8z = 3.54;";
+        //String input = "f();";
+        /*String input = "record Point{\n" +
                 "    x int;\n" +
                 "    y int;\n" +
+                "}";*/
+        String input = "proc square(v int, a8aze_z real) int {\n" +
+                "    return v*v;\n" +
                 "}";
+        //String input = "return v * v;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -70,24 +94,10 @@ public class Parser {
             return match(Token.Strings);
         } else if (isSymbol(Token.RealNumber)) {
             return match(Token.RealNumber);
+        } else if (isSymbol(Token.NaturalNumber)) {
+            return match(Token.NaturalNumber);
         }
-        return match(Token.NaturalNumber);
-
-    }
-
-    public Expression parseExpression() {
-        ArrayList<Symbol> arrayList = new ArrayList<>();
-        arrayList.add(parseValue());
-        Symbol operatorSymbol = whichSymbol(operatorValues);
-
-        while (operatorSymbol != null) {
-            arrayList.add(operatorSymbol);
-            arrayList.add(parseValue());
-            operatorSymbol = whichSymbol(operatorValues);
-        }
-
-        return new Expression(arrayList);
-
+        return match(Token.Identifier);
 
     }
 
@@ -102,12 +112,29 @@ public class Parser {
         return new Param(type, identifier);
     }
 
+    public Expression parseExpression() {
+        ArrayList<Symbol> arrayList = new ArrayList<>();
+        arrayList.add(parseValue());
+        Symbol operatorSymbol = whichSymbol(operatorValues);
+
+        while (operatorSymbol != null) {
+            arrayList.add(operatorSymbol);
+            lookahead = lexer.getNextSymbol();
+            arrayList.add(parseValue());
+            operatorSymbol = whichSymbol(operatorValues);
+        }
+
+        return new Expression(arrayList);
+
+
+    }
+
     public ArrayList<Param> parseParameters() {
         // assumes we read the opening parenthesis "("
         ArrayList<Param> paramArrayList = new ArrayList<>();
         if (!lookahead.getAttribute().equals(Token.ClosingParenthesis)) {
             paramArrayList.add(parseParam());
-            while (lookahead.getAttribute().equals(Token.Comma)) {
+            while (isSymbol(Token.Comma)) {
                 match(Token.Comma);
                 paramArrayList.add(parseParam());
             }
@@ -117,53 +144,14 @@ public class Parser {
     }
 
     public Block parseBlock() {
-        if (lookahead.getAttribute().equals(Token.OpeningCurlyBracket)) {
-            match(Token.OpeningCurlyBracket);
-            ArrayList<Symbol> symbolArrayList = new ArrayList<>();
-            int openingMinusClosingCount = 1;
-            while (openingMinusClosingCount > 0) {
+        ArrayList<ASTNode> symbolArrayList = new ArrayList<>();
+        match(Token.OpeningCurlyBracket);
 
-                symbolArrayList.add(lookahead);
-                if (lookahead.getAttribute().equals(Token.OpeningCurlyBracket)) {
-                    openingMinusClosingCount++;
-                } else if (lookahead.getAttribute().equals(Token.ClosingCurlyBracket)) {
-                    openingMinusClosingCount--;
-                }
-
-                lookahead = lexer.getNextSymbol();
-
-            }
-            symbolArrayList.remove(symbolArrayList.size() - 1);
-            return new Block(symbolArrayList);
+        while (!isSymbol(Token.ClosingCurlyBracket)) {
+            symbolArrayList.add(parse());
         }
-        return new Block(new ArrayList<>());
-    }
-
-    public ASTNode parse() {
-        if (isSymbol(Token.Keyword)) {
-            // check creation of variable : var a int = 2 ;
-            // it is the only case
-            if (isSymbol(Token.VarKeyword) || isSymbol(Token.ValKeyword) || isSymbol(Token.ConstKeyword)) {
-                Keyword create_variable_identifier = parseCreationStateVariable();
-                Identifier identifier = (Identifier) match(Token.Identifier);
-                Type type = parseType();
-                AssignmentOperator assignmentOperator = new AssignmentOperator(match(Token.Assignment));
-                Expression expression = parseExpression();
-                match(Token.Semicolon);
-                return new CreateVariable(create_variable_identifier, identifier, type, assignmentOperator, expression);
-            }
-
-            if (isSymbol(Token.RecordKeyword)) {
-                Keyword keyword = (Keyword) match(Token.Keyword);
-                Identifier identifier = (Identifier) match(Token.Identifier);
-                SpecialCharacter openBracket = (SpecialCharacter) match(Token.OpeningCurlyBracket);
-                ArrayList<RecordVariable> recordVariable = parseRecordVariables();
-                SpecialCharacter closeBracket = (SpecialCharacter) match(Token.ClosingCurlyBracket);
-                return new Record(keyword, identifier, openBracket, recordVariable, closeBracket);
-
-            }
-        }
-        return null;
+        match(Token.ClosingCurlyBracket);
+        return new Block(symbolArrayList);
     }
 
     public Symbol match(Token token) {
@@ -200,16 +188,69 @@ public class Parser {
         return null;
     }
 
-    public ArrayList<RecordVariable> parseRecordVariables() {
-        ArrayList<RecordVariable> arrayList = new ArrayList<>();
-        while (isSymbol(Token.Identifier)) {
-            Identifier identifier = (Identifier) match(Token.Identifier);
-            Identifier type_identifier = (Identifier) match(whichToken(types));
-            Type type = new Type(type_identifier.getAttribute());
-            SpecialCharacter semicolon = (SpecialCharacter) match(Token.Semicolon);
-            arrayList.add(new RecordVariable(identifier, type, semicolon));
+    public ASTNode parse() {
+        if (isSymbol(Token.Keyword)) {
+            // check creation of variable : var a int = 2 ;
+            // it is the only case
+            if (isSymbol(Token.VarKeyword) || isSymbol(Token.ValKeyword) || isSymbol(Token.ConstKeyword)) {
+                Keyword create_variable_identifier = parseCreationStateVariable();
+                Identifier identifier = (Identifier) match(Token.Identifier);
+                Type type = parseType();
+                AssignmentOperator assignmentOperator = new AssignmentOperator(match(Token.Assignment));
+                Expression expression = parseExpression();
+                match(Token.Semicolon);
+                return new CreateVariable(create_variable_identifier, identifier, type, assignmentOperator, expression);
+            }
+
+            if (isSymbol(Token.RecordKeyword)) {
+                Keyword keyword = (Keyword) match(Token.Keyword);
+                Identifier identifier = (Identifier) match(Token.Identifier);
+                SpecialCharacter openBracket = (SpecialCharacter) match(Token.OpeningCurlyBracket);
+                ArrayList<RecordVariable> recordVariable = parseRecordVariables();
+                SpecialCharacter closeBracket = (SpecialCharacter) match(Token.ClosingCurlyBracket);
+                return new Record(keyword, identifier, openBracket, recordVariable, closeBracket);
+
+            }
+
+            if (isSymbol(Token.ProcKeyword)) {
+                return parseCreateProcedure();
+            }
+            if (isSymbol(Token.ReturnKeyword)) {
+                match(Token.ReturnKeyword);
+                Expression expression = parseExpression();
+                match(Token.Semicolon);
+                return new ReturnStatement(expression);
+            }
+
         }
-        return arrayList;
+
+        if (isSymbol(Token.Identifier)) {
+            Identifier identifier = (Identifier) match(Token.Identifier);
+            //     i = (i+2)*2
+            if (isSymbol(Token.Assignment)) {
+                match(Token.Assignment);
+                Expression expression = parseExpression();
+                match(Token.Semicolon);
+                return new Reassignment(identifier, expression);
+            }
+            if (isSymbol(Token.OpeningParenthesis)) {
+                // function call   f(....)
+                // params are either :
+                /** Expression : (i+1) * 2;  or function call writeln(square(value)); */
+                match(Token.OpeningParenthesis);
+                // Empty function call
+                if (isSymbol(Token.ClosingParenthesis)) {
+                    match(Token.ClosingParenthesis);
+                    match(Token.Semicolon);
+                    return new FunctionCall(identifier, new ArrayList<>());
+                }
+
+                // function call with parameters
+            }
+        }
+
+
+        return null;
     }
 
     public Token whichToken(Token[] tokenArray) {
@@ -218,5 +259,29 @@ public class Parser {
                 return token;
         }
         return null;
+    }
+
+    public ArrayList<RecordVariable> parseRecordVariables() {
+        ArrayList<RecordVariable> arrayList = new ArrayList<>();
+        while (isSymbol(Token.Identifier)) {
+            Identifier identifier = (Identifier) match(Token.Identifier);
+            Identifier type_identifier = (Identifier) match(whichToken(types));
+            Type type = new Type(type_identifier.getAttribute());
+            match(Token.Semicolon);
+            arrayList.add(new RecordVariable(identifier, type));
+        }
+        return arrayList;
+    }
+
+    public CreateProcedure parseCreateProcedure() {
+        match(Token.ProcKeyword);
+        Identifier procedure_name = (Identifier) match(Token.Identifier);
+        match(Token.OpeningParenthesis);
+        ArrayList<Param> params = parseParameters();
+        match(Token.ClosingParenthesis);
+        Type returnType = parseType();
+        // todo implement body extraction of procedure
+        Block body = parseBlock();
+        return new CreateProcedure(procedure_name, params, returnType, body);
     }
 }

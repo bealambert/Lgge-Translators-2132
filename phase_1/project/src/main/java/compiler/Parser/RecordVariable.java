@@ -11,12 +11,10 @@ public class RecordVariable extends ASTNode {
 
     Identifier identifier;
     Type type;
-    SpecialCharacter specialCharacter;
 
-    public RecordVariable(Identifier identifier, Type type, SpecialCharacter specialCharacter) {
+    public RecordVariable(Identifier identifier, Type type) {
         super();
         this.identifier = identifier;
         this.type = type;
-        this.specialCharacter = specialCharacter;
     }
 }

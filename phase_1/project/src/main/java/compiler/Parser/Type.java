@@ -10,4 +10,10 @@ public class Type extends ASTNode {
         super();
         this.attribute = attribute;
     }
+
+    @Override
+    public String toString() {
+        return attribute;
+
+    }
 }
