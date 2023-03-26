@@ -51,10 +51,7 @@ public class Parser {
 
     public static void main(String[] args) {
         //String input = "var a int = 2;";
-        String input = "record Point{\n" +
-                "    x int;\n" +
-                "    y int;\n" +
-                "}";
+        String input = "var a int = i*5.0+2;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -70,11 +67,17 @@ public class Parser {
             return match(Token.Strings);
         } else if (isSymbol(Token.RealNumber)) {
             return match(Token.RealNumber);
+        } else if (isSymbol(Token.NaturalNumber)) {
+            return match(Token.NaturalNumber);
         }
-        return match(Token.NaturalNumber);
+        return match(Token.Identifier);
 
     }
 
+    // todo Bea
+    // var a int = 2;
+    // this method is called after the match() of "=" Symbol
+    // so the look ahead points to "NaturalNumber, 2" here
     public Expression parseExpression() {
         ArrayList<Symbol> arrayList = new ArrayList<>();
         arrayList.add(parseValue());
@@ -82,10 +85,11 @@ public class Parser {
 
         while (operatorSymbol != null) {
             arrayList.add(operatorSymbol);
+            lookahead = lexer.getNextSymbol();
             arrayList.add(parseValue());
             operatorSymbol = whichSymbol(operatorValues);
         }
-
+        System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
         return new Expression(arrayList);
 
 
