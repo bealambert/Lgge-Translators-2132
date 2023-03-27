@@ -4,9 +4,6 @@ import compiler.AST;
 import compiler.ASTNode;
 import compiler.Lexer.*;
 import compiler.Token;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
-
 import java.io.StringReader;
 import java.util.*;
 
@@ -71,7 +68,8 @@ public class Parser {
         /*String input = "for var i int =2 to 100 by 1 {" +
                 "return v*v;}";*/
         //String input = "if value <> 3 {return x*x;} else{return 2*3;}";
-        String input = "var c int[] = int[](5);";
+        //String input = "var c int[] = int[](5);";
+        String input = "var a int = fun(a,3)*2;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -85,27 +83,75 @@ public class Parser {
         }
     }
 
-    public Param parseParam() {
-        Type type = parseType();
-        Identifier identifier = (Identifier) match(Token.Identifier);
-        return new Param(type, identifier);
-    }
 
+    // todo Bea
+    // var a int = 2;
+    // this method is called after the match() of "=" Symbol
+    // so the look ahead points to "NaturalNumber, 2" here
     public Expression parseExpression() {
-        ArrayList<Symbol> arrayList = new ArrayList<>();
-        arrayList.add(parseValue());
+        ArrayList<Object> arrayList = new ArrayList<>();
+
+        if (isSymbol(Token.Identifier)){
+            Symbol currValue = parseValue();
+            // is it an identifier or a function call ?
+            if (isSymbol(Token.OpeningParenthesis)){
+                pop();
+                arrayList.add(parseFunctionCall(currValue));
+            } else{
+                // here you ve found an identifier value
+                arrayList.add(currValue);
+            }
+        }
         Symbol operatorSymbol = whichSymbol(operatorValues);
 
         while (operatorSymbol != null) {
             arrayList.add(operatorSymbol);
-            lookahead = lexer.getNextSymbol();
             arrayList.add(parseValue());
             operatorSymbol = whichSymbol(operatorValues);
         }
-
+        System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
         return new Expression(arrayList);
+    }
+    public Object parseExpressionBackup() {
+        ArrayList<Object> arrayList = new ArrayList<>();
+        // is it a value candidate or a parenthesis ???
+        if (isSymbol(Token.OpeningParenthesis)){
+            // here is a sub expression
+            pop(); // no need to match as we do not use the "(" symbol
+            arrayList.add(parseExpression());
+        } else {
+            // if it is not a '(' then it must be a value:
+            arrayList.add(parseValue()); // match is included, so lookahead is updated
+        }
+        // here we must have empty or Operation
+        if (whichSymbol(operatorValues) != null){
+            arrayList.add(pop());
+            arrayList.add(parseExpression());
+        }
 
+        System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
+        if (arrayList.size()==1){
+            return arrayList.get(0);
+        }
+        return new Expression(arrayList);
+    }
 
+    public FunctionCall parseFunctionCall(Symbol identifier){
+        ArrayList<Object> arrayList = new ArrayList<>();
+        while(!isSymbol(Token.ClosingParenthesis)){
+            if (isSymbol(Token.Comma)){
+                pop();
+            }
+            arrayList.add(parseValue());
+        }
+        pop();
+        return new FunctionCall(identifier, arrayList);
+    }
+
+    public Param parseParam() {
+        Type type = parseType();
+        Identifier identifier = (Identifier) match(Token.Identifier);
+        return new Param(type, identifier);
     }
 
     public ArrayList<Param> parseParameters() {
@@ -153,6 +199,12 @@ public class Parser {
         }
         throw new RuntimeException();
     }
+    public Symbol pop() {
+        Symbol match = lookahead;
+        lookahead = lexer.getNextSymbol();
+        return match;
+
+    }
 
     public Keyword parseStateVariable() {
         Keyword create_variable_identifier;
@@ -179,13 +231,6 @@ public class Parser {
         return lookahead != null && (lookahead.getName().equals(token.getName()) || lookahead.getAttribute().equals(token.getName()));
     }
 
-    public Token whichToken(Token[] tokenArray) {
-        for (Token token : tokenArray) {
-            if (isSymbol(token))
-                return token;
-        }
-        return null;
-    }
 
     public ASTNode parse() {
         if (isSymbol(Token.Keyword)) {

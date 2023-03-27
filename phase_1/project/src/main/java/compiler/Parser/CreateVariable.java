@@ -12,7 +12,7 @@ public class CreateVariable extends ASTNode {
     Type type;
     Expression expression;
     ArrayInitializer arrayInitializer;
-
+    //Object expression;
     public CreateVariable(Keyword create_variable_identifier, Identifier identifier,
                           Type type) {
         super();
@@ -20,6 +20,7 @@ public class CreateVariable extends ASTNode {
         this.identifier = identifier;
         this.type = type;
     }
+
 
     public CreateVariable(Keyword create_variable_identifier, Identifier identifier,
                           Type type, Expression expression) {
