@@ -51,7 +51,7 @@ public class Parser {
 
     public static void main(String[] args) {
         //String input = "var a int = 2;";
-        String input = "var a int = i*5.0+2;";
+        String input = "var a int = fun(a,3)*2;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -79,8 +79,19 @@ public class Parser {
     // this method is called after the match() of "=" Symbol
     // so the look ahead points to "NaturalNumber, 2" here
     public Expression parseExpression() {
-        ArrayList<Symbol> arrayList = new ArrayList<>();
-        arrayList.add(parseValue());
+        ArrayList<Object> arrayList = new ArrayList<>();
+
+        if (isSymbol(Token.Identifier)){
+            Symbol currValue = parseValue();
+            // is it an identifier or a function call ?
+            if (isSymbol(Token.OpeningParenthesis)){
+                pop();
+                arrayList.add(parseFunctionCall(currValue));
+            } else{
+                // here you ve found an identifier value
+                arrayList.add(currValue);
+            }
+        }
         Symbol operatorSymbol = whichSymbol(operatorValues);
 
         while (operatorSymbol != null) {
@@ -94,7 +105,43 @@ public class Parser {
 
 
     }
+    public Object parseExpressionBackup() {
+        ArrayList<Object> arrayList = new ArrayList<>();
+        // is it a value candidate or a parenthesis ???
+        if (isSymbol(Token.OpeningParenthesis)){
+            // here is a sub expression
+            pop(); // no need to match as we do not use the "(" symbol
+            arrayList.add(parseExpression());
+        } else {
+            // if it is not a '(' then it must be a value:
+            arrayList.add(parseValue()); // match is included, so lookahead is updated
+        }
+        // here we must have empty or Operation
+        if (whichSymbol(operatorValues) != null){
+            arrayList.add(pop());
+            arrayList.add(parseExpression());
+        }
 
+        System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
+        if (arrayList.size()==1){
+            return arrayList.get(0);
+        }
+        return new Expression(arrayList);
+
+
+    }
+
+    public FunctionCall parseFunctionCall(Symbol identifier){
+        ArrayList<Object> arrayList = new ArrayList<>();
+        while(!isSymbol(Token.ClosingParenthesis)){
+            if (isSymbol(Token.Comma)){
+                pop();
+            }
+            arrayList.add(parseValue());
+        }
+        pop();
+        return new FunctionCall(identifier, arrayList);
+    }
     public Type parseType() {
         Symbol type = match(Token.Identifier);
         return new Type(String.valueOf(type.getAttribute()));
@@ -152,7 +199,7 @@ public class Parser {
                 Identifier identifier = (Identifier) match(Token.Identifier);
                 Type type = parseType();
                 AssignmentOperator assignmentOperator = new AssignmentOperator(match(Token.Assignment));
-                Expression expression = parseExpression();
+                Object expression = parseExpression();
                 match(Token.Semicolon);
                 return new CreateVariable(create_variable_identifier, identifier, type, assignmentOperator, expression);
             }
@@ -178,6 +225,12 @@ public class Parser {
             return match;
         }
         throw new RuntimeException();
+    }
+    public Symbol pop() {
+        Symbol match = lookahead;
+        lookahead = lexer.getNextSymbol();
+        return match;
+
     }
 
     public Keyword parseCreationStateVariable() {

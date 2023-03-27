@@ -11,10 +11,10 @@ public class CreateVariable extends ASTNode {
     Identifier identifier;
     Type type;
     AssignmentOperator assignmentOperator;
-    Expression expression;
+    Object expression;
 
     public CreateVariable(Keyword create_variable_identifier, Identifier identifier,
-                          Type type, AssignmentOperator assignmentOperator, Expression expression) {
+                          Type type, AssignmentOperator assignmentOperator, Object expression) {
         super();
         this.create_variable_identifier = create_variable_identifier;
         this.identifier = identifier;
