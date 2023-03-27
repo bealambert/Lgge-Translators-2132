@@ -10,21 +10,43 @@ public class CreateVariable extends ASTNode {
     Keyword create_variable_identifier;
     Identifier identifier;
     Type type;
-    AssignmentOperator assignmentOperator;
     Expression expression;
+    ArrayInitializer arrayInitializer;
 
     public CreateVariable(Keyword create_variable_identifier, Identifier identifier,
-                          Type type, AssignmentOperator assignmentOperator, Expression expression) {
+                          Type type) {
         super();
         this.create_variable_identifier = create_variable_identifier;
         this.identifier = identifier;
         this.type = type;
-        this.assignmentOperator = assignmentOperator;
+    }
+
+    public CreateVariable(Keyword create_variable_identifier, Identifier identifier,
+                          Type type, Expression expression) {
+        super();
+        this.create_variable_identifier = create_variable_identifier;
+        this.identifier = identifier;
+        this.type = type;
         this.expression = expression;
+    }
+
+    public CreateVariable(Keyword create_variable_identifier, Identifier identifier,
+                          Type type, ArrayInitializer arrayInitializer) {
+        super();
+        this.create_variable_identifier = create_variable_identifier;
+        this.identifier = identifier;
+        this.type = type;
+        this.arrayInitializer = arrayInitializer;
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "CreateVariable{" +
+                "create_variable_identifier=" + create_variable_identifier +
+                ", identifier=" + identifier +
+                ", type=" + type +
+                ", expression=" + expression +
+                ", arrayInitializer=" + arrayInitializer +
+                '}';
     }
 }

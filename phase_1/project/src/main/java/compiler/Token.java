@@ -19,6 +19,7 @@ public enum Token {
     IntIdentifier("int"),
     RealIdentifier("real"),
     StringIdentifier("string"),
+    VoidIdentifier("void"),
 
     ConstKeyword("const"),
     RecordKeyword("record"),

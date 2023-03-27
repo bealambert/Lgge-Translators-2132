@@ -16,7 +16,7 @@ public class Param extends ASTNode {
 
     @Override
     public String toString() {
-        return "< type= " + type +
-                ", identifier= " + identifier + ">";
+        return "<" + type +
+                ", " + identifier + "";
     }
 }
