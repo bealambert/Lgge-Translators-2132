@@ -68,8 +68,8 @@ public class Parser {
         /*String input = "for var i int =2 to 100 by 1 {" +
                 "return v*v;}";*/
         //String input = "if value <> 3 {return x*x;} else{return 2*3;}";
-        //String input = "var c int[] = int[](5);";
-        String input = "var a int = fun(a,3)*2;";
+        String input = "var c int[] = int[](5);";
+        //String input = "var a int = fun(a,3)*2;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -94,18 +94,21 @@ public class Parser {
         if (isSymbol(Token.Identifier)){
             Symbol currValue = parseValue();
             // is it an identifier or a function call ?
-            if (isSymbol(Token.OpeningParenthesis)){
+            if (isSymbol(Token.OpeningParenthesis)) {
                 pop();
                 arrayList.add(parseFunctionCall(currValue));
-            } else{
+            } else {
                 // here you ve found an identifier value
                 arrayList.add(currValue);
             }
+        } else {
+            arrayList.add(parseValue());
         }
         Symbol operatorSymbol = whichSymbol(operatorValues);
 
         while (operatorSymbol != null) {
             arrayList.add(operatorSymbol);
+            pop();
             arrayList.add(parseValue());
             operatorSymbol = whichSymbol(operatorValues);
         }
@@ -150,6 +153,10 @@ public class Parser {
 
     public Param parseParam() {
         Type type = parseType();
+        if (isSymbol(Token.OpeningBracket)) {
+            match(Token.OpeningBracket);
+            match(Token.ClosingBracket);
+        }
         Identifier identifier = (Identifier) match(Token.Identifier);
         return new Param(type, identifier);
     }
@@ -180,14 +187,12 @@ public class Parser {
     }
 
     public Type parseType() {
-        Symbol type = match(Token.Identifier);
+        Identifier type = (Identifier) match(Token.Identifier);
         boolean isArray = false;
         if (isSymbol(Token.OpeningBracket)) {
-            match(Token.OpeningBracket);
-            match(Token.ClosingBracket);
             isArray = true;
         }
-        return new Type(String.valueOf(type.getAttribute()), isArray);
+        return new Type(type, isArray);
     }
 
     public Symbol match(Token token) {
@@ -203,7 +208,6 @@ public class Parser {
         Symbol match = lookahead;
         lookahead = lexer.getNextSymbol();
         return match;
-
     }
 
     public Keyword parseStateVariable() {
@@ -318,6 +322,10 @@ public class Parser {
         ArrayList<Param> params = parseParameters();
         match(Token.ClosingParenthesis);
         Type returnType = parseType();
+        if (isSymbol(Token.OpeningBracket)) {
+            match(Token.OpeningBracket);
+            match(Token.ClosingBracket);
+        }
         Block body = parseBlock();
         return new CreateProcedure(procedure_name, params, returnType, body);
     }
@@ -327,6 +335,10 @@ public class Parser {
         while (isSymbol(Token.Identifier)) {
             Identifier identifier = (Identifier) match(Token.Identifier);
             Type type = parseType();
+            if (isSymbol(Token.OpeningBracket)) {
+                match(Token.OpeningBracket);
+                match(Token.ClosingBracket);
+            }
             match(Token.Semicolon);
             arrayList.add(new RecordVariable(identifier, type));
         }
@@ -362,7 +374,10 @@ public class Parser {
         Keyword create_variable_identifier = parseStateVariable();
         Identifier identifier = (Identifier) match(Token.Identifier);
         Type type = parseType();
-
+        if (isSymbol(Token.OpeningBracket)) {
+            match(Token.OpeningBracket);
+            match(Token.ClosingBracket);
+        }
         // can be either var x int; or var x int = 2;
         if (isSymbol(Token.Semicolon)) {
             return new CreateVariable(create_variable_identifier, identifier, type);
@@ -376,6 +391,8 @@ public class Parser {
                 if (isSymbol(Token.OpeningBracket)) {
                     match(Token.OpeningBracket);
                     match(Token.ClosingBracket);
+                }
+                if (isSymbol(Token.OpeningParenthesis)) {
                     match(Token.OpeningParenthesis);
                     Expression arraySizeExpression = parseExpression();
                     match(Token.ClosingParenthesis);

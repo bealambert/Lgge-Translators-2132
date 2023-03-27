@@ -1,13 +1,19 @@
 package compiler.Parser;
 
 import compiler.ASTNode;
+import compiler.Lexer.Identifier;
 
 public class Type extends ASTNode {
 
-    String attribute;
+    Identifier attribute;
     boolean isArray;
 
-    public Type(String attribute, boolean isArray) {
+    public Type(Identifier attribute) {
+        super();
+        this.attribute = attribute;
+    }
+
+    public Type(Identifier attribute, boolean isArray) {
         super();
         this.attribute = attribute;
         this.isArray = isArray;
@@ -15,7 +21,9 @@ public class Type extends ASTNode {
 
     @Override
     public String toString() {
-        return attribute;
-
+        return "Type{" +
+                "attribute=" + attribute +
+                ", isArray=" + isArray +
+                '}';
     }
 }

@@ -11,8 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 public class TestBasics {
 
-    String input = "var c int[] = int[](5);";
-
     @Test
     public void TestAll() {
 
@@ -123,5 +121,27 @@ public class TestBasics {
 
         ASTNode root = parser.getAST();
         assertTrue(root instanceof IfElse);
+    }
+
+    @Test
+    public void TestArrayInitialization() {
+        String input = "var c int[] = int[](5);";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        assertTrue(root instanceof CreateVariable);
+    }
+
+    @Test
+    public void TestInitializationWithFunctionCallExpression() {
+        String input = "var a int = fun(a,3)*2;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        assertTrue(root instanceof CreateVariable);
     }
 }

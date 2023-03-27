@@ -10,6 +10,7 @@ public class CreateProcedure extends ASTNode {
     Identifier procedureName;
     ArrayList<Param> params;
     Type returnType;
+    ArrayInitializer returnTypeArray;
     Block body;
 
     /*

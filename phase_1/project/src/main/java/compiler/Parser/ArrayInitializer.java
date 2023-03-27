@@ -14,4 +14,11 @@ public class ArrayInitializer extends ASTNode {
         this.arraySize = arraySize;
     }
 
+    @Override
+    public String toString() {
+        return "ArrayInitializer{" +
+                "type=" + type +
+                ", arraySize=" + arraySize +
+                '}';
+    }
 }
