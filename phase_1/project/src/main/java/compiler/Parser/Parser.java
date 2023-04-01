@@ -98,7 +98,7 @@ public class Parser {
         while (operatorSymbol != null) {
             arrayList.add(operatorSymbol);
             pop();
-            arrayList.add(parseValue());
+            arrayList.add(parseExpression());
             operatorSymbol = whichSymbol(operatorValues);
         }
         //System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());

@@ -160,13 +160,25 @@ public class TestParserBasics {
     }
 
     @Test
-    public void TestMultipleFunctionCall() {
+    public void TestNestedFunctionCall() {
         String input = "writeln(square(value));";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
 
         ASTNode root = parser.getAST();
+        assertTrue(root instanceof FunctionCall);
+    }
+
+    @Test
+    public void TestExtremeFunctionCall() {
+        String input = "writeln(square(value) + circle(3, a) * 3 + rectangle(a,b,c,d), 2 * square(value));";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        System.out.println(root);
         assertTrue(root instanceof FunctionCall);
     }
 }
