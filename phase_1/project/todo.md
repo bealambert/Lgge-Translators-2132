@@ -6,7 +6,7 @@ Binary tree rather than an arraylist that does not take into account precedence
 
 ### function call
 
-function_call( Expression | Expression , MoreExpression )
+- function_call : identifier ( Expression | Expression , MoreExpression )
 
 remember an expression can also be a function call.
 

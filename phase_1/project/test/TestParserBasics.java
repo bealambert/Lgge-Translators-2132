@@ -1,18 +1,32 @@
 import compiler.ASTNode;
-import compiler.Lexer.Boolean;
 import compiler.Lexer.Lexer;
 import compiler.Parser.*;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.StringReader;
 
 import static org.junit.Assert.assertTrue;
 
-public class TestBasics {
+public class TestParserBasics {
 
     @Test
     public void TestAll() {
+
+        //String input = "var a int = 2;";
+        // String input = "azea_8z = 3.54;";
+        //String input = "f();";
+        /*String input = "record Point{\n" +
+                "    x int;\n" +
+                "    y int;\n" +
+                "}";*/
+        /*String input = "proc square(v int, a8aze_z real) int {\n" +
+                "    return v*v;\n" +
+                "}";*/
+        //String input = "return v * v;";
+        /*String input = "for var i int =2 to 100 by 1 {" +
+                "return v*v;}";*/
+        //String input = "if value <> 3 {return x*x;} else{return 2*3;}";
+        //String input = "var c int[] = int[](5);";
 
         String allInput = new String(
                 "var a int = 2;azrvzoe = 3.54;f();" +
@@ -82,7 +96,7 @@ public class TestBasics {
         Parser parser = new Parser(lexer);
 
         ASTNode root = parser.getAST();
-        assertTrue(root instanceof Record);
+        assertTrue(root instanceof Records);
 
     }
 
@@ -143,5 +157,16 @@ public class TestBasics {
 
         ASTNode root = parser.getAST();
         assertTrue(root instanceof CreateVariable);
+    }
+
+    @Test
+    public void TestMultipleFunctionCall() {
+        String input = "writeln(square(value));";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        assertTrue(root instanceof FunctionCall);
     }
 }

@@ -6,15 +6,20 @@ import compiler.Lexer.Symbol;
 
 import java.util.ArrayList;
 
-public class FunctionCall extends ASTNode {
+public class FunctionCall extends Expression {
 
     Symbol identifier;
-    ArrayList<Object> params;
 
 
     public FunctionCall(Symbol identifier, ArrayList<Object> params) {
-        super();
+        super(params);
         this.identifier = identifier;
-        this.params = params;
+    }
+
+    @Override
+    public String toString() {
+        return "FunctionCall{" +
+                identifier +
+                '}' + ", (" + this.getExpression() + ')';
     }
 }

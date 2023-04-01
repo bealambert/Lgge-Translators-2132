@@ -1,11 +1,12 @@
 package compiler.Parser;
 
+import compiler.ASTNode;
 import compiler.Lexer.Symbol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Expression {
+public class Expression extends ASTNode {
 
     private final ArrayList<Object> expression;
 
@@ -17,5 +18,9 @@ public class Expression {
     @Override
     public String toString() {
         return this.expression.toString();
+    }
+
+    public ArrayList<Object> getExpression() {
+        return expression;
     }
 }
