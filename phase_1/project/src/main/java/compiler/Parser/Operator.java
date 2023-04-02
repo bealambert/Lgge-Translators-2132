@@ -11,4 +11,10 @@ public class Operator extends ASTNode {
         this.specialCharacter = specialCharacter;
     }
 
+    @Override
+    public String toString() {
+        return "Operator{" +
+                "specialCharacter=" + specialCharacter +
+                '}';
+    }
 }

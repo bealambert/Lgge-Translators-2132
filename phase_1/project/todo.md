@@ -1,16 +1,22 @@
 ## Parser
 
-### Expression
+### Records
+
+return new Records(keyword, identifier, openBracket, recordVariable, closeBracket);
+
+### Expression - Precedence
 
 Binary tree rather than an arraylist that does not take into account precedence
 
-### function call
+### ~~function call~~
 
 - function_call : identifier ( Expression | Expression , MoreExpression )
 
 remember an expression can also be a function call.
 
 ### Type
+
+change how I implemented the type with isArray parameter???
 
 extend type to int [] rather than only int
 

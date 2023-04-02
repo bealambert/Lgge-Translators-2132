@@ -2,6 +2,7 @@ package compiler.Parser;
 
 import compiler.AST;
 import compiler.ASTNode;
+import compiler.ClassName;
 import compiler.Lexer.*;
 import compiler.Token;
 import java.io.StringReader;
@@ -31,8 +32,10 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        //String input = "var a int = fun(a,3)*2;";
-        String input = "writeln(square(value));";
+        //String input = "p.x;";
+        String input = "proc copyPoints(p Point[]) Point {\n" +
+                "     return Point(p[0].x+p[1].x, p[0].y+p[1].y)\n" +
+                "}";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -105,12 +108,52 @@ public class Parser {
         return new Expression(arrayList);
     }
 
+
+    public Expression parseParameterFunctionCall() {
+        /***
+         * Extends parseExpression with arrayInitializer -> int [] (a*2) is a valid parameter for a record
+         */
+        ArrayList<Object> arrayList = new ArrayList<>();
+
+        if (isSymbol(Token.Identifier)) {
+            Identifier currValue = (Identifier) match(Token.Identifier);
+            // is it an identifier or a function call ?
+            if (isSymbol(Token.OpeningParenthesis)) {
+                pop();
+                FunctionCall functionCall = parseFunctionCall(currValue);
+                arrayList.add(functionCall);
+            } else if (isSymbol(Token.OpeningBracket)) {
+                ArrayType arrayType = new ArrayType(currValue);
+                match(Token.OpeningBracket);
+                match(Token.ClosingBracket);
+                match(Token.OpeningParenthesis);
+                Expression expression = parseExpression();
+                match(Token.ClosingParenthesis);
+
+                ArrayInitializer arrayInitializer = new ArrayInitializer(arrayType, expression);
+                arrayList.add(arrayInitializer);
+
+            } else {
+                // here you ve found an identifier value
+                arrayList.add(currValue);
+            }
+        } else {
+            arrayList.add(parseValue());
+        }
+        Symbol operatorSymbol = whichSymbol(operatorValues);
+
+        while (operatorSymbol != null) {
+            arrayList.add(operatorSymbol);
+            pop();
+            arrayList.add(parseExpression());
+            operatorSymbol = whichSymbol(operatorValues);
+        }
+        //System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
+        return new Expression(arrayList);
+    }
+
     public Param parseParam() {
         Type type = parseType();
-        if (isSymbol(Token.OpeningBracket)) {
-            match(Token.OpeningBracket);
-            match(Token.ClosingBracket);
-        }
         Identifier identifier = (Identifier) match(Token.Identifier);
         return new Param(type, identifier);
     }
@@ -129,6 +172,20 @@ public class Parser {
         return paramArrayList;
     }
 
+    public Expression parseFunctionCallParameters() {
+        // assumes we read the opening parenthesis "("
+        ArrayList<Object> paramArrayList = new ArrayList<>();
+        if (!lookahead.getAttribute().equals(Token.ClosingParenthesis)) {
+            paramArrayList.add(parseParameterFunctionCall());
+            while (isSymbol(Token.Comma)) {
+                match(Token.Comma);
+                paramArrayList.add(parseParameterFunctionCall());
+            }
+        }
+        // TODO : do we have to match ")" ?
+        return new Expression(paramArrayList);
+    }
+
     public Block parseBlock() {
         ArrayList<ASTNode> symbolArrayList = new ArrayList<>();
         match(Token.OpeningCurlyBracket);
@@ -142,11 +199,12 @@ public class Parser {
 
     public Type parseType() {
         Identifier type = (Identifier) match(Token.Identifier);
-        boolean isArray = false;
         if (isSymbol(Token.OpeningBracket)) {
-            isArray = true;
+            match(Token.OpeningBracket);
+            match(Token.ClosingBracket);
+            return new ArrayType(type);
         }
-        return new Type(type, isArray);
+        return new Type(type);
     }
 
     public Symbol match(Token token) {
@@ -202,6 +260,7 @@ public class Parser {
         return new FunctionCall(identifier, arrayList);
     }
 
+
     public CreateProcedure parseCreateProcedure() {
         match(Token.ProcKeyword);
         Identifier procedure_name = (Identifier) match(Token.Identifier);
@@ -209,25 +268,17 @@ public class Parser {
         ArrayList<Param> params = parseParameters();
         match(Token.ClosingParenthesis);
         Type returnType = parseType();
-        if (isSymbol(Token.OpeningBracket)) {
-            match(Token.OpeningBracket);
-            match(Token.ClosingBracket);
-        }
         Block body = parseBlock();
         return new CreateProcedure(procedure_name, params, returnType, body);
     }
 
-    public ArrayList<RecordVariable> parseRecordVariables() {
-        ArrayList<RecordVariable> arrayList = new ArrayList<>();
+    public ArrayList<RecordParameter> parseRecordVariables() {
+        ArrayList<RecordParameter> arrayList = new ArrayList<>();
         while (isSymbol(Token.Identifier)) {
             Identifier identifier = (Identifier) match(Token.Identifier);
             Type type = parseType();
-            if (isSymbol(Token.OpeningBracket)) {
-                match(Token.OpeningBracket);
-                match(Token.ClosingBracket);
-            }
             match(Token.Semicolon);
-            arrayList.add(new RecordVariable(identifier, type));
+            arrayList.add(new RecordParameter(identifier, type));
         }
         return arrayList;
     }
@@ -247,13 +298,13 @@ public class Parser {
             Block body = parseBlock();
             return new ForLoop(identifier, startExpression, endExpression, incrementByExpression, body);
         } else {
-            CreateVariable createVariable = (parseCreationStateVariable());
+            CreateVariables createVariables = (parseCreationStateVariable());
             match(Token.ToKeyword);
             Expression endExpression = parseExpression();
             match(Token.ByKeyword);
             Expression incrementByExpression = parseExpression();
             Block body = parseBlock();
-            return new ForLoop(createVariable, endExpression, incrementByExpression, body);
+            return new ForLoop(createVariables, endExpression, incrementByExpression, body);
         }
     }
 
@@ -262,18 +313,18 @@ public class Parser {
             // check creation of variable : var a int = 2 ;
             // it is the only case
             if (isSymbol(Token.VarKeyword) || isSymbol(Token.ValKeyword) || isSymbol(Token.ConstKeyword)) {
-                CreateVariable createVariable = parseCreationStateVariable();
+                CreateVariables createVariables = parseCreationStateVariable();
                 match(Token.Semicolon);
-                return createVariable;
+                return createVariables;
             }
 
             if (isSymbol(Token.RecordKeyword)) {
                 Keyword keyword = (Keyword) match(Token.Keyword);
-                Identifier identifier = (Identifier) match(Token.Identifier);
-                SpecialCharacter openBracket = (SpecialCharacter) match(Token.OpeningCurlyBracket);
-                ArrayList<RecordVariable> recordVariable = parseRecordVariables();
-                SpecialCharacter closeBracket = (SpecialCharacter) match(Token.ClosingCurlyBracket);
-                return new Records(keyword, identifier, openBracket, recordVariable, closeBracket);
+                Records record = new Records((String) match(Token.Identifier).getAttribute());
+                match(Token.OpeningCurlyBracket);
+                ArrayList<RecordParameter> recordVariable = parseRecordVariables();
+                match(Token.ClosingCurlyBracket);
+                return new InitializeRecords(keyword, record, recordVariable);
 
             }
 
@@ -325,6 +376,23 @@ public class Parser {
                 return parseFunctionCall(identifier);
                 // function call with parameters
             }
+            if (isSymbol(Token.OpeningBracket)) {
+                match(Token.OpeningBracket);
+                Expression expression = parseExpression();
+                match(Token.ClosingBracket);
+                AccessToIndexArray accessToIndexArray = new AccessToIndexArray(identifier.getAttribute(), expression);
+                if (isSymbol(Token.Point)) {
+                    match(Token.Point);
+                    Identifier methodIdentifier = (Identifier) match(Token.Identifier);
+                    return new MethodCall(accessToIndexArray, methodIdentifier);
+                }
+
+            }
+            if (isSymbol(Token.Point)) {
+                match(Token.Point);
+                Identifier methodIdentifier = (Identifier) match(Token.Identifier);
+                return new MethodCall(identifier, methodIdentifier);
+            }
         }
 
 
@@ -344,38 +412,82 @@ public class Parser {
         return new WhileLoop(condition, body);
     }
 
-    public CreateVariable parseCreationStateVariable() {
+    public CreateVariables parseCreationStateVariable() {
         Keyword create_variable_identifier = parseStateVariable();
+
         Identifier identifier = (Identifier) match(Token.Identifier);
+        Symbol symbol = whichSymbol(types);
         Type type = parseType();
-        if (isSymbol(Token.OpeningBracket)) {
-            match(Token.OpeningBracket);
-            match(Token.ClosingBracket);
-        }
         // can be either var x int; or var x int = 2;
+
         if (isSymbol(Token.Semicolon)) {
-            return new CreateVariable(create_variable_identifier, identifier, type);
+            return new CreateVoidVariable(create_variable_identifier, identifier, type);
         }
         match(Token.Assignment);
-        if (type.isArray) {
-            //var c int[] = int[](5);  // new array of length 5
-            // var d Person = Person("me", Point(3,7), int[](a*2));
-            if (isSymbol(Token.Identifier)) {
-                Type typeOrFunctionIdentifier = parseType();
-                if (isSymbol(Token.OpeningBracket)) {
-                    match(Token.OpeningBracket);
-                    match(Token.ClosingBracket);
-                }
+
+
+        if (isSymbol(Token.Identifier)) {
+            Identifier referenceOrTypeIdentifier = (Identifier) match(Token.Identifier);
+            if (isSymbol(Token.Semicolon)) {
+                match(Token.Semicolon);
+                return new CreateReferencedVariable(create_variable_identifier, identifier, type, referenceOrTypeIdentifier);
+            }
+            if (isSymbol(Token.OpeningBracket)) {
+                match(Token.OpeningBracket);
+                match(Token.ClosingBracket);
+                ArrayType arrayType = new ArrayType(referenceOrTypeIdentifier);
                 if (isSymbol(Token.OpeningParenthesis)) {
                     match(Token.OpeningParenthesis);
                     Expression arraySizeExpression = parseExpression();
                     match(Token.ClosingParenthesis);
-                    ArrayInitializer arrayInitializer = new ArrayInitializer(typeOrFunctionIdentifier, arraySizeExpression);
-                    return new CreateVariable(create_variable_identifier, identifier, type, arrayInitializer);
+                    ArrayInitializer arrayInitializer = new ArrayInitializer(arrayType, arraySizeExpression);
+                    // TODO : cast to arrayType or rather if (...) throw new Exception()?
+                    return new CreateArrayVariable(create_variable_identifier, identifier, (ArrayType) type, arrayInitializer);
                 }
             }
+            if (isSymbol(Token.OpeningParenthesis)) {
+                // pointer is not set to the start of the expression
+                match(Token.OpeningParenthesis);
+
+
+                if (symbol == null) {
+                    Expression functionCallParameters = parseFunctionCallParameters();
+                    match(Token.ClosingParenthesis);
+                    RecordCall recordCall = new RecordCall(referenceOrTypeIdentifier.getAttribute(), functionCallParameters);
+                    CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type);
+                    if (expression != null) return expression;
+                    return new CreateRecordVariables(create_variable_identifier, identifier, type, recordCall);
+                } else {
+                    FunctionCall functionCall = parseFunctionCall(referenceOrTypeIdentifier);
+                    CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type);
+                    if (expression != null) return expression;
+                    return new CreateExpressionVariable(create_variable_identifier, identifier, type, functionCall);
+                }
+            }
+            CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type);
+            if (expression != null) return expression;
+
+        }
+        // TODO
+        // if ArrayType
+        if (type.getName().equals(ClassName.ArrayType.getName())) {
+            //var c int[] = int[](5);  // new array of length 5
+            // var d Person = Person("me", Point(3,7), int[](a*2));
         }
         Expression expression = parseExpression();
-        return new CreateVariable(create_variable_identifier, identifier, type, expression);
+        return new CreateExpressionVariable(create_variable_identifier, identifier, type, expression);
+
+    }
+
+    private CreateVariables extendCreateExpressionVariable(Keyword create_variable_identifier, Identifier identifier, Type type) {
+        Symbol operatorSymbol = whichSymbol(operatorValues);
+        if (operatorSymbol != null) {
+            pop();
+            Expression expression = parseFunctionCallParameters();
+            expression.getExpression().add(0, operatorSymbol);
+            expression.getExpression().add(0, identifier);
+            return new CreateExpressionVariable(create_variable_identifier, identifier, type, expression);
+        }
+        return null;
     }
 }

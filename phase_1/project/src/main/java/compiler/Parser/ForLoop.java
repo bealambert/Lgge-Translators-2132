@@ -11,7 +11,7 @@ public class ForLoop extends ASTNode {
     Expression incrementBy;
     Block body;
 
-    CreateVariable createVariable;
+    CreateVariables createVariables;
 
 
     public ForLoop(Identifier identifier, Expression start, Expression end, Expression incrementBy, Block body) {
@@ -22,8 +22,8 @@ public class ForLoop extends ASTNode {
         this.body = body;
     }
 
-    public ForLoop(CreateVariable createVariable, Expression end, Expression incrementBy, Block body) {
-        this.createVariable = createVariable;
+    public ForLoop(CreateVariables createVariables, Expression end, Expression incrementBy, Block body) {
+        this.createVariables = createVariables;
         this.end = end;
         this.incrementBy = incrementBy;
         this.body = body;

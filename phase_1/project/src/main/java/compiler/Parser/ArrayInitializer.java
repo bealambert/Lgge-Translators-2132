@@ -5,10 +5,10 @@ import compiler.Lexer.Identifier;
 
 public class ArrayInitializer extends ASTNode {
 
-    Type type;
+    ArrayType type;
     Expression arraySize;
 
-    public ArrayInitializer(Type type, Expression arraySize) {
+    public ArrayInitializer(ArrayType type, Expression arraySize) {
         super();
         this.type = type;
         this.arraySize = arraySize;
