@@ -83,15 +83,27 @@ public class Parser {
         ArrayList<Object> arrayList = new ArrayList<>();
 
         if (isSymbol(Token.Identifier)) {
-            Symbol currValue = parseValue();
+            Identifier identifier = (Identifier) match(Token.Identifier);
             // is it an identifier or a function call ?
             if (isSymbol(Token.OpeningParenthesis)) {
-                pop();
-                FunctionCall functionCall = parseFunctionCall(currValue);
+                FunctionCall functionCall = parseFunctionCall(identifier);
                 arrayList.add(functionCall);
+            } else if (isSymbol(Token.OpeningBracket)) {
+                match(Token.OpeningBracket);
+                Expression expression = parseExpression();
+                match(Token.ClosingBracket);
+                AccessToIndexArray accessToIndexArray = new AccessToIndexArray(identifier.getAttribute(), expression);
+                if (isSymbol(Token.Point)) {
+                    MethodCallFromIndexArray methodCallFromIndexArray = (MethodCallFromIndexArray) parseMethodCall(accessToIndexArray);
+                    arrayList.add(methodCallFromIndexArray);
+                }
+
+            } else if (isSymbol(Token.Point)) {
+                MethodCallFromIdentifier methodCallFromIdentifier = (MethodCallFromIdentifier) parseMethodCall(identifier);
+                arrayList.add(methodCallFromIdentifier);
             } else {
                 // here you ve found an identifier value
-                arrayList.add(currValue);
+                arrayList.add(identifier);
             }
         } else {
             arrayList.add(parseValue());
@@ -119,7 +131,7 @@ public class Parser {
             Identifier currValue = (Identifier) match(Token.Identifier);
             // is it an identifier or a function call ?
             if (isSymbol(Token.OpeningParenthesis)) {
-                pop();
+
                 FunctionCall functionCall = parseFunctionCall(currValue);
                 arrayList.add(functionCall);
             } else if (isSymbol(Token.OpeningBracket)) {
@@ -153,15 +165,15 @@ public class Parser {
     }
 
     public Param parseParam() {
-        Type type = parseType();
         Identifier identifier = (Identifier) match(Token.Identifier);
+        Type type = parseType();
         return new Param(type, identifier);
     }
 
     public ArrayList<Param> parseParameters() {
         // assumes we read the opening parenthesis "("
         ArrayList<Param> paramArrayList = new ArrayList<>();
-        if (!lookahead.getAttribute().equals(Token.ClosingParenthesis)) {
+        if (!isSymbol(Token.ClosingParenthesis)) {
             paramArrayList.add(parseParam());
             while (isSymbol(Token.Comma)) {
                 match(Token.Comma);
@@ -192,6 +204,9 @@ public class Parser {
 
         while (!isSymbol(Token.ClosingCurlyBracket)) {
             symbolArrayList.add(parse());
+            if (isSymbol(Token.Semicolon)) {
+                match(Token.Semicolon);
+            }
         }
         match(Token.ClosingCurlyBracket);
         return new Block(symbolArrayList);
@@ -250,13 +265,14 @@ public class Parser {
     public FunctionCall parseFunctionCall(Symbol identifier) {
 
         ArrayList<Object> arrayList = new ArrayList<>();
+        match(Token.OpeningParenthesis);
         while (!isSymbol(Token.ClosingParenthesis)) {
             arrayList.add(parseExpression());
             if (isSymbol(Token.Comma)) {
-                pop();
+                match(Token.Comma);
             }
         }
-        pop();
+        match(Token.ClosingParenthesis);
         return new FunctionCall(identifier, arrayList);
     }
 
@@ -371,7 +387,6 @@ public class Parser {
                 // function call   f(....)
                 // params are either :
                 /** Expression : (i+1) * 2;  or function call writeln(square(value)); */
-                match(Token.OpeningParenthesis);
                 // Empty function call
                 return parseFunctionCall(identifier);
                 // function call with parameters
@@ -382,16 +397,12 @@ public class Parser {
                 match(Token.ClosingBracket);
                 AccessToIndexArray accessToIndexArray = new AccessToIndexArray(identifier.getAttribute(), expression);
                 if (isSymbol(Token.Point)) {
-                    match(Token.Point);
-                    Identifier methodIdentifier = (Identifier) match(Token.Identifier);
-                    return new MethodCall(accessToIndexArray, methodIdentifier);
+                    return parseMethodCall(accessToIndexArray);
                 }
 
             }
             if (isSymbol(Token.Point)) {
-                match(Token.Point);
-                Identifier methodIdentifier = (Identifier) match(Token.Identifier);
-                return new MethodCall(identifier, methodIdentifier);
+                return parseMethodCall(identifier);
             }
         }
 
@@ -402,6 +413,23 @@ public class Parser {
     public Condition parseCondition() {
         Expression condition = parseExpression();
         return new Condition(condition);
+    }
+
+    public AccessToIndexArray parseAccessToIndexArray(Identifier identifier) {
+        match(Token.OpeningBracket);
+        Expression expression = parseExpression();
+        match(Token.ClosingBracket);
+        AccessToIndexArray accessToIndexArray = new AccessToIndexArray(identifier.getAttribute(), expression);
+        return accessToIndexArray;
+    }
+
+    public MethodCall parseMethodCall(Identifier identifier) {
+        match(Token.Point);
+        Identifier methodIdentifier = (Identifier) match(Token.Identifier);
+        if (identifier.getName().equals(ClassName.AccessToIndexArray.getName())) {
+            return new MethodCallFromIndexArray((AccessToIndexArray) identifier, methodIdentifier);
+        }
+        return new MethodCallFromIdentifier(identifier, methodIdentifier);
     }
 
     public WhileLoop parseWhileLoop() {
@@ -447,10 +475,9 @@ public class Parser {
             }
             if (isSymbol(Token.OpeningParenthesis)) {
                 // pointer is not set to the start of the expression
-                match(Token.OpeningParenthesis);
-
 
                 if (symbol == null) {
+                    match(Token.OpeningParenthesis);
                     Expression functionCallParameters = parseFunctionCallParameters();
                     match(Token.ClosingParenthesis);
                     RecordCall recordCall = new RecordCall(referenceOrTypeIdentifier.getAttribute(), functionCallParameters);

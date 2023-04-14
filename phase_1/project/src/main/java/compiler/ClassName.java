@@ -1,9 +1,13 @@
 package compiler;
 
+import compiler.Parser.AccessToIndexArray;
+
 public enum ClassName {
 
     Type("Type"),
-    ArrayType("ArrayType");
+    ArrayType("ArrayType"),
+    AccessToIndexArray("AccessToIndexArray"),
+    Identifier("Identifier");
 
     private final String name;
 

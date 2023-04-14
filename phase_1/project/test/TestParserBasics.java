@@ -183,6 +183,41 @@ public class TestParserBasics {
     }
 
     @Test
+    public void TestAccessToArrayByIndex() {
+        String input = "proc copyPoints(p Point[]) Point { return Point(p[0].x+p[1].x, p[0].y+p[1].y);}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        //System.out.println(root);
+        assertTrue(root instanceof CreateProcedure);
+    }
+
+    @Test
+    public void TestProcedureExample() {
+        String input = "proc main() void {\n" +
+                "    var value int = readInt();                             \n" +
+                "    writeln(square(value));\n" +
+                "    var i int;\n" +
+                "    for i=1 to 100 by 2 {\n" +
+                "        while value <> 3 {\n" +
+                "            // ....\n" +
+                "        }\n" +
+                "    }\n" +
+                "    \n" +
+                "    i = i+2*2;\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        //System.out.println(root);
+        assertTrue(root instanceof CreateProcedure);
+    }
+
+    @Test
     public void TestExample() {
         String input =
                 "var d Person = Person(\"me\", Point(3,7), int[](a*2));  // new record";
@@ -335,7 +370,7 @@ public class TestParserBasics {
                 "}\n" +
                 "\n" +
                 "proc copyPoints(p Point[]) Point {\n" +
-                "     return Point(p[0].x+p[1].x, p[0].y+p[1].y)\n" +
+                "     return Point(p[0].x+p[1].x, p[0].y+p[1].y);\n" +
                 "}\n" +
                 "                            \n" +
                 "proc main() void {\n" +
@@ -343,12 +378,12 @@ public class TestParserBasics {
                 "    writeln(square(value));\n" +
                 "    var i int;\n" +
                 "    for i=1 to 100 by 2 {\n" +
-                "        while value!=3 {\n" +
+                "        while value <> 3 {\n" +
                 "            // ....\n" +
                 "        }\n" +
                 "    }\n" +
                 "    \n" +
-                "    i = (i+2)*2\n" +
+                "    i = i+2*2;\n" +
                 "} \n";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);

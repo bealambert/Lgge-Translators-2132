@@ -6,7 +6,7 @@ import compiler.Lexer.Identifier;
 public class AccessToIndexArray extends Identifier {
 
     Expression expression;
-
+    private final String name = "AccessToIndexArray";
 
     public AccessToIndexArray(String attribute, Expression expression) {
         super(attribute);
@@ -15,7 +15,7 @@ public class AccessToIndexArray extends Identifier {
 
     @Override
     public String getName() {
-        return "AccessToIndexArray";
+        return name;
     }
 
     public Expression getExpression() {
