@@ -21,6 +21,10 @@ public class Condition extends ASTNode implements Visitable {
                 '}';
     }
 
+    public Expression getExpression() {
+        return expression;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

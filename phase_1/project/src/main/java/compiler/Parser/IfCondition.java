@@ -23,6 +23,14 @@ public class IfCondition extends ASTNode implements Visitable {
                 '}';
     }
 
+    public Block getIfBlock() {
+        return ifBlock;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

@@ -4,29 +4,21 @@ import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Semantic.*;
 
-public class Type extends ASTNode implements Visitable {
+public class Type extends Identifier {
 
-    Identifier attribute;
 
     public Type(Identifier attribute) {
-        super();
-        this.attribute = attribute;
+        super(String.valueOf(attribute));
     }
 
-    public Identifier getAttribute() {
-        return attribute;
-    }
 
     public String getName() {
         return "Type";
     }
 
-
     @Override
     public String toString() {
-        return "Type{" +
-                "attribute=" + attribute +
-                '}';
+        return super.toString();
     }
 
     @Override

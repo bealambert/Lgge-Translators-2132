@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.AST;
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Lexer.Keyword;
@@ -10,6 +11,7 @@ public class Records extends Identifier implements Visitable {
     public Records(String attribute) {
         super(attribute);
     }
+
 
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {

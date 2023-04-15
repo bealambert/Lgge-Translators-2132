@@ -37,15 +37,12 @@ public interface Visitor {
 
     void visit(FunctionCall functionCall, SymbolTable symbolTable);
 
-    void visit(IdentifierVariable identifierVariable, SymbolTable symbolTable);
 
     void visit(IfCondition ifCondition, SymbolTable symbolTable);
 
     void visit(IfElse ifElse, SymbolTable symbolTable);
 
     void visit(InitializeRecords initializeRecords, SymbolTable symbolTable);
-
-    void visit(Method method, SymbolTable symbolTable);
 
     void visit(MethodCall methodCall, SymbolTable symbolTable);
 

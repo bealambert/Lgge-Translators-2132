@@ -21,6 +21,14 @@ public class Param extends ASTNode implements Visitable {
                 ", " + identifier + "";
     }
 
+    public Identifier getIdentifier() {
+        return identifier;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

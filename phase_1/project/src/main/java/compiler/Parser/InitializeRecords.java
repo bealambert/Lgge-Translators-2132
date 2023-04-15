@@ -21,6 +21,18 @@ public class InitializeRecords extends ASTNode implements Visitable {
         this.recordVariable = recordVariable;
     }
 
+    public Records getRecords() {
+        return records;
+    }
+
+    public ArrayList<RecordParameter> getRecordVariable() {
+        return recordVariable;
+    }
+
+    public Keyword getKeyword() {
+        return keyword;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

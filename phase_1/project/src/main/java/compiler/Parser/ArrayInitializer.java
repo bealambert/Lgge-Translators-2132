@@ -23,6 +23,14 @@ public class ArrayInitializer extends ASTNode implements Visitable {
                 '}';
     }
 
+    public ArrayType getType() {
+        return type;
+    }
+
+    public Expression getArraySize() {
+        return arraySize;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

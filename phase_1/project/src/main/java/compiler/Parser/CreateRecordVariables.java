@@ -16,6 +16,11 @@ public class CreateRecordVariables extends CreateVariables implements Visitable 
         this.recordCall = recordCall;
     }
 
+    public RecordCall getRecordCall() {
+        return recordCall;
+    }
+
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

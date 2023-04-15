@@ -17,6 +17,18 @@ public abstract class CreateVariables extends ASTNode implements Visitable {
         this.type = type;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public Identifier getVariableIdentifier() {
+        return variableIdentifier;
+    }
+
+    public Keyword getStateKeyword() {
+        return stateKeyword;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

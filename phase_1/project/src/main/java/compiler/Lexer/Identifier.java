@@ -4,7 +4,7 @@ import compiler.ASTNode;
 import compiler.Parser.AccessToIndexArray;
 import compiler.Semantic.*;
 
-public class Identifier implements Symbol, Visitable {
+public class Identifier extends ASTNode implements Symbol, Visitable {
 
     private final String attribute;
     private final String name = "Identifier";

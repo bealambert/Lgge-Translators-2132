@@ -31,6 +31,26 @@ public class CreateProcedure extends ASTNode implements Visitable {
                 '}';
     }
 
+    public Type getReturnType() {
+        return returnType;
+    }
+
+    public Block getBody() {
+        return body;
+    }
+
+    public Identifier getProcedureName() {
+        return procedureName;
+    }
+
+    public ArrayInitializer getReturnTypeArray() {
+        return returnTypeArray;
+    }
+
+    public ArrayList<Param> getParams() {
+        return params;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

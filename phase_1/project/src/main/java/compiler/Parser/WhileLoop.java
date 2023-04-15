@@ -15,6 +15,14 @@ public class WhileLoop extends ASTNode implements Visitable {
         this.body = body;
     }
 
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public Block getBody() {
+        return body;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

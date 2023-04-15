@@ -22,6 +22,10 @@ public class Block extends ASTNode implements Visitable {
                 '}';
     }
 
+    public ArrayList<ASTNode> getAttribute() {
+        return attribute;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

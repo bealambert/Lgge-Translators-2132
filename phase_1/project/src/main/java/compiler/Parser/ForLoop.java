@@ -31,6 +31,30 @@ public class ForLoop extends ASTNode implements Visitable {
 
     }
 
+    public Identifier getIdentifier() {
+        return identifier;
+    }
+
+    public Block getBody() {
+        return body;
+    }
+
+    public CreateVariables getCreateVariables() {
+        return createVariables;
+    }
+
+    public Expression getEnd() {
+        return end;
+    }
+
+    public Expression getIncrementBy() {
+        return incrementBy;
+    }
+
+    public Expression getStart() {
+        return start;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

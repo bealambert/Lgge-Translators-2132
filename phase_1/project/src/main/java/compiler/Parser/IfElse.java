@@ -4,16 +4,12 @@ import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Semantic.*;
 
-public class IfElse extends ASTNode implements Visitable {
+public class IfElse extends IfCondition implements Visitable {
 
-    Condition condition;
-    Block ifBlock;
     Block elseBlock;
 
     public IfElse(Condition condition, Block ifBlock, Block elseBlock) {
-        super();
-        this.condition = condition;
-        this.ifBlock = ifBlock;
+        super(condition, ifBlock);
         this.elseBlock = elseBlock;
     }
 
@@ -24,6 +20,10 @@ public class IfElse extends ASTNode implements Visitable {
                 ", ifBlock=" + ifBlock +
                 ", elseBlock=" + elseBlock +
                 '}';
+    }
+
+    public Block getElseBlock() {
+        return elseBlock;
     }
 
     @Override

@@ -84,10 +84,6 @@ public class MakeSemanticAnalysisVisitor implements Visitor {
 
     }
 
-    @Override
-    public void visit(IdentifierVariable identifierVariable, SymbolTable symbolTable) {
-
-    }
 
     @Override
     public void visit(IfCondition ifCondition, SymbolTable symbolTable) {
@@ -101,11 +97,6 @@ public class MakeSemanticAnalysisVisitor implements Visitor {
 
     @Override
     public void visit(InitializeRecords initializeRecords, SymbolTable symbolTable) {
-
-    }
-
-    @Override
-    public void visit(Method method, SymbolTable symbolTable) {
 
     }
 

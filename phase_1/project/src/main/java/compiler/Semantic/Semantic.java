@@ -12,6 +12,7 @@ public class Semantic {
 
     Parser parser;
     SymbolTable globalSymbolTable = new SymbolTable(null);
+    AssignSymbolTableVisitor assignSymbolTableVisitor = new AssignSymbolTableVisitor();
     MakeSemanticAnalysisVisitor makeSemanticAnalysisVisitor = new MakeSemanticAnalysisVisitor();
 
 
@@ -23,15 +24,9 @@ public class Semantic {
         // make first traversal of the AST
         ASTNode astNode = parser.getAST();
         while (astNode != null) {
-
-
+            astNode.accept(assignSymbolTableVisitor, globalSymbolTable);
             astNode = astNode.getNext();
         }
-
-    }
-
-    public void fill(ASTNode astNode) {
-
 
     }
 
@@ -40,7 +35,7 @@ public class Semantic {
         ASTNode astNode = parser.getAST();
         while (astNode != null) {
 
-
+            astNode.accept(makeSemanticAnalysisVisitor, globalSymbolTable);
             astNode = astNode.getNext();
         }
     }
