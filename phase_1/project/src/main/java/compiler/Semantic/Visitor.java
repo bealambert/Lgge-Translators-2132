@@ -3,7 +3,7 @@ package compiler.Semantic;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
 
-public interface SemanticVisitor {
+public interface Visitor {
 
     void visit(AccessToIndexArray accessToIndexArray, SymbolTable symbolTable);
 

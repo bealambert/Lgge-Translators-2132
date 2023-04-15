@@ -3,7 +3,7 @@ package compiler.Semantic;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
 
-public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
+public class MakeSemanticAnalysisVisitor implements Visitor {
     @Override
     public void visit(AccessToIndexArray accessToIndexArray, SymbolTable symbolTable) {
 
@@ -179,3 +179,6 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     }
 }
+
+
+
