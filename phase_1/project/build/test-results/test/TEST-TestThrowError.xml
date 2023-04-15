@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TestThrowError" tests="6" skipped="0" failures="0" errors="0" timestamp="2023-03-27T16:36:11" hostname="limoncello" time="0.003">
+  <properties/>
+  <testcase name="test_error_is_thrown_exclamation_mark" classname="TestThrowError" time="0.001"/>
+  <testcase name="test_error_is_thrown_esperluette" classname="TestThrowError" time="0.001"/>
+  <testcase name="test_error_is_thrown_power_of_two" classname="TestThrowError" time="0.0"/>
+  <testcase name="test_refused_ascii" classname="TestThrowError" time="0.0"/>
+  <testcase name="test_error_is_thrown_question_mark" classname="TestThrowError" time="0.001"/>
+  <testcase name="test_error_is_thrown_vertical_bar" classname="TestThrowError" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

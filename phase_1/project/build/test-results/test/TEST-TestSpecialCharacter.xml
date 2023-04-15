@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TestSpecialCharacter" tests="22" skipped="0" failures="0" errors="0" timestamp="2023-03-27T16:36:11" hostname="limoncello" time="0.021">
+  <properties/>
+  <testcase name="test_recognize_semicolon" classname="TestSpecialCharacter" time="0.017"/>
+  <testcase name="test_recognize_greater_than_or_equal" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_right_bracket" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_plus_operator" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_left_curly_bracket" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_right_parenthesis" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_greater_than" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_less_than" classname="TestSpecialCharacter" time="0.001"/>
+  <testcase name="test_recognize_assignment_operator" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_random" classname="TestSpecialCharacter" time="0.001"/>
+  <testcase name="test_recognize_equality_operator" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_less_than_or_equal" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_comma" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_left_parenthesis" classname="TestSpecialCharacter" time="0.001"/>
+  <testcase name="test_recognize_right_curly_bracket" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_divide_operator" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_left_bracket" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_less_than_greater_than" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_minus_operator" classname="TestSpecialCharacter" time="0.001"/>
+  <testcase name="test_recognize_dot" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_multiply_operator" classname="TestSpecialCharacter" time="0.0"/>
+  <testcase name="test_recognize_modulo_operator" classname="TestSpecialCharacter" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

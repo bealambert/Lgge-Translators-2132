@@ -51,7 +51,7 @@ public class Parser {
 
     public static void main(String[] args) {
         //String input = "var a int = 2;";
-        String input = "var a int = fun(a,3)*2;";
+        String input = "var a int = 2+i;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -91,6 +91,8 @@ public class Parser {
                 // here you ve found an identifier value
                 arrayList.add(currValue);
             }
+        } else {
+            arrayList.add(parseValue());
         }
         Symbol operatorSymbol = whichSymbol(operatorValues);
 

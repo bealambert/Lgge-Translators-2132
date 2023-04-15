@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TestBoolean" tests="6" skipped="0" failures="0" errors="0" timestamp="2023-03-27T16:36:11" hostname="limoncello" time="0.015">
+  <properties/>
+  <testcase name="test_random_boolean_values_and_length" classname="TestBoolean" time="0.014"/>
+  <testcase name="test_recognize_boolean_multiple_values" classname="TestBoolean" time="0.0"/>
+  <testcase name="test_recognize_tabulation" classname="TestBoolean" time="0.0"/>
+  <testcase name="test_recognize_end_of_line" classname="TestBoolean" time="0.0"/>
+  <testcase name="test_recognize_boolean_one_value_false" classname="TestBoolean" time="0.0"/>
+  <testcase name="test_recognize_boolean_one_value_true" classname="TestBoolean" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

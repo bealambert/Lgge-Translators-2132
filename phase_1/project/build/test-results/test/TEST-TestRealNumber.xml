@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TestRealNumber" tests="4" skipped="0" failures="0" errors="0" timestamp="2023-03-27T16:36:11" hostname="limoncello" time="0.005">
+  <properties/>
+  <testcase name="test_recognize_tabulation" classname="TestRealNumber" time="0.001"/>
+  <testcase name="test_recognize_end_of_line" classname="TestRealNumber" time="0.0"/>
+  <testcase name="test_random_real_number" classname="TestRealNumber" time="0.003"/>
+  <testcase name="test_recognize_real_number" classname="TestRealNumber" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
