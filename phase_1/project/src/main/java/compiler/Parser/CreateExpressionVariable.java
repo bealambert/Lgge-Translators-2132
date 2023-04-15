@@ -2,11 +2,9 @@ package compiler.Parser;
 
 import compiler.Lexer.Identifier;
 import compiler.Lexer.Keyword;
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
+import compiler.Semantic.*;
 
-public class CreateExpressionVariable extends CreateVariables {
+public class CreateExpressionVariable extends CreateVariables implements Visitable {
 
     Expression expression;
 
@@ -23,12 +21,7 @@ public class CreateExpressionVariable extends CreateVariables {
     }
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 }

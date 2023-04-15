@@ -1,12 +1,10 @@
 package compiler.Parser;
 
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
+import compiler.Semantic.*;
 
 import java.util.ArrayList;
 
-public class RecordCall extends Records {
+public class RecordCall extends Records implements Visitable {
 
     Expression expression;
 
@@ -23,12 +21,7 @@ public class RecordCall extends Records {
     }
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 }

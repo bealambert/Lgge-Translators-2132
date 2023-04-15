@@ -4,7 +4,7 @@ import compiler.ASTNode;
 import compiler.Parser.AccessToIndexArray;
 import compiler.Semantic.*;
 
-public class Identifier extends ASTNode implements Symbol {
+public class Identifier implements Symbol, Visitable {
 
     private final String attribute;
     private final String name = "Identifier";
@@ -30,12 +30,7 @@ public class Identifier extends ASTNode implements Symbol {
 
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 }

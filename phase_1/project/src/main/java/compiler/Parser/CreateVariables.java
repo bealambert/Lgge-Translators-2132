@@ -3,11 +3,9 @@ package compiler.Parser;
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Lexer.Keyword;
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
+import compiler.Semantic.*;
 
-public abstract class CreateVariables extends ASTNode {
+public abstract class CreateVariables extends ASTNode implements Visitable {
 
     Identifier variableIdentifier;
     Keyword stateKeyword;
@@ -20,12 +18,7 @@ public abstract class CreateVariables extends ASTNode {
     }
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 

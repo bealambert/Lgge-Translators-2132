@@ -4,7 +4,7 @@ import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Semantic.*;
 
-public class AccessToIndexArray extends Identifier {
+public class AccessToIndexArray extends Identifier implements Visitable {
 
     Expression expression;
     private final String name = "AccessToIndexArray";
@@ -31,12 +31,7 @@ public class AccessToIndexArray extends Identifier {
     }
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 }

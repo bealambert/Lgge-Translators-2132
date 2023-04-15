@@ -1,11 +1,9 @@
 package compiler.Parser;
 
 import compiler.ASTNode;
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
+import compiler.Semantic.*;
 
-public class Condition extends ASTNode {
+public class Condition extends ASTNode implements Visitable {
 
     // value != 3
     // Subset of Expression
@@ -24,12 +22,7 @@ public class Condition extends ASTNode {
     }
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 }

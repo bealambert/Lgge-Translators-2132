@@ -1,11 +1,9 @@
 package compiler.Parser;
 
 import compiler.ASTNode;
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
+import compiler.Semantic.*;
 
-public class ReturnStatement extends ASTNode {
+public class ReturnStatement extends ASTNode implements Visitable {
 
     Expression expression;
 
@@ -21,13 +19,9 @@ public class ReturnStatement extends ASTNode {
                 '}';
     }
 
-    @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
 
     @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 }

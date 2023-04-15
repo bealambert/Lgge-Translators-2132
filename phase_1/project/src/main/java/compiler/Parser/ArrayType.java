@@ -1,11 +1,9 @@
 package compiler.Parser;
 
 import compiler.Lexer.Identifier;
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
+import compiler.Semantic.*;
 
-public class ArrayType extends Type {
+public class ArrayType extends Type implements Visitable {
 
     public ArrayType(Identifier attribute) {
         super(attribute);
@@ -16,12 +14,7 @@ public class ArrayType extends Type {
     }
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 

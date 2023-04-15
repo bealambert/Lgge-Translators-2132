@@ -2,13 +2,11 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Symbol;
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
+import compiler.Semantic.*;
 
 import java.util.ArrayList;
 
-public class Block extends ASTNode {
+public class Block extends ASTNode implements Visitable {
 
     private final ArrayList<ASTNode> attribute;
 
@@ -25,12 +23,7 @@ public class Block extends ASTNode {
     }
 
     @Override
-    public void accept(AssignSymbolTableVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
     }
 }

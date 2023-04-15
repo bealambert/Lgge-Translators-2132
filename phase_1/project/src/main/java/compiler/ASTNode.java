@@ -3,6 +3,7 @@ package compiler;
 import compiler.Semantic.AssignSymbolTableVisitor;
 import compiler.Semantic.MakeSemanticAnalysisVisitor;
 import compiler.Semantic.SymbolTable;
+import compiler.Semantic.Visitor;
 
 import java.util.ArrayList;
 
@@ -31,9 +32,7 @@ public abstract class ASTNode {
         this.symbolTable = symbolTable;
     }
 
-    public abstract void accept(AssignSymbolTableVisitor visitor);
-
-    public abstract void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable);
+    public abstract void accept(Visitor visitor, SymbolTable symbolTable);
 
 
 }
