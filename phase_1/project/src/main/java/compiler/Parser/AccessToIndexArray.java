@@ -2,6 +2,7 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.*;
 
 public class AccessToIndexArray extends Identifier {
 
@@ -27,5 +28,15 @@ public class AccessToIndexArray extends Identifier {
         return "AccessToIndexArray{" +
                 "expression=" + expression +
                 '}';
+    }
+
+    @Override
+    public void accept(AssignSymbolTableVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
     }
 }

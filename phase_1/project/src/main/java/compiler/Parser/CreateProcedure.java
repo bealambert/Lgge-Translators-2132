@@ -2,10 +2,14 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.AssignSymbolTableVisitor;
+import compiler.Semantic.MakeSemanticAnalysisVisitor;
+import compiler.Semantic.SymbolTable;
+import compiler.Semantic.Visitable;
 
 import java.util.ArrayList;
 
-public class CreateProcedure extends ASTNode {
+public class CreateProcedure extends ASTNode implements Visitable {
 
     Identifier procedureName;
     ArrayList<Param> params;
@@ -29,4 +33,15 @@ public class CreateProcedure extends ASTNode {
                 ", body=" + body +
                 '}';
     }
+
+    @Override
+    public void accept(AssignSymbolTableVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public void accept(MakeSemanticAnalysisVisitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
 }
