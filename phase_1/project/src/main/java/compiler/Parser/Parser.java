@@ -222,6 +222,10 @@ public class Parser {
         return new Type(type);
     }
 
+    /**
+     * @param token
+     * @return
+     */
     public Symbol match(Token token) {
         // match of either class name or attribute
         if (isSymbol(token)) {
@@ -231,6 +235,11 @@ public class Parser {
         }
         throw new RuntimeException();
     }
+
+    /**
+     * It updates the lookahead with the next symbol and return the initial lookahead
+     * @return the current lookahead
+     */
     public Symbol pop() {
         Symbol match = lookahead;
         lookahead = lexer.getNextSymbol();
@@ -249,6 +258,10 @@ public class Parser {
         return create_variable_identifier;
     }
 
+    /**
+     * @param tokenArray : an array of token
+     * @return the lookahead Symbol if the lookahead is in the tokenArray null otherwise
+     */
     public Symbol whichSymbol(Token[] tokenArray) {
         for (Token token : tokenArray) {
             if (isSymbol(token))
@@ -257,8 +270,11 @@ public class Parser {
         return null;
     }
 
+    /**
+     * @param token: the token to compare with the lookahead Symbol
+     * @return true if they are the same kind (same attribute)
+     */
     public boolean isSymbol(Token token) {
-
         return lookahead != null && (lookahead.getName().equals(token.getName()) || lookahead.getAttribute().equals(token.getName()));
     }
 
