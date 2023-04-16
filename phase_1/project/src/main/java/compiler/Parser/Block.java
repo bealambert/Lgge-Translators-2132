@@ -3,6 +3,7 @@ package compiler.Parser;
 import compiler.ASTNode;
 import compiler.Lexer.Symbol;
 import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
@@ -29,5 +30,10 @@ public class Block extends ASTNode implements Visitable {
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }

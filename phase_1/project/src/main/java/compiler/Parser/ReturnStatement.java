@@ -2,6 +2,7 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
 public class ReturnStatement extends ASTNode implements Visitable {
 
@@ -19,9 +20,17 @@ public class ReturnStatement extends ASTNode implements Visitable {
                 '}';
     }
 
+    public Expression getExpression() {
+        return expression;
+    }
 
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }

@@ -11,8 +11,6 @@ public interface Visitor {
 
     void visit(ArrayType arrayType, SymbolTable symbolTable);
 
-    void visit(AssignmentOperator assignmentOperator, SymbolTable symbolTable);
-
     void visit(Block block, SymbolTable symbolTable);
 
     void visit(Condition condition, SymbolTable symbolTable);
@@ -50,7 +48,6 @@ public interface Visitor {
 
     void visit(MethodCallFromIndexArray methodCallFromIndexArray, SymbolTable symbolTable);
 
-    void visit(Operator operator, SymbolTable symbolTable);
 
     void visit(Param param, SymbolTable symbolTable);
 

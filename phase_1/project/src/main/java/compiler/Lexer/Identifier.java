@@ -3,6 +3,7 @@ package compiler.Lexer;
 import compiler.ASTNode;
 import compiler.Parser.AccessToIndexArray;
 import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
 public class Identifier extends ASTNode implements Symbol, Visitable {
 
@@ -32,5 +33,10 @@ public class Identifier extends ASTNode implements Symbol, Visitable {
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException {
+        semanticVisitor.visit(this);
     }
 }

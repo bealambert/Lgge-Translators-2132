@@ -1,6 +1,7 @@
 package compiler.Parser;
 
 import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
@@ -23,5 +24,10 @@ public class RecordCall extends Records implements Visitable {
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }

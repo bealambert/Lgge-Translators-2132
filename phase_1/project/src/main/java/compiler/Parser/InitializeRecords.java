@@ -4,6 +4,7 @@ import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Lexer.Keyword;
 import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
@@ -38,5 +39,9 @@ public class InitializeRecords extends ASTNode implements Visitable {
         visitor.visit(this, symbolTable);
     }
 
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
+    }
 
 }

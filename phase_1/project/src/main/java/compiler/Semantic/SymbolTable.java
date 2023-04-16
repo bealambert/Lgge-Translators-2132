@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class SymbolTable {
 
     SymbolTable previous;
-    HashMap<Identifier, ASTNode> symbolTable;
+    HashMap<Identifier, ASTNode> symbolTable = new HashMap<>();
 
     public SymbolTable(SymbolTable previous) {
         this.previous = previous;

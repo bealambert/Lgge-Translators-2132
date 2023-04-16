@@ -1,16 +1,13 @@
 package compiler;
 
-import compiler.Semantic.AssignSymbolTableVisitor;
-import compiler.Semantic.MakeSemanticAnalysisVisitor;
-import compiler.Semantic.SymbolTable;
-import compiler.Semantic.Visitor;
+import compiler.Semantic.*;
 
 import java.util.ArrayList;
 
 public abstract class ASTNode {
 
     private ASTNode next;
-    private SymbolTable symbolTable;
+    private SymbolTable symbolTable = new SymbolTable(null);
 
     public ASTNode() {
 
@@ -31,8 +28,7 @@ public abstract class ASTNode {
     public void setSymbolTable(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
     }
-
     public abstract void accept(Visitor visitor, SymbolTable symbolTable);
 
-
+    public abstract void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException;
 }

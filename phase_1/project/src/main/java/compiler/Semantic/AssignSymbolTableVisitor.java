@@ -24,10 +24,6 @@ public class AssignSymbolTableVisitor implements Visitor {
         arrayType.setSymbolTable(symbolTable);
     }
 
-    @Override
-    public void visit(AssignmentOperator assignmentOperator, SymbolTable symbolTable) {
-        assignmentOperator.setSymbolTable(symbolTable);
-    }
 
     @Override
     public void visit(Block block, SymbolTable symbolTable) {
@@ -161,11 +157,6 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(MethodCallFromIndexArray methodCallFromIndexArray, SymbolTable symbolTable) {
         methodCallFromIndexArray.setSymbolTable(symbolTable);
-    }
-
-    @Override
-    public void visit(Operator operator, SymbolTable symbolTable) {
-        operator.setSymbolTable(symbolTable);
     }
 
     @Override
