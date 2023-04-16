@@ -2,8 +2,10 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
-public class Reassignment extends ASTNode {
+public class Reassignment extends ASTNode implements Visitable {
 
     private Identifier identifier;
     private Expression expression;
@@ -20,5 +22,15 @@ public class Reassignment extends ASTNode {
                 identifier +
                 " " + expression +
                 " }";
+    }
+
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }

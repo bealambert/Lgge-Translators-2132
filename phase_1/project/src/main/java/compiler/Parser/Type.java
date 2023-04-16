@@ -2,29 +2,38 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
-public class Type extends ASTNode {
+public class Type extends Identifier {
 
-    Identifier attribute;
 
     public Type(Identifier attribute) {
-        super();
-        this.attribute = attribute;
+        super(String.valueOf(attribute));
     }
 
-    public Identifier getAttribute() {
-        return attribute;
-    }
 
     public String getName() {
         return "Type";
     }
 
-
     @Override
     public String toString() {
-        return "Type{" +
-                "attribute=" + attribute +
-                '}';
+        return super.toString();
+    }
+
+    @Override
+    public String getAttribute() {
+        return super.getAttribute();
+    }
+
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }

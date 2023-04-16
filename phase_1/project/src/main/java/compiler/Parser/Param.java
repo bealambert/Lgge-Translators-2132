@@ -2,8 +2,10 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
-public class Param extends ASTNode {
+public class Param extends ASTNode implements Visitable {
 
     Type type;
     Identifier identifier;
@@ -18,5 +20,23 @@ public class Param extends ASTNode {
     public String toString() {
         return "<" + type +
                 ", " + identifier + "";
+    }
+
+    public Identifier getIdentifier() {
+        return identifier;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }

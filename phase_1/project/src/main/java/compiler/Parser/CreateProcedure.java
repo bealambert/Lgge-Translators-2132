@@ -2,15 +2,16 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
-public class CreateProcedure extends ASTNode {
+public class CreateProcedure extends ASTNode implements Visitable {
 
     Identifier procedureName;
     ArrayList<Param> params;
     Type returnType;
-    ArrayInitializer returnTypeArray;
     Block body;
 
     public CreateProcedure(Identifier procedureName, ArrayList<Param> params, Type returnType, Block body) {
@@ -29,4 +30,31 @@ public class CreateProcedure extends ASTNode {
                 ", body=" + body +
                 '}';
     }
+
+    public Type getReturnType() {
+        return returnType;
+    }
+
+    public Block getBody() {
+        return body;
+    }
+
+    public Identifier getProcedureName() {
+        return procedureName;
+    }
+
+    public ArrayList<Param> getParams() {
+        return params;
+    }
+
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
+    }
+
 }

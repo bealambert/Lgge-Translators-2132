@@ -2,10 +2,12 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
-public class MethodCall extends Expression {
+public class MethodCall extends Expression implements Visitable {
 
     Identifier methodIdentifier;
 
@@ -20,5 +22,15 @@ public class MethodCall extends Expression {
         return "MethodCall{" +
                 "methodIdentifier=" + methodIdentifier +
                 '}';
+    }
+
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }

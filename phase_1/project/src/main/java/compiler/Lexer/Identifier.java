@@ -1,6 +1,11 @@
 package compiler.Lexer;
 
-public class Identifier implements Symbol{
+import compiler.ASTNode;
+import compiler.Parser.AccessToIndexArray;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
+
+public class Identifier extends ASTNode implements Symbol, Visitable {
 
     private final String attribute;
     private final String name = "Identifier";
@@ -25,4 +30,13 @@ public class Identifier implements Symbol{
     }
 
 
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException {
+        semanticVisitor.visit(this);
+    }
 }

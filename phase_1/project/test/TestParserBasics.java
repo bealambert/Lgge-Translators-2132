@@ -63,6 +63,22 @@ public class TestParserBasics {
     }
 
     @Test
+    public void TestRecords() {
+        String input = "record Person {\n" +
+                "    name string;\n" +
+                "    location Point;\n" +
+                "    history int[];\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        System.out.println(root);
+        assertTrue(root instanceof InitializeRecords);
+    }
+
+    @Test
     public void TestReassignment() {
         String input = "azea_8z = 3.54;";
         StringReader reader = new StringReader(input);

@@ -2,17 +2,15 @@ package compiler.Parser;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
-public class IfElse extends ASTNode {
+public class IfElse extends IfCondition implements Visitable {
 
-    Condition condition;
-    Block ifBlock;
     Block elseBlock;
 
     public IfElse(Condition condition, Block ifBlock, Block elseBlock) {
-        super();
-        this.condition = condition;
-        this.ifBlock = ifBlock;
+        super(condition, ifBlock);
         this.elseBlock = elseBlock;
     }
 
@@ -23,5 +21,19 @@ public class IfElse extends ASTNode {
                 ", ifBlock=" + ifBlock +
                 ", elseBlock=" + elseBlock +
                 '}';
+    }
+
+    public Block getElseBlock() {
+        return elseBlock;
+    }
+
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
     }
 }
