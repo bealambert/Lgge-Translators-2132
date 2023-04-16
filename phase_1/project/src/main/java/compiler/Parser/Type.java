@@ -7,7 +7,6 @@ import compiler.SemanticAnalysisException;
 
 public class Type extends Identifier {
 
-
     public Type(Identifier attribute) {
         super(String.valueOf(attribute));
     }

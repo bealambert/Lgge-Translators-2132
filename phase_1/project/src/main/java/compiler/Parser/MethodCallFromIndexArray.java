@@ -13,6 +13,11 @@ public class MethodCallFromIndexArray extends MethodCall implements Visitable {
         this.accessToIndexArray = accessToIndexArray;
     }
 
+    public AccessToIndexArray getAccessToIndexArray() {
+        return accessToIndexArray;
+    }
+
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

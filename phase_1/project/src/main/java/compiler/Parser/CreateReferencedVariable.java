@@ -21,6 +21,10 @@ public class CreateReferencedVariable extends CreateVariables implements Visitab
                 '}';
     }
 
+    public Identifier getReferencedIdentifier() {
+        return referencedIdentifier;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

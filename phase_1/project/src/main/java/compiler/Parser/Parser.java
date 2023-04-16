@@ -96,6 +96,8 @@ public class Parser {
                 if (isSymbol(Token.Point)) {
                     MethodCallFromIndexArray methodCallFromIndexArray = (MethodCallFromIndexArray) parseMethodCall(accessToIndexArray);
                     arrayList.add(methodCallFromIndexArray);
+                } else {
+                    arrayList.add(accessToIndexArray);
                 }
 
             } else if (isSymbol(Token.Point)) {
@@ -280,7 +282,7 @@ public class Parser {
 
     public FunctionCall parseFunctionCall(Symbol identifier) {
 
-        ArrayList<Object> arrayList = new ArrayList<>();
+        ArrayList<Expression> arrayList = new ArrayList<>();
         match(Token.OpeningParenthesis);
         while (!isSymbol(Token.ClosingParenthesis)) {
             arrayList.add(parseExpression());
@@ -495,8 +497,9 @@ public class Parser {
                 if (symbol == null) {
                     match(Token.OpeningParenthesis);
                     Expression functionCallParameters = parseFunctionCallParameters();
+
                     match(Token.ClosingParenthesis);
-                    RecordCall recordCall = new RecordCall(referenceOrTypeIdentifier.getAttribute(), functionCallParameters);
+                    RecordCall recordCall = new RecordCall(referenceOrTypeIdentifier.getAttribute(), functionCallParameters.getExpression());
                     CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type);
                     if (expression != null) return expression;
                     return new CreateRecordVariables(create_variable_identifier, identifier, type, recordCall);
