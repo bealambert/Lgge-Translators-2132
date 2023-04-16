@@ -4,6 +4,7 @@ import compiler.Lexer.Identifier;
 import compiler.Lexer.Keyword;
 import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
+import compiler.Token;
 
 public class CreateArrayVariable extends CreateVariables implements Visitable {
 
@@ -20,6 +21,7 @@ public class CreateArrayVariable extends CreateVariables implements Visitable {
                 "arrayInitializer=" + arrayInitializer +
                 '}';
     }
+
 
     public ArrayInitializer getArrayInitializer() {
         return arrayInitializer;

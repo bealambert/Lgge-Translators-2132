@@ -13,6 +13,11 @@ public class MethodCallFromIdentifier extends MethodCall implements Visitable {
         this.objectIdentifier = objectIdentifier;
     }
 
+    public Identifier getObjectIdentifier() {
+        return objectIdentifier;
+    }
+
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

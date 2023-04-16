@@ -16,6 +16,14 @@ public class RecordParameter extends ASTNode implements Visitable {
         this.type = type;
     }
 
+    public Identifier getIdentifier() {
+        return identifier;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

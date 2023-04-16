@@ -24,6 +24,14 @@ public class Reassignment extends ASTNode implements Visitable {
                 " }";
     }
 
+    public Identifier getIdentifier() {
+        return identifier;
+    }
+
+    public Expression getExpression() {
+        return expression;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

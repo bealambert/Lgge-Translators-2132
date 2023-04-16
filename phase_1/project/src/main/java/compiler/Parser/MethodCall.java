@@ -24,6 +24,11 @@ public class MethodCall extends Expression implements Visitable {
                 '}';
     }
 
+    public Identifier getMethodIdentifier() {
+        return methodIdentifier;
+    }
+
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

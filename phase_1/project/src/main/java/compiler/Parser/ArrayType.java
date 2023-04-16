@@ -3,6 +3,7 @@ package compiler.Parser;
 import compiler.Lexer.Identifier;
 import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
+import compiler.Token;
 
 public class ArrayType extends Type implements Visitable {
 

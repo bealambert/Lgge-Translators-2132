@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 public class RecordCall extends Records implements Visitable {
 
-    Expression expression;
+    ArrayList<Object> expression;
 
-    public RecordCall(String attribute, Expression expression) {
+    public RecordCall(String attribute, ArrayList<Object> expression) {
         super(attribute);
         this.expression = expression;
     }
@@ -19,6 +19,10 @@ public class RecordCall extends Records implements Visitable {
         return "RecordCall{" +
                 "expression=" + expression +
                 '}';
+    }
+
+    public ArrayList<Object> getExpression() {
+        return expression;
     }
 
     @Override
