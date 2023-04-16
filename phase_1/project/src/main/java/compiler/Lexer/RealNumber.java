@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class RealNumber implements Symbol{
+public class RealNumber extends GenericValue implements Symbol {
 
     private final Double attribute;
     private final String name = "RealNumber";

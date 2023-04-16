@@ -7,11 +7,18 @@ import compiler.Lexer.Keyword;
 import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
-public class Records extends Identifier implements Visitable {
+public class Records extends ASTNode implements Visitable {
 
-    public Records(String attribute) {
-        super(attribute);
+    Identifier identifier;
+
+    public Records(Identifier identifier) {
+        this.identifier = identifier;
     }
+
+    public Identifier getIdentifier() {
+        return identifier;
+    }
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
         visitor.visit(this, symbolTable);

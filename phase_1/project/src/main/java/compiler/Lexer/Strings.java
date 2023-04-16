@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class Strings implements Symbol{
+public class Strings extends GenericValue implements Symbol {
 
     private final String attribute;
     private final String name = "Strings";

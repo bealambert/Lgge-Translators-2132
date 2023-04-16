@@ -8,22 +8,15 @@ public class Condition extends ASTNode implements Visitable {
 
     // value != 3
     // Subset of Expression
-    Expression expression;
+    ArrayOfExpression arrayOfExpression;
 
-    public Condition(Expression expression) {
+    public Condition(ArrayOfExpression arrayOfExpression) {
         super();
-        this.expression = expression;
+        this.arrayOfExpression = arrayOfExpression;
     }
 
-    @Override
-    public String toString() {
-        return "Condition{" +
-                "expression=" + expression +
-                '}';
-    }
-
-    public Expression getExpression() {
-        return expression;
+    public ArrayOfExpression getArrayOfExpression() {
+        return arrayOfExpression;
     }
 
     @Override

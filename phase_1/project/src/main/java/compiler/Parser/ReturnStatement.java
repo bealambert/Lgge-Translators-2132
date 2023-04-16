@@ -6,22 +6,15 @@ import compiler.SemanticAnalysisException;
 
 public class ReturnStatement extends ASTNode implements Visitable {
 
-    Expression expression;
+    ArrayOfExpression arrayOfExpression;
 
-    public ReturnStatement(Expression expression) {
+    public ReturnStatement(ArrayOfExpression arrayOfExpression) {
         super();
-        this.expression = expression;
+        this.arrayOfExpression = arrayOfExpression;
     }
 
-    @Override
-    public String toString() {
-        return "ReturnStatement{" +
-                "expression=" + expression +
-                '}';
-    }
-
-    public Expression getExpression() {
-        return expression;
+    public ArrayOfExpression getArrayOfExpression() {
+        return arrayOfExpression;
     }
 
     @Override

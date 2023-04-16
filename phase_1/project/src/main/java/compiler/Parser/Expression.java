@@ -8,22 +8,14 @@ import compiler.SemanticAnalysisException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Expression extends ASTNode implements Visitable {
+public abstract class Expression extends ASTNode implements Visitable {
 
-    private final ArrayList<Object> expression;
-
-    public Expression(ArrayList<Object> symbolArrayList) {
+    public Expression() {
         super();
-        this.expression = symbolArrayList;
     }
 
-    @Override
-    public String toString() {
-        return this.expression.toString();
-    }
-
-    public ArrayList<Object> getExpression() {
-        return expression;
+    public Expression getExpression() {
+        return this;
     }
 
     @Override

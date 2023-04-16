@@ -5,24 +5,19 @@ import compiler.Lexer.Keyword;
 import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
+import java.util.ArrayList;
+
 public class CreateExpressionVariable extends CreateVariables implements Visitable {
 
-    Expression expression;
+    ArrayOfExpression arrayOfExpression;
 
-    public CreateExpressionVariable(Keyword stateKeyword, Identifier variableIdentifier, Type type, Expression expression) {
+    public CreateExpressionVariable(Keyword stateKeyword, Identifier variableIdentifier, Type type, ArrayOfExpression arrayOfExpression) {
         super(stateKeyword, variableIdentifier, type);
-        this.expression = expression;
+        this.arrayOfExpression = arrayOfExpression;
     }
 
-    @Override
-    public String toString() {
-        return "CreateExpressionVariable{" +
-                "expression=" + expression +
-                '}';
-    }
-
-    public Expression getExpression() {
-        return expression;
+    public ArrayOfExpression getArrayOfExpression() {
+        return arrayOfExpression;
     }
 
     @Override

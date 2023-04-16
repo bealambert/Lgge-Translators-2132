@@ -2,6 +2,7 @@ package compiler.Semantic;
 
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.Parser.ArrayOfExpression;
 import compiler.Parser.Expression;
 import compiler.Parser.Type;
 import compiler.SemanticAnalysisException;
@@ -10,6 +11,10 @@ public class TreatSemanticCases {
 
     public TreatSemanticCases() {
 
+    }
+
+    public Type treatExpression(ArrayOfExpression arrayOfExpression) {
+        return null;
     }
 
     public Type treatExpression(Expression expression) {

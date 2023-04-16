@@ -12,8 +12,7 @@ public class MethodCall extends Expression implements Visitable {
     Identifier methodIdentifier;
 
     public MethodCall(Identifier methodIdentifier) {
-        super(new ArrayList<>());
-
+        super();
         this.methodIdentifier = methodIdentifier;
     }
 

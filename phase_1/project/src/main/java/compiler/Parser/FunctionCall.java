@@ -11,19 +11,13 @@ import java.util.ArrayList;
 public class FunctionCall extends Expression implements Visitable {
 
     Symbol identifier;
+    ArrayList<ArrayOfExpression> params;
 
-
-    public FunctionCall(Symbol identifier, ArrayList<Expression> params) {
-        super(params);
+    public FunctionCall(Symbol identifier, ArrayList<ArrayOfExpression> params) {
+        this.params = params;
         this.identifier = identifier;
     }
 
-    @Override
-    public String toString() {
-        return "FunctionCall{" +
-                identifier +
-                '}' + ", (" + this.getExpression() + ')';
-    }
 
     public Symbol getIdentifier() {
         return identifier;

@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class NaturalNumber implements Symbol{
+public class NaturalNumber extends GenericValue implements Symbol {
 
     private final Integer attribute;
     private final String name = "NaturalNumber";

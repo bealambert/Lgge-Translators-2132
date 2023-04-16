@@ -139,7 +139,7 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(InitializeRecords initializeRecords, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(initializeRecords.getRecords(), initializeRecords);
+        symbolTable.symbolTable.put(initializeRecords.getRecords().getIdentifier(), initializeRecords);
         initializeRecords.setSymbolTable(symbolTable);
     }
 

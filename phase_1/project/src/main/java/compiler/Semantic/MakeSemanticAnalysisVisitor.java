@@ -23,7 +23,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
         CreateArrayVariable createArrayVariable =
                 (CreateArrayVariable) treatSemanticCases.getFirstDeclarationInsideSymbolTable
-                        (accessToIndexArray, accessToIndexArray.getSymbolTable());
+                        (accessToIndexArray.getIdentifier(), accessToIndexArray.getSymbolTable());
         if (!createArrayVariable.getType().getName().equals(ClassName.ArrayType.getName())) {
             throw new SemanticAnalysisException("");
         }
@@ -57,7 +57,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(Condition condition) throws SemanticAnalysisException {
         // expected boolean expression at the end
-        Type observedType = treatSemanticCases.treatExpression(condition.getExpression());
+        Type observedType = treatSemanticCases.treatExpression(condition.getArrayOfExpression());
         if (!observedType.getAttribute().equals("bool")) {
             throw new SemanticAnalysisException("");
         }
@@ -75,7 +75,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(CreateExpressionVariable createExpressionVariable) throws SemanticAnalysisException {
         Type expectedType = createExpressionVariable.getType();
-        Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getExpression());
+        Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getArrayOfExpression());
         treatSemanticCases.isEqual(expectedType, observedType);
     }
 
@@ -264,7 +264,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(ReturnStatement returnStatement) throws SemanticAnalysisException {
         SymbolTable symbolTable = returnStatement.getSymbolTable();
-        Type observedType = treatSemanticCases.treatExpression(returnStatement.getExpression());
+        Type observedType = treatSemanticCases.treatExpression(returnStatement.getArrayOfExpression());
         Identifier functionName = functionNameStack.peek();
         CreateProcedure createProcedure = (CreateProcedure) treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionName, symbolTable);
         Type expectedType = createProcedure.getReturnType();

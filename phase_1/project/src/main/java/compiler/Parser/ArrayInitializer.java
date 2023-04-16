@@ -8,12 +8,12 @@ import compiler.SemanticAnalysisException;
 public class ArrayInitializer extends ASTNode implements Visitable {
 
     ArrayType type;
-    Expression arraySize;
+    ArrayOfExpression arraySize;
 
-    public ArrayInitializer(ArrayType type, Expression arraySize) {
+    public ArrayInitializer(ArrayType type, ArrayOfExpression arrayOfExpression) {
         super();
         this.type = type;
-        this.arraySize = arraySize;
+        this.arraySize = arrayOfExpression;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class ArrayInitializer extends ASTNode implements Visitable {
         return type;
     }
 
-    public Expression getArraySize() {
+    public ArrayOfExpression getArraySize() {
         return arraySize;
     }
 

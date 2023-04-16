@@ -9,7 +9,7 @@
 // Strings are immutable.
 // For int and real, available operations are
 //      +, -, * , /, - (unary).
-//      ==, <>, <, >, <=, >=
+//      ==, <>, <, <=>, , >=
 // For int:
 //      %
 // For boolean:

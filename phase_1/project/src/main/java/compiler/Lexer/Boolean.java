@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class Boolean implements Symbol{
+public class Boolean extends GenericValue implements Symbol {
 
     private final String name = "Boolean";
     private final String[] acceptedAttributes = new String[]{"true", "false"};

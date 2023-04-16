@@ -1,14 +1,22 @@
 package compiler.Parser;
 
 import compiler.ASTNode;
+import compiler.Lexer.Symbol;
 import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
-public class Values extends ASTNode implements Visitable {
+public class Values extends Expression {
 
 
-    public Values() {
+    Symbol symbol;
+
+    public Values(Symbol symbol) {
         super();
+        this.symbol = symbol;
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
     }
 
     @Override

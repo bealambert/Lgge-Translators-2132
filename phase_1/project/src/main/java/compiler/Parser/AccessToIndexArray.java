@@ -5,31 +5,24 @@ import compiler.Lexer.Identifier;
 import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
-public class AccessToIndexArray extends Identifier implements Visitable {
+public class AccessToIndexArray extends Variable implements Visitable {
 
-    Expression expression;
+    ArrayOfExpression arrayOfExpression;
     private final String name = "AccessToIndexArray";
 
-    public AccessToIndexArray(String attribute, Expression expression) {
-        super(attribute);
-        this.expression = expression;
+    public AccessToIndexArray(Identifier identifier, ArrayOfExpression arrayOfExpression) {
+        super(identifier);
+        this.arrayOfExpression = arrayOfExpression;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    public Expression getExpression() {
-        return this.expression;
+    public ArrayOfExpression getArrayOfExpression() {
+        return arrayOfExpression;
     }
 
-    @Override
-    public String toString() {
-        return "AccessToIndexArray{" +
-                "expression=" + expression +
-                '}';
-    }
 
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {

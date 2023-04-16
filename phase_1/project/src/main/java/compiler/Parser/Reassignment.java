@@ -8,29 +8,22 @@ import compiler.SemanticAnalysisException;
 public class Reassignment extends ASTNode implements Visitable {
 
     private Identifier identifier;
-    private Expression expression;
+    private ArrayOfExpression arrayOfExpression;
 
-    public Reassignment(Identifier identifier, Expression expression) {
+    public Reassignment(Identifier identifier, ArrayOfExpression arrayOfExpression) {
         super();
         this.identifier = identifier;
-        this.expression = expression;
+        this.arrayOfExpression = arrayOfExpression;
     }
 
-    @Override
-    public String toString() {
-        return "Reassignment{ " +
-                identifier +
-                " " + expression +
-                " }";
+    public ArrayOfExpression getArrayOfExpression() {
+        return arrayOfExpression;
     }
 
     public Identifier getIdentifier() {
         return identifier;
     }
 
-    public Expression getExpression() {
-        return expression;
-    }
 
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {

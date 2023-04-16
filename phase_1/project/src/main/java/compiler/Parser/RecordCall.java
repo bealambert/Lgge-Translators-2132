@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.Lexer.Identifier;
 import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
@@ -7,22 +8,16 @@ import java.util.ArrayList;
 
 public class RecordCall extends Records implements Visitable {
 
-    ArrayList<Object> expression;
+    ArrayList<FunctionCallParameter> functionCallParameters;
 
-    public RecordCall(String attribute, ArrayList<Object> expression) {
-        super(attribute);
-        this.expression = expression;
+    public RecordCall(Identifier identifier, ArrayList<FunctionCallParameter> functionCallParameters) {
+        super(identifier);
+        this.functionCallParameters = functionCallParameters;
     }
 
-    @Override
-    public String toString() {
-        return "RecordCall{" +
-                "expression=" + expression +
-                '}';
-    }
 
-    public ArrayList<Object> getExpression() {
-        return expression;
+    public ArrayList<FunctionCallParameter> getFunctionCallParameters() {
+        return functionCallParameters;
     }
 
     @Override
