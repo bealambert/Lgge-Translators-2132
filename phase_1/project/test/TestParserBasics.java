@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestParserBasics {
@@ -140,6 +141,37 @@ public class TestParserBasics {
         ASTNode root = parser.getAST();
         assertTrue(root instanceof ReturnStatement);
 
+    }
+
+    @Test
+    public void TestSimpleExpression() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "a+1*3.2/true%func();";
+        String outputExpected = "[<Identifier, a>, <SpecialCharacter, +>, <NaturalNumber, 1>, <SpecialCharacter, *>, <RealNumber, 3.2>, <SpecialCharacter, />, <Boolean, true>, <SpecialCharacter, %>, FunctionCall{<Identifier, func>}, ([])]";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        Expression result = parser.parseExpression();
+        //System.out.println(result);
+
+        assertEquals((result.toString()), outputExpected);
+    }
+    @Test
+    public void TestExpressionWithParenthesis() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "a+(1*3.2)/true%func();";
+        String outputExpected = "[<Identifier, a>, <SpecialCharacter, +>, <NaturalNumber, 1>, <SpecialCharacter, *>, <RealNumber, 3.2>, <SpecialCharacter, />, <Boolean, true>, <SpecialCharacter, %>, FunctionCall{<Identifier, func>}, ([])]";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        Expression result = parser.parseExpression();
+        //System.out.println(result);
+
+        // assertEquals((result.toString()), outputExpected);
     }
 
     @Test

@@ -1,10 +1,8 @@
 package compiler.Parser;
 
-import compiler.AST;
-import compiler.ASTNode;
-import compiler.ClassName;
+import compiler.*;
 import compiler.Lexer.*;
-import compiler.Token;
+
 import java.io.StringReader;
 import java.util.*;
 
@@ -75,13 +73,7 @@ public class Parser {
         return ast.getRoot();
     }
 
-    // todo Bea
-    // var a int = 2;
-    // this method is called after the match() of "=" Symbol
-    // so the look ahead points to "NaturalNumber, 2" here
-    public Expression parseExpression() {
-        ArrayList<Object> arrayList = new ArrayList<>();
-
+    public void parseValueHelper(ArrayList<Object> arrayList){
         if (isSymbol(Token.Identifier)) {
             Identifier identifier = (Identifier) match(Token.Identifier);
             // is it an identifier or a function call ?
@@ -97,7 +89,6 @@ public class Parser {
                     MethodCallFromIndexArray methodCallFromIndexArray = (MethodCallFromIndexArray) parseMethodCall(accessToIndexArray);
                     arrayList.add(methodCallFromIndexArray);
                 }
-
             } else if (isSymbol(Token.Point)) {
                 MethodCallFromIdentifier methodCallFromIdentifier = (MethodCallFromIdentifier) parseMethodCall(identifier);
                 arrayList.add(methodCallFromIdentifier);
@@ -105,19 +96,37 @@ public class Parser {
                 // here you ve found an identifier value
                 arrayList.add(identifier);
             }
-        } else {
-            arrayList.add(parseValue());
         }
-        Symbol operatorSymbol = whichSymbol(operatorValues);
-
-        while (operatorSymbol != null) {
-            arrayList.add(operatorSymbol);
+        else if(isSymbol(Token.OpeningParenthesis)){
             pop();
             arrayList.add(parseExpression());
+        }else {
+            arrayList.add(parseValue());
+        }
+    }
+
+    // todo Bea
+    // here we stop when we meet the terminal symbol ";"
+    public Expression parseExpression() {
+        ArrayList<Object> arrayList = new ArrayList<>();
+        // look for a first value
+        parseValueHelper(arrayList);
+        // look for an operator
+        Symbol operatorSymbol = whichSymbol(operatorValues);
+
+        while (operatorSymbol != null ) {
+            arrayList.add(operatorSymbol);
+            pop();
+            parseValueHelper(arrayList);
             operatorSymbol = whichSymbol(operatorValues);
         }
+        if (isSymbol(Token.ClosingParenthesis)){
+            pop();
+        }
         //System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
-        return new Expression(arrayList);
+        Expression expression = new Expression(arrayList);
+        expression.buildTree();
+        return expression;
     }
 
 
