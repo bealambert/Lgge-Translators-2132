@@ -37,4 +37,9 @@ public class FunctionCall extends Expression implements Visitable {
     public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
         return typeCheckingVisitor.visit(this);
     }
+
+    @Override
+    public String toString() {
+        return this.identifier.toString() + " - "+this.params.toString();
+    }
 }

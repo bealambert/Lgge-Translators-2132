@@ -40,4 +40,9 @@ public class Values extends Expression {
     public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
         return typeCheckingVisitor.visit(this);
     }
+
+    @Override
+    public String toString() {
+        return this.symbol.toString();
+    }
 }

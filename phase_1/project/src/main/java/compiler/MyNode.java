@@ -13,6 +13,7 @@ import compiler.Semantic.TypeCheckingVisitor;
 public class MyNode extends Expression {
     Expression value;
     String type;
+    int n_nodes;
     MyNode left;
     MyNode right;
 
@@ -21,8 +22,9 @@ public class MyNode extends Expression {
         if (v instanceof Symbol){
             this.type = ((Symbol) v).getName();
         }
-        left=null;
-        right=null;
+        this.left=null;
+        this.right=null;
+        this.n_nodes = 1;
     }
     public MyNode(Operator v, MyNode left, MyNode right){
         this.value = v;
@@ -39,6 +41,8 @@ public class MyNode extends Expression {
         } else {
             this.right = right;
         }
+
+        this.n_nodes = this.left.n_nodes + this.right.n_nodes + 1;
     }
 
     public MyNode getRight() {
@@ -53,8 +57,14 @@ public class MyNode extends Expression {
         return type;
     }
 
+    public int getN_nodes(){
+        return n_nodes;
+    }
     public Expression getValue() {
         return value;
+    }
+    public boolean isLeaf(){
+        return getLeft()==null && getRight()==null;
     }
 
     public void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException {

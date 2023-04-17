@@ -50,10 +50,12 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     public Type visit(MyNode myNode) throws SemanticAnalysisException {
         MyNode left = myNode.getLeft();
         MyNode right = myNode.getRight();
-        if (left == null && right == null) {
-            Expression expression = myNode.getValue();
+        // left == null && right == null
+        if (myNode.isLeaf()) {
+            Expression expression = (Expression) myNode.getValue();
             return expression.accept(this);
         }
+        // if myNode is not a leaf then it must have 2 children !
         assert left != null;
         assert right != null;
         Type leftType = left.accept(this);

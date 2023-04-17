@@ -76,7 +76,6 @@ public class Parser {
     }
 
     public Expression parseExpression() {
-
         if (isSymbol(Token.Identifier)) {
             Identifier identifier = (Identifier) match(Token.Identifier);
             // is it an identifier or a function call ?
@@ -118,12 +117,28 @@ public class Parser {
     public ArrayOfExpression parseArrayOfExpression() {
         ArrayList<Expression> arrayList = new ArrayList<>();
 
-        arrayList.add(parseExpression());
+        if (isSymbol(Token.MinusOperator)){
+            pop();
+            arrayList.add(new NegativeValue(parseExpression()));
+        } else if (isSymbol(Token.OpeningParenthesis)){
+            pop();
+            arrayList.add(parseSubExpression());
+        } else{
+            arrayList.add(parseExpression());
+        }
+
         Symbol operatorSymbol = whichSymbol(operatorValues);
 
         while (operatorSymbol != null) {
             arrayList.add(parseOperator((String) operatorSymbol.getAttribute()));
             pop();
+            /*
+            // to add if we want to allow "3+-4"
+            if (isSymbol(Token.MinusOperator)){
+                pop();
+                arrayList.add(new NegativeValue(parseExpression()));
+            } else
+            */
             if (isSymbol(Token.OpeningParenthesis)){
                 pop();
                 arrayList.add(parseSubExpression());
@@ -140,14 +155,27 @@ public class Parser {
 
     public SubExpression parseSubExpression() {
         ArrayList<Expression> arrayList = new ArrayList<>();
+        if (isSymbol(Token.MinusOperator)){
+            pop();
+            arrayList.add(new NegativeValue(parseExpression()));
+        } else if (isSymbol(Token.OpeningParenthesis)){
+            pop();
+            arrayList.add(parseSubExpression());
+        } else{
+            arrayList.add(parseExpression());
+        }
 
-        arrayList.add(parseExpression());
         Symbol operatorSymbol = whichSymbol(operatorValues);
 
         while (operatorSymbol != null) {
             arrayList.add(parseOperator((String) operatorSymbol.getAttribute()));
             pop();
-            arrayList.add(parseExpression());
+            if (isSymbol(Token.OpeningParenthesis)){
+                pop();
+                arrayList.add(parseSubExpression());
+            } else{
+                arrayList.add(parseExpression());
+            }
             if (isSymbol(Token.ClosingParenthesis)){
                 pop();
                 return new SubExpression(new ArrayOfExpression(arrayList));

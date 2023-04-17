@@ -11,36 +11,16 @@ import java.util.ArrayList;
 import java.util.RandomAccess;
 
 public class BinaryTree {
-    private final Token[] operatorValues = new Token[]{
-            Token.PlusOperator, Token.MinusOperator, Token.DivideOperator,
-            Token.MultiplyOperator, Token.ModuloOperator, Token.IsDifferentOperator,
-            Token.IsLessOperator, Token.IsEqualOperator, Token.IsGreaterOperator,
-            Token.IsLessOrEqualOperator, Token.IsGreaterOrEqualOperator, Token.AndKeyword, Token.OrKeyword
-    };
-    private final Token[] firstPrecedence = new Token[]{
-            Token.DivideOperator, Token.MultiplyOperator, Token.ModuloOperator
-    };
-
-    private final Token[] secondPrecedence = new Token[]{
-            Token.PlusOperator, Token.MinusOperator
-    };
-
-    private final Token[] thirdPrecedence = new Token[]{
-            Token.IsDifferentOperator, Token.IsLessOperator, Token.IsEqualOperator, Token.IsGreaterOperator,
-            Token.IsLessOrEqualOperator, Token.IsGreaterOrEqualOperator
-    };
-
-    private final Token[] fourthPrecedence = new Token[]{
-            Token.AndKeyword, Token.OrKeyword
-    };
     MyNode root;
+    int n_nodes;
 
-    public BinaryTree(MyNode node) {
-        this.root = node;
-    }
-
+    /**
+     * @param symbolArrayList: the list of Expression from which we have to build a binary tree
+     * Build a tree following the precedence of the operations rules
+     */
     public BinaryTree(ArrayList<Expression> symbolArrayList) {
         this.root = BinaryTreeHelperRun(symbolArrayList);
+        this.n_nodes = this.root.getN_nodes();
     }
     public MyNode BinaryTreeHelperRun(ArrayList<Expression> symbolArrayList){
         if (symbolArrayList.size()<2){
@@ -98,6 +78,12 @@ public class BinaryTree {
         return this.root;
     }
 
+    /**
+     * @return the number of nodes of the tree
+     */
+    public int size(){
+        return this.n_nodes;
+    }
     public Type accept(ExpressionTypeVisitor expressionTypeVisitor) throws SemanticAnalysisException {
         return expressionTypeVisitor.visit(this.getRoot());
     }
