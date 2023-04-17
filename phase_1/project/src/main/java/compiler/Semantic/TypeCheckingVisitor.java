@@ -23,14 +23,15 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(FunctionCall functionCall) throws SemanticAnalysisException {
         SymbolTable symbolTable = functionCall.getSymbolTable();
-        Type type = treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionCall.getIdentifier(), symbolTable).accept(this);
-        return type;
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionCall.getIdentifier(), symbolTable).accept(this);
+        return astNode.accept(typeCheckingVisitor);
     }
 
     @Override
     public Type visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException {
         SymbolTable symbolTable = accessToIndexArray.getSymbolTable();
-        Type type = treatSemanticCases.getFirstDeclarationInsideSymbolTable(accessToIndexArray.getIdentifier(), symbolTable).accept(this);
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(accessToIndexArray.getIdentifier(), symbolTable).accept(this);
+        Type type = astNode.accept(typeCheckingVisitor);
         ArrayOfExpression arrayOfExpression = accessToIndexArray.getArrayOfExpression();
         BinaryTree myTree = arrayOfExpression.getMyTree();
         Type indexType = myTree.accept(this);
