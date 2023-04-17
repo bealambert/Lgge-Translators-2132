@@ -12,6 +12,9 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(ArrayOfExpression arrayOfExpression, SymbolTable symbolTable) {
         arrayOfExpression.setSymbolTable(symbolTable);
+        for (int i = 0; i < arrayOfExpression.getExpressions().size(); i++) {
+            arrayOfExpression.getExpressions().get(i).accept(this, symbolTable);
+        }
     }
 
     @Override
@@ -21,7 +24,9 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(ArrayInitializer arrayInitializer, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(arrayInitializer.getType(), arrayInitializer);
+        symbolTable.symbolTable.put(arrayInitializer.getType().getAttribute(), arrayInitializer);
+        arrayInitializer.getArraySize().accept(this, symbolTable);
+        arrayInitializer.getType().accept(this, symbolTable);
     }
 
     @Override
@@ -35,6 +40,7 @@ public class AssignSymbolTableVisitor implements Visitor {
         ArrayList<ASTNode> astNodes = block.getAttribute();
         for (int i = 0; i < astNodes.size(); i++) {
             ASTNode astNode = astNodes.get(i);
+            astNode.setSymbolTable(symbolTable);
             astNode.accept(this, symbolTable);
         }
 
@@ -49,26 +55,29 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(CreateArrayVariable createArrayVariable, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createArrayVariable.getVariableIdentifier(), createArrayVariable);
+        symbolTable.symbolTable.put(createArrayVariable.getVariableIdentifier().getAttribute(), createArrayVariable);
         createArrayVariable.setSymbolTable(symbolTable);
+        createArrayVariable.getArrayInitializer().accept(this, symbolTable);
+        createArrayVariable.getVariableIdentifier().accept(this, symbolTable);
+        createArrayVariable.getType().accept(this, symbolTable);
     }
 
     @Override
     public void visit(CreateExpressionVariable createExpressionVariable, SymbolTable symbolTable) {
 
-        symbolTable.symbolTable.put(createExpressionVariable.getVariableIdentifier(), createExpressionVariable);
+        symbolTable.symbolTable.put(createExpressionVariable.getVariableIdentifier().getAttribute(), createExpressionVariable);
         createExpressionVariable.setSymbolTable(symbolTable);
     }
 
     @Override
     public void visit(CreateProcedure createProcedure, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createProcedure.getProcedureName(), createProcedure);
+        symbolTable.symbolTable.put(createProcedure.getProcedureName().getAttribute(), createProcedure);
         createProcedure.setSymbolTable(symbolTable);
         // TODO : Do we need to set all attributes `symbolTable` field to the current ST ? or is it enough?
         SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
         ArrayList<Param> procedureParameters = createProcedure.getParams();
         for (int i = 0; i < createProcedure.getParams().size(); i++) {
-            nestedScopeSymbolTable.symbolTable.put(procedureParameters.get(i).getIdentifier(), procedureParameters.get(i));
+            nestedScopeSymbolTable.symbolTable.put(procedureParameters.get(i).getIdentifier().getAttribute(), procedureParameters.get(i));
         }
         Block body = createProcedure.getBody();
         body.setSymbolTable(nestedScopeSymbolTable);
@@ -77,25 +86,25 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(CreateRecordVariables createRecordVariables, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createRecordVariables.getVariableIdentifier(), createRecordVariables);
+        symbolTable.symbolTable.put(createRecordVariables.getVariableIdentifier().getAttribute(), createRecordVariables);
         createRecordVariables.setSymbolTable(symbolTable);
     }
 
     @Override
     public void visit(CreateReferencedVariable createReferencedVariable, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createReferencedVariable.getVariableIdentifier(), createReferencedVariable);
+        symbolTable.symbolTable.put(createReferencedVariable.getVariableIdentifier().getAttribute(), createReferencedVariable);
         createReferencedVariable.setSymbolTable(symbolTable);
     }
 
     @Override
     public void visit(CreateVariables createVariables, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createVariables.getVariableIdentifier(), createVariables);
+        symbolTable.symbolTable.put(createVariables.getVariableIdentifier().getAttribute(), createVariables);
         createVariables.setSymbolTable(symbolTable);
     }
 
     @Override
     public void visit(CreateVoidVariable createVoidVariable, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createVoidVariable.getVariableIdentifier(), createVoidVariable);
+        symbolTable.symbolTable.put(createVoidVariable.getVariableIdentifier().getAttribute(), createVoidVariable);
         createVoidVariable.setSymbolTable(symbolTable);
     }
 
@@ -108,7 +117,7 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(ForLoop forLoop, SymbolTable symbolTable) {
         forLoop.setSymbolTable(symbolTable);
         SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
-        nestedScopeSymbolTable.symbolTable.put(forLoop.getIdentifier(), forLoop);
+        nestedScopeSymbolTable.symbolTable.put(forLoop.getIdentifier().getAttribute(), forLoop);
 
         Block body = forLoop.getBody();
         body.accept(this, nestedScopeSymbolTable);
@@ -144,7 +153,7 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(InitializeRecords initializeRecords, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(initializeRecords.getRecords().getIdentifier(), initializeRecords);
+        symbolTable.symbolTable.put(initializeRecords.getRecords().getIdentifier().getAttribute(), initializeRecords);
         initializeRecords.setSymbolTable(symbolTable);
     }
 
@@ -192,6 +201,7 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(ReturnStatement returnStatement, SymbolTable symbolTable) {
         returnStatement.setSymbolTable(symbolTable);
+        returnStatement.getArrayOfExpression().accept(this, symbolTable);
     }
 
     @Override

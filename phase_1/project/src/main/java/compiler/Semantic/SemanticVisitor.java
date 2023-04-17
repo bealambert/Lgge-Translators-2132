@@ -7,7 +7,12 @@ import compiler.MyNode;
 import compiler.Parser.*;
 import compiler.SemanticAnalysisException;
 
+import java.util.Stack;
+
 public interface SemanticVisitor {
+
+    TreatSemanticCases treatSemanticCases = new TreatSemanticCases();
+    Stack<Identifier> functionNameStack = new Stack<>();
 
     void visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException;
 

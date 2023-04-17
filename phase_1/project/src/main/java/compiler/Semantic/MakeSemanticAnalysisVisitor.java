@@ -10,8 +10,6 @@ import java.util.Stack;
 
 public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
-    TreatSemanticCases treatSemanticCases = new TreatSemanticCases();
-    Stack<Identifier> functionNameStack = new Stack<>();
 
     @Override
     public void visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException {
@@ -261,7 +259,8 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(ReturnStatement returnStatement) throws SemanticAnalysisException {
         SymbolTable symbolTable = returnStatement.getSymbolTable();
-        Type observedType = treatSemanticCases.treatExpression(returnStatement.getArrayOfExpression());
+        ASTNode astNode = treatSemanticCases.treatExpression(returnStatement.getArrayOfExpression());
+        Type observedType = astNode.accept(ExpressionTypeVisitor.typeCheckingVisitor);
         Identifier functionName = functionNameStack.peek();
         CreateProcedure createProcedure = (CreateProcedure) treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionName, symbolTable);
         Type expectedType = createProcedure.getReturnType();

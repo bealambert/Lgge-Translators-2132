@@ -6,6 +6,7 @@ import compiler.Lexer.Identifier;
 import compiler.MyNode;
 import compiler.Parser.ArrayOfExpression;
 import compiler.Parser.Expression;
+import compiler.Parser.Param;
 import compiler.Parser.Type;
 import compiler.SemanticAnalysisException;
 
@@ -16,6 +17,7 @@ import static compiler.Semantic.ExpressionTypeVisitor.typeCheckingVisitor;
 public class TreatSemanticCases {
 
     HashMap<String, String> mapping = new HashMap<>();
+    TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor();
 
 
     public TreatSemanticCases() {
@@ -48,7 +50,7 @@ public class TreatSemanticCases {
     }
 
     public ASTNode getFirstDeclarationInsideSymbolTable(Identifier identifier, SymbolTable symbolTable) throws SemanticAnalysisException {
-        ASTNode astNode = symbolTable.symbolTable.get(identifier);
+        ASTNode astNode = symbolTable.symbolTable.get(identifier.getAttribute());
 
         if (astNode != null) {
             return astNode;

@@ -10,8 +10,9 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(Variable variable) throws SemanticAnalysisException {
         SymbolTable symbolTable = variable.getSymbolTable();
-        Type type = treatSemanticCases.getFirstDeclarationInsideSymbolTable(variable.getIdentifier(), symbolTable).accept(this);
-        return type;
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(variable.getIdentifier(), symbolTable).accept(this);
+
+        return astNode.accept(typeCheckingVisitor);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
         MyNode left = myNode.getLeft();
         MyNode right = myNode.getRight();
         if (left == null && right == null) {
-            Expression expression = (Expression) myNode.getValue();
+            Expression expression = myNode.getValue();
             return expression.accept(this);
         }
         assert left != null;
@@ -59,7 +60,10 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
         Type rightType = right.accept(this);
 
         treatSemanticCases.isEqual(leftType, rightType);
-        throw new SemanticAnalysisException("");
+        if (myNode.getValue() instanceof OperatorComparator) {
+            return new Type(new Identifier("bool"));
+        }
+        return leftType;
     }
 
     @Override
@@ -105,5 +109,23 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(ASTNode astNode) throws SemanticAnalysisException {
         return null;
+    }
+
+    @Override
+    public Type visit(Type type) throws SemanticAnalysisException {
+        return type;
+    }
+
+    @Override
+    public Type visit(Param param) throws SemanticAnalysisException {
+        return param.getType();
+    }
+
+    public Type applyOperation(MyNode myNode, Operator operator, Type leftType) {
+        return leftType;
+    }
+
+    public Type applyOperation(MyNode myNode, OperatorComparator operatorComparator) {
+        return new Type(new Identifier("bool"));
     }
 }

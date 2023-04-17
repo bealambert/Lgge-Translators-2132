@@ -8,8 +8,7 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class TestSemanticAnalysis {
 
@@ -40,7 +39,7 @@ public class TestSemanticAnalysis {
     @Test
     public void TestIfCondition() {
         // String input = "if value <> 3 {return x*x;} else{return 2*3;}";
-        String input = "var value int = 0;" + "if value <> 3 {return x*x;}";
+        String input = "if 2 <> 3 { var x int = 2*3;}";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -53,9 +52,56 @@ public class TestSemanticAnalysis {
     }
 
     @Test
+    public void TestWrongTypeIntBoolean() {
+        String input = "var x int = 2<>3;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+    }
+
+    @Test
+    public void TestWrongTypeIntReal() {
+        String input = "var x int = 2.14;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+    }
+
+
+    @Test
+    public void TestWrongTypeRealInt() {
+        String input = "var x real = 2;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+    }
+
+    @Test
     public void TestCreateExpressionVariables() {
         // String input = "if value <> 3 {return x*x;} else{return 2*3;}";
         String input = "var value int = 0;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestCreateProcedure() {
+        String input = "proc square(v int) int {\n" +
+                "    return v*v;\n" +
+                "}";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);

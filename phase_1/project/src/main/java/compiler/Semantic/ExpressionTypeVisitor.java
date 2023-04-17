@@ -10,6 +10,8 @@ public interface ExpressionTypeVisitor {
     TreatSemanticCases treatSemanticCases = new TreatSemanticCases();
     TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor();
 
+    Type visit(Param param) throws SemanticAnalysisException;
+
     Type visit(Variable variable) throws SemanticAnalysisException;
 
     Type visit(Values values) throws SemanticAnalysisException;
@@ -39,4 +41,6 @@ public interface ExpressionTypeVisitor {
     Type visit(CreateVoidVariable createVoidVariable) throws SemanticAnalysisException;
 
     Type visit(ASTNode astNode) throws SemanticAnalysisException;
+
+    Type visit(Type type) throws SemanticAnalysisException;
 }
