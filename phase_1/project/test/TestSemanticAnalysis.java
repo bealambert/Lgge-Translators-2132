@@ -112,4 +112,31 @@ public class TestSemanticAnalysis {
             fail();
         }
     }
+
+    @Test
+    public void TestCreateProcedureWrongReturnType() {
+        String input = "proc square(v int) real {\n" +
+                "    return v*v;\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+
+    @Test
+    public void TestCreateProcedureWrongReturnExpression() {
+        String input = "proc square(v real) int {\n" +
+                "    return v*v;\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
 }
