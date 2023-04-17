@@ -195,6 +195,62 @@ public class TestParserBasics {
         ArrayOfExpression result = parser.parseArrayOfExpression();
         assertEquals(result.getMyTree().size(), sizeExpected);
     }
+    @Test
+    public void TestExpressionBeginWithMoreParenthesis() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "((3+42)-4) and true;";
+        int sizeExpected = 7;
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ArrayOfExpression result = parser.parseArrayOfExpression();
+        assertEquals(result.getMyTree().size(), sizeExpected);
+    }
+
+    @Test
+    public void TestExpressionBeginWithNegValue() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "-4 and true;";
+        int sizeExpected = 3;
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ArrayOfExpression result = parser.parseArrayOfExpression();
+        assertEquals(result.getMyTree().size(), sizeExpected);
+    }
+    @Test
+    public void TestExpressionBeginWithNegValueInParenthesis() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "3%(-4 and (-true));";
+        int sizeExpected = 5;
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ArrayOfExpression result = parser.parseArrayOfExpression();
+        assertEquals(result.getMyTree().size(), sizeExpected);
+    }
+
+    /*
+    @Test
+    public void TestExpressionWithNegValue() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "a*-4 and true;";
+        int sizeExpected = 3;
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ArrayOfExpression result = parser.parseArrayOfExpression();
+        assertEquals(result.getMyTree().size(), sizeExpected);
+    }
+    */
 
     @Test
     public void TestIfElse() {
