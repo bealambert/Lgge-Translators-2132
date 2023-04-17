@@ -33,4 +33,12 @@ public class AccessToIndexArray extends Variable implements Visitable {
     public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
         visitor.visit(this);
     }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
+
+    public Type accept(ExpressionTypeVisitor expressionTypeVisitor) throws SemanticAnalysisException {
+        return expressionTypeVisitor.visit(this);
+    }
 }

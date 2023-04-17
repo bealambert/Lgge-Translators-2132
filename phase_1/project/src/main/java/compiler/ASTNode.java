@@ -1,6 +1,7 @@
 package compiler;
 
 import compiler.Parser.Type;
+import compiler.Parser.Variable;
 import compiler.Semantic.*;
 
 import java.util.ArrayList;
@@ -34,7 +35,5 @@ public abstract class ASTNode {
 
     public abstract void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException;
 
-    public Type accept(ExpressionTypeVisitor expressionTypeVisitor) throws SemanticAnalysisException {
-        return this.accept(expressionTypeVisitor);
-    }
+    public abstract Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException;
 }

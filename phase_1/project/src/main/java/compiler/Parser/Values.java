@@ -36,4 +36,8 @@ public class Values extends Expression {
     public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
         visitor.visit(this);
     }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
 }

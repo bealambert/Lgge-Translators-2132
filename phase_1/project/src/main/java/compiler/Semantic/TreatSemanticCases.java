@@ -3,23 +3,32 @@ package compiler.Semantic;
 import compiler.ASTNode;
 import compiler.BinaryTree;
 import compiler.Lexer.Identifier;
+import compiler.MyNode;
 import compiler.Parser.ArrayOfExpression;
 import compiler.Parser.Expression;
 import compiler.Parser.Type;
 import compiler.SemanticAnalysisException;
 
+import java.util.HashMap;
+
 import static compiler.Semantic.ExpressionTypeVisitor.typeCheckingVisitor;
 
 public class TreatSemanticCases {
 
+    HashMap<String, String> mapping = new HashMap<>();
+
 
     public TreatSemanticCases() {
-
+        mapping.put("NaturalNumber", "int");
+        mapping.put("RealNumber", "real");
+        mapping.put("Boolean", "bool");
+        mapping.put("Strings", "string");
+        mapping.put("NaturalNumber", "int");
     }
 
-    public Type treatExpression(ArrayOfExpression arrayOfExpression) {
-        BinaryTree binaryTree = arrayOfExpression.getMyTree();
-        return binaryTree.accept(typeCheckingVisitor);
+    public Type treatExpression(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {
+        MyNode root = arrayOfExpression.getMyTree().getRoot();
+        return root.accept(typeCheckingVisitor);
     }
 
     public Type treatExpression(Expression expression) {
@@ -29,7 +38,10 @@ public class TreatSemanticCases {
     public void isEqual(Type expected, Type observed) throws SemanticAnalysisException {
         // might need to add the line + if inside function
         // expected <int>      observed <boolean>    in function : <function>  at line 302.
-        if (!expected.getAttribute().equals(observed.getAttribute())) {
+        String expectations = mapping.getOrDefault(expected.getAttribute(), expected.getAttribute());
+        String reality = mapping.getOrDefault(observed.getAttribute(), observed.getAttribute());
+
+        if (!expectations.equals(reality)) {
             throw new SemanticAnalysisException(
                     "Types do no match :  expected : " + expected.getName() + "\t observed : " + observed.getName());
         }

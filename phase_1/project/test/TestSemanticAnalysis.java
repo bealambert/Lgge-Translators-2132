@@ -45,6 +45,25 @@ public class TestSemanticAnalysis {
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
         Semantic semantic = new Semantic(parser);
-        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestCreateExpressionVariables() {
+        // String input = "if value <> 3 {return x*x;} else{return 2*3;}";
+        String input = "var value int = 0;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
     }
 }

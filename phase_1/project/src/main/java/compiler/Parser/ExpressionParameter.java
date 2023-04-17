@@ -1,5 +1,8 @@
 package compiler.Parser;
 
+import compiler.Semantic.TypeCheckingVisitor;
+import compiler.SemanticAnalysisException;
+
 public class ExpressionParameter extends FunctionCallParameter {
 
     Expression expression;
@@ -11,5 +14,9 @@ public class ExpressionParameter extends FunctionCallParameter {
 
     public Expression getExpression() {
         return expression;
+    }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
     }
 }

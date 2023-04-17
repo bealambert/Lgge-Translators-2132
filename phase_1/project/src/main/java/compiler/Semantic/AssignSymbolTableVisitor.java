@@ -10,6 +10,11 @@ public class AssignSymbolTableVisitor implements Visitor {
 
 
     @Override
+    public void visit(ArrayOfExpression arrayOfExpression, SymbolTable symbolTable) {
+        arrayOfExpression.setSymbolTable(symbolTable);
+    }
+
+    @Override
     public void visit(AccessToIndexArray accessToIndexArray, SymbolTable symbolTable) {
         accessToIndexArray.setSymbolTable(symbolTable);
     }

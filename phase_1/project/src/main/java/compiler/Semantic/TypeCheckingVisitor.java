@@ -46,50 +46,6 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     }
 
     @Override
-    public Type visit(BinaryComparator binaryComparator) throws SemanticAnalysisException {
-        Expression left = binaryComparator.getLeft();
-        Expression right = binaryComparator.getRight();
-
-        Type leftType = left.accept(this);
-        Type rightType = right.accept(this);
-        if (leftType.getAttribute().equals(Token.Boolean.getName()) && rightType.getAttribute().equals(Token.Boolean.getName())) {
-            return leftType;
-        }
-        treatSemanticCases.isEqual(leftType, rightType);
-        return leftType;
-    }
-
-
-    @Override
-    public Type visit(BinaryModulo binaryModulo) throws SemanticAnalysisException {
-        Expression left = binaryModulo.getLeft();
-        Expression right = binaryModulo.getRight();
-
-        Type leftType = left.accept(this);
-        Type rightType = right.accept(this);
-
-        if (leftType.getAttribute().equals(Token.IntIdentifier.getName()) && rightType.getAttribute().equals(Token.IntIdentifier.getName())) {
-            return leftType;
-        }
-
-        treatSemanticCases.isEqual(leftType, rightType);
-        return leftType;
-    }
-
-
-    @Override
-    public Type visit(BinaryOperator binaryOperator) throws SemanticAnalysisException {
-        Expression left = binaryOperator.getLeft();
-        Expression right = binaryOperator.getRight();
-
-        Type leftType = left.accept(this);
-        Type rightType = right.accept(this);
-
-        treatSemanticCases.isEqual(leftType, rightType);
-        return leftType;
-    }
-
-    @Override
     public Type visit(MyNode myNode) throws SemanticAnalysisException {
         MyNode left = myNode.getLeft();
         MyNode right = myNode.getRight();
@@ -104,7 +60,6 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
         treatSemanticCases.isEqual(leftType, rightType);
         throw new SemanticAnalysisException("");
-
     }
 
     @Override
@@ -144,6 +99,11 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     @Override
     public Type visit(CreateVoidVariable createVoidVariable) throws SemanticAnalysisException {
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTNode astNode) throws SemanticAnalysisException {
         return null;
     }
 }

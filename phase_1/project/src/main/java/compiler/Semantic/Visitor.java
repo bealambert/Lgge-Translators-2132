@@ -1,9 +1,12 @@
 package compiler.Semantic;
 
+import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
 
 public interface Visitor {
+
+    void visit(ArrayOfExpression arrayOfExpression, SymbolTable symbolTable);
 
     void visit(AccessToIndexArray accessToIndexArray, SymbolTable symbolTable);
 

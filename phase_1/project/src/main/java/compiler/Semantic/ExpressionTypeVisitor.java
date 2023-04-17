@@ -1,5 +1,6 @@
 package compiler.Semantic;
 
+import compiler.ASTNode;
 import compiler.MyNode;
 import compiler.Parser.*;
 import compiler.SemanticAnalysisException;
@@ -19,13 +20,6 @@ public interface ExpressionTypeVisitor {
 
     Type visit(MethodCall methodCall) throws SemanticAnalysisException;
 
-    Type visit(BinaryComparator binaryComparator) throws SemanticAnalysisException;
-
-    Type visit(BinaryModulo binaryModulo) throws SemanticAnalysisException;
-
-
-    Type visit(BinaryOperator binaryOperator) throws SemanticAnalysisException;
-
     Type visit(MyNode myNode) throws SemanticAnalysisException;
 
     Type visit(CreateProcedure createProcedure) throws SemanticAnalysisException;
@@ -43,4 +37,6 @@ public interface ExpressionTypeVisitor {
     Type visit(CreateVariables createVariables) throws SemanticAnalysisException;
 
     Type visit(CreateVoidVariable createVoidVariable) throws SemanticAnalysisException;
+
+    Type visit(ASTNode astNode) throws SemanticAnalysisException;
 }

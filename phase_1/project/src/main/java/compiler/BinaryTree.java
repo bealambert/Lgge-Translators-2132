@@ -4,6 +4,8 @@ import compiler.Lexer.Symbol;
 import compiler.Parser.Expression;
 import compiler.Parser.Operator;
 import compiler.MyNode;
+import compiler.Parser.Type;
+import compiler.Semantic.ExpressionTypeVisitor;
 
 import java.util.ArrayList;
 import java.util.RandomAccess;
@@ -92,8 +94,12 @@ public class BinaryTree {
     }
 
 
-    public MyNode getRoot(){
+    public MyNode getRoot() {
         return this.root;
+    }
+
+    public Type accept(ExpressionTypeVisitor expressionTypeVisitor) throws SemanticAnalysisException {
+        return expressionTypeVisitor.visit(this.getRoot());
     }
 
 }

@@ -40,4 +40,7 @@ public abstract class CreateVariables extends ASTNode implements Visitable {
         visitor.visit(this);
     }
 
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
 }

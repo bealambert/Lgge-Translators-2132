@@ -1,15 +1,13 @@
 package compiler.Parser;
 
+import compiler.ASTNode;
 import compiler.BinaryTree;
-import compiler.Semantic.SemanticVisitor;
-import compiler.Semantic.SymbolTable;
-import compiler.Semantic.Visitable;
-import compiler.Semantic.Visitor;
+import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
-public class ArrayOfExpression implements Visitable {
+public class ArrayOfExpression extends ASTNode implements Visitable {
 
     ArrayList<Expression> expressions;
     BinaryTree myTree;
@@ -26,17 +24,19 @@ public class ArrayOfExpression implements Visitable {
         return this.myTree;
     }
 
+
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
-
+        visitor.visit(this, symbolTable);
     }
 
     @Override
     public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
-
+        visitor.visit(this);
     }
 
-
-
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
 
 }

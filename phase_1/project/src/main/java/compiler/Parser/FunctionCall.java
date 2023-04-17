@@ -33,4 +33,8 @@ public class FunctionCall extends Expression implements Visitable {
     public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
         visitor.visit(this);
     }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
 }

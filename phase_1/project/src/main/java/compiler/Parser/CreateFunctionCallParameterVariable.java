@@ -2,6 +2,8 @@ package compiler.Parser;
 
 import compiler.Lexer.Identifier;
 import compiler.Lexer.Keyword;
+import compiler.Semantic.TypeCheckingVisitor;
+import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
@@ -19,5 +21,8 @@ public class CreateFunctionCallParameterVariable extends CreateVariables {
         return functionCallParameters;
     }
 
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
 
 }

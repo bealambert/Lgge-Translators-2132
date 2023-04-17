@@ -8,7 +8,7 @@ import compiler.SemanticAnalysisException;
 public class Type extends Identifier {
 
     public Type(Identifier attribute) {
-        super(String.valueOf(attribute));
+        super(attribute.getAttribute());
     }
 
 
@@ -34,5 +34,9 @@ public class Type extends Identifier {
     @Override
     public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
         visitor.visit(this);
+    }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
     }
 }

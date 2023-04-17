@@ -1,9 +1,7 @@
 package compiler.Parser;
 
 import compiler.ASTNode;
-import compiler.Semantic.SemanticVisitor;
-import compiler.Semantic.SymbolTable;
-import compiler.Semantic.Visitor;
+import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
 public class FunctionCallParameter extends ASTNode {
@@ -18,4 +16,9 @@ public class FunctionCallParameter extends ASTNode {
     public void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException {
         this.accept(semanticVisitor);
     }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
+
 }

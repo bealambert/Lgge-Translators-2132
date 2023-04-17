@@ -25,4 +25,8 @@ public class ArrayType extends Type implements Visitable {
         visitor.visit(this);
     }
 
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
+
 }

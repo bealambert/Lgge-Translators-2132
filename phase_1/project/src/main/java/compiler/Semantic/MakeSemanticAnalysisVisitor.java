@@ -304,7 +304,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(MyNode myNode) throws SemanticAnalysisException {
-        Expression expression = (Expression) myNode.getValue();
+        Expression expression = myNode.getValue();
         expression.accept(this);
         MyNode left = myNode.getLeft();
         MyNode right = myNode.getRight();
@@ -314,6 +314,11 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         if (right != null) {
             right.accept(this);
         }
+    }
+
+    @Override
+    public void visit(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {
+
     }
 }
 

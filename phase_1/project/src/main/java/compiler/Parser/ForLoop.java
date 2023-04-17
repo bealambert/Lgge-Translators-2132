@@ -66,5 +66,9 @@ public class ForLoop extends ASTNode implements Visitable {
         visitor.visit(this);
     }
 
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
+
 
 }

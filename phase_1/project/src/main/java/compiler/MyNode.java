@@ -5,6 +5,10 @@ import compiler.Lexer.Symbol;
 import compiler.Parser.Expression;
 import compiler.Parser.Operator;
 import compiler.Parser.SubExpression;
+import compiler.Parser.Type;
+import compiler.Semantic.ExpressionTypeVisitor;
+import compiler.Semantic.SemanticVisitor;
+import compiler.Semantic.TypeCheckingVisitor;
 
 public class MyNode extends Expression {
     Expression value;
@@ -27,14 +31,41 @@ public class MyNode extends Expression {
         }
         if (left.value instanceof SubExpression){
             this.left=((SubExpression) left.value).getRoot();
-        }else {
-            this.left=left;
+        } else {
+            this.left = left;
         }
-        if (right.value instanceof SubExpression){
-            this.right=((SubExpression) right.value).getRoot();
-        }else {
-            this.right=right;
+        if (right.value instanceof SubExpression) {
+            this.right = ((SubExpression) right.value).getRoot();
+        } else {
+            this.right = right;
         }
     }
 
+    public MyNode getRight() {
+        return right;
+    }
+
+    public MyNode getLeft() {
+        return left;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Expression getValue() {
+        return value;
+    }
+
+    public void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException {
+        semanticVisitor.visit(this);
+    }
+
+    public Type accept(ExpressionTypeVisitor expressionTypeVisitor) throws SemanticAnalysisException {
+        return expressionTypeVisitor.visit(this);
+    }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
+    }
 }

@@ -1,7 +1,9 @@
 package compiler.Parser;
 
 import compiler.Lexer.Identifier;
+import compiler.Semantic.TypeCheckingVisitor;
 import compiler.Semantic.Visitable;
+import compiler.SemanticAnalysisException;
 
 public class Variable extends Expression {
 
@@ -20,5 +22,9 @@ public class Variable extends Expression {
     @Override
     public Expression getExpression() {
         return this;
+    }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
     }
 }
