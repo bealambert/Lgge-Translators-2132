@@ -21,6 +21,38 @@ public class TestNormal {
     }
 
     @Test
+    public void test_number_of_line() {
+        String input = "\n" +
+                "\n" +
+                "val y double = 24.741;\n" +
+                "\n" +
+                "var x int = 2;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Symbol result =lexer.getNextSymbol();
+        while(result != null) {
+            result = lexer.getNextSymbol();
+        }
+        System.out.println(lexer.getN_line());
+        assertEquals( 5, lexer.getN_line());
+    }
+    @Test
+    public void test_number_of_line2() {
+        String input =
+                "val ;\n " +
+                        "\n " +
+                        "var 2;\n" ;
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Symbol result =lexer.getNextSymbol();
+        while(result != null) {
+            result = lexer.getNextSymbol();
+        }
+        //System.out.println(lexer.getN_line());
+        assertEquals(lexer.getN_line(), 3);
+    }
+
+    @Test
     public void test_basic() {
         String input = "var x int = 2;";
         StringReader reader = new StringReader(input);

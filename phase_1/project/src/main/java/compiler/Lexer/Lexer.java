@@ -12,12 +12,15 @@ public class Lexer {
     String[] special_str_values = new String[]{"==","<>","<=",">="};
     String[] keyword_values = new String[]{"const", "record", "var", "val", "proc", "for", "to", "by", "while", "if", "else", "return", "and", "or"};
     String[] boolean_values = new String[]{"true", "false"};
-
+    int n_line ;
 
     public Lexer(Reader input) {
         this.inputData=new PushbackReader(input,2);
+        this.n_line = 1;
     }
-    
+    public int getN_line(){
+        return n_line;
+    }
     public Symbol getNextSymbol()  {
         // init phase
         StringBuilder s = new StringBuilder();
@@ -29,6 +32,9 @@ public class Lexer {
 
         // ignore firsts whitespaces:
         while (c==' ' || c== '\n' || c == '\t'){
+            if (c=='\n'){
+                n_line++;
+            }
             c=getNextChar();
         }
 
@@ -139,6 +145,7 @@ public class Lexer {
             throw new Error("There is an unrecognized character !");
         }
         // yes end of file
+        else{n_line++;}
         return null;
     }
     public char getNextChar(){
@@ -154,6 +161,9 @@ public class Lexer {
     public void unread_handled(char c){
         try {
             inputData.unread(c);
+            if (c=='\n'){
+                n_line--;
+            }
         } catch (IOException e){
         }
     }
