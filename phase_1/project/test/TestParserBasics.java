@@ -153,7 +153,7 @@ public class TestParserBasics {
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
 
-        Expression result = parser.parseExpression();
+        ArrayOfExpression result = parser.parseArrayOfExpression();
         //System.out.println(result);
 
         assertEquals((result.toString()), outputExpected);
@@ -168,7 +168,7 @@ public class TestParserBasics {
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
 
-        Expression result = parser.parseExpression();
+        ArrayOfExpression result = parser.parseArrayOfExpression();
         //System.out.println(result);
 
         // assertEquals((result.toString()), outputExpected);
