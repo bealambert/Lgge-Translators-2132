@@ -1,8 +1,9 @@
 package compiler;
 
 import compiler.Lexer.Symbol;
-import compiler.Parser.Type;
-import compiler.Semantic.ExpressionTypeVisitor;
+import compiler.Parser.Expression;
+import compiler.Parser.Operator;
+import compiler.MyNode;
 
 import java.util.ArrayList;
 import java.util.RandomAccess;
@@ -36,32 +37,33 @@ public class BinaryTree {
         this.root = node;
     }
 
-    public BinaryTree(ArrayList<Object> symbolArrayList) {
+    public BinaryTree(ArrayList<Expression> symbolArrayList) {
         this.root = BinaryTreeHelperRun(symbolArrayList);
     }
+    public MyNode BinaryTreeHelperRun(ArrayList<Expression> symbolArrayList){
+        if (symbolArrayList.size()<2){
+            return new MyNode(symbolArrayList.get(0));
+        }
+        else{
+            ArrayList<Expression> firstP = BinaryTreeHelper(symbolArrayList, 1);
+            ArrayList<Expression> secondP = BinaryTreeHelper(firstP, 2);
+            ArrayList<Expression> thirdP = BinaryTreeHelper(secondP, 3);
+            ArrayList<Expression> fourthP = BinaryTreeHelper(thirdP, 4);
+            return (MyNode) fourthP.get(0);
+        }
 
-    public MyNode getRoot() {
-        return root;
     }
 
-    public MyNode BinaryTreeHelperRun(ArrayList<Object> symbolArrayList) {
-        ArrayList<Object> firstP = BinaryTreeHelper(symbolArrayList, firstPrecedence);
-        ArrayList<Object> secondP = BinaryTreeHelper(firstP, secondPrecedence);
-        ArrayList<Object> thirdP = BinaryTreeHelper(secondP, thirdPrecedence);
-        ArrayList<Object> fourthP = BinaryTreeHelper(thirdP, fourthPrecedence);
-        return (MyNode) fourthP.get(0);
-    }
-
-    public ArrayList<Object> BinaryTreeHelper(ArrayList<Object> symbolArrayList, Token[] validTokens) {
-        ArrayList<Object> resultingList = new ArrayList<>();
+    public ArrayList<Expression> BinaryTreeHelper(ArrayList<Expression> symbolArrayList, int target_precedence_level){
+        ArrayList<Expression> resultingList = new ArrayList<>();
         int n = symbolArrayList.size();
-        Object current_elem;
+        Expression current_elem;
         MyNode node; MyNode left; MyNode right;
 
         for (int i = 0; i < n; i++) {
             current_elem = symbolArrayList.get(i);
-            if (current_elem instanceof Symbol && whichSymbol( (Symbol) current_elem, validTokens)) {
-                // if it is a valid operation
+            if (current_elem instanceof Operator  &&  ((Operator) current_elem).getPrecedenceLevel() == target_precedence_level) {
+                // it is a valid operation
                 if (i>0){
                     // 2+3
                     System.out.println(current_elem);
@@ -75,7 +77,7 @@ public class BinaryTree {
                     } else{
                         right = new MyNode(symbolArrayList.get(i+1));
                     }
-                    node = new MyNode(current_elem, left, right);
+                    node = new MyNode((Operator) current_elem, left, right);
                     resultingList.set(resultingList.size()-1, node);
                 }
                 i++;
@@ -89,27 +91,9 @@ public class BinaryTree {
         return resultingList;
     }
 
-    public boolean isArgToken(Symbol elem, Token reference) {
-        return elem != null && (elem.getName().equals(reference.getName()) || elem.getAttribute().equals(reference.getName()));
+
+    public MyNode getRoot(){
+        return this.root;
     }
 
-    /**
-     * @param elem
-     * @param tokenArray
-     * @return true if elem is an operator symbol
-     */
-    public boolean whichSymbol(Symbol elem, Token[] tokenArray) {
-        for (Token token : tokenArray) {
-            if (isArgToken(elem, token)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Type accept(ExpressionTypeVisitor expressionTypeVisitor) {
-        return this.accept(expressionTypeVisitor);
-    }
 }
-
-

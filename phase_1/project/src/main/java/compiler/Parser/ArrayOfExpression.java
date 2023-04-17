@@ -16,20 +16,14 @@ public class ArrayOfExpression implements Visitable {
 
     public ArrayOfExpression(ArrayList<Expression> expressionArrayList) {
         this.expressions = expressionArrayList;
-        this.myTree = null;
+        this.myTree = new BinaryTree(expressionArrayList);
     }
 
     public ArrayList<Expression> getExpressions() {
         return expressions;
     }
-
-    public BinaryTree buildTree() {
-        //this.myTree = new BinaryTree(this.expressions);
-        return myTree;
-    }
-
-    public BinaryTree getMyTree() {
-        return myTree;
+    public BinaryTree getMyTree(){
+        return this.myTree;
     }
 
     @Override

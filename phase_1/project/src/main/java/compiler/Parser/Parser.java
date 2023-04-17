@@ -124,12 +124,39 @@ public class Parser {
         while (operatorSymbol != null) {
             arrayList.add(parseOperator((String) operatorSymbol.getAttribute()));
             pop();
-            arrayList.add(parseExpression());
+            if (isSymbol(Token.OpeningParenthesis)){
+                pop();
+                arrayList.add(parseSubExpression());
+            } else{
+                arrayList.add(parseExpression());
+            }
+
             operatorSymbol = whichSymbol(operatorValues);
         }
 
         //System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
         return new ArrayOfExpression(arrayList);
+    }
+
+    public SubExpression parseSubExpression() {
+        ArrayList<Expression> arrayList = new ArrayList<>();
+
+        arrayList.add(parseExpression());
+        Symbol operatorSymbol = whichSymbol(operatorValues);
+
+        while (operatorSymbol != null) {
+            arrayList.add(parseOperator((String) operatorSymbol.getAttribute()));
+            pop();
+            arrayList.add(parseExpression());
+            if (isSymbol(Token.ClosingParenthesis)){
+                pop();
+                return new SubExpression(new ArrayOfExpression(arrayList));
+            }
+            operatorSymbol = whichSymbol(operatorValues);
+        }
+
+        //System.out.println("---> Here is the discovered expression:\n    " + arrayList.toString());
+        return new SubExpression(new ArrayOfExpression(arrayList));
     }
 
 
@@ -190,9 +217,13 @@ public class Parser {
             case ">=":
                 return new OperatorGreaterThanOrEqual();
             case "<>":
-                return new OperatorDifference();
+                return new OperatorNotEqual();
             case "==":
                 return new OperatorEquality();
+            case "and":
+                return new OperatorAnd();
+            case "or":
+                return new OperatorOr();
         }
         throw new RuntimeException();
     }
