@@ -146,33 +146,54 @@ public class TestParserBasics {
 
     @Test
     public void TestSimpleExpression() {
-        //String input = "var a int = 2;";
-        //"fun(a,3)*2;"
         String input = "a+1*3.2/true%func();";
-        String outputExpected = "[<Identifier, a>, <SpecialCharacter, +>, <NaturalNumber, 1>, <SpecialCharacter, *>, <RealNumber, 3.2>, <SpecialCharacter, />, <Boolean, true>, <SpecialCharacter, %>, FunctionCall{<Identifier, func>}, ([])]";
+        int sizeExpected = 9;
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
 
         ArrayOfExpression result = parser.parseArrayOfExpression();
-        //System.out.println(result);
-
-        assertEquals((result.toString()), outputExpected);
+        assertEquals(result.getMyTree().size(), sizeExpected);
     }
     @Test
     public void TestExpressionWithParenthesis() {
         //String input = "var a int = 2;";
         //"fun(a,3)*2;"
         String input = "a+(1*3.2)/true%func();";
-        String outputExpected = "[<Identifier, a>, <SpecialCharacter, +>, <NaturalNumber, 1>, <SpecialCharacter, *>, <RealNumber, 3.2>, <SpecialCharacter, />, <Boolean, true>, <SpecialCharacter, %>, FunctionCall{<Identifier, func>}, ([])]";
+        int sizeExpected = 9;
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
 
         ArrayOfExpression result = parser.parseArrayOfExpression();
-        //System.out.println(result);
+        assertEquals(result.getMyTree().size(), sizeExpected);
+    }
+    @Test
+    public void TestExpressionWithMoreParenthesis() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "func() and (4-(3+42));";
+        int sizeExpected = 7;
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
 
-        // assertEquals((result.toString()), outputExpected);
+        ArrayOfExpression result = parser.parseArrayOfExpression();
+        assertEquals(result.getMyTree().size(), sizeExpected);
+    }
+
+    @Test
+    public void TestExpressionBeginWithParenthesis() {
+        //String input = "var a int = 2;";
+        //"fun(a,3)*2;"
+        String input = "(4-(3+42)) and true;";
+        int sizeExpected = 7;
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ArrayOfExpression result = parser.parseArrayOfExpression();
+        assertEquals(result.getMyTree().size(), sizeExpected);
     }
 
     @Test

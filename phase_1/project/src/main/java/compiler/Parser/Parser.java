@@ -118,7 +118,12 @@ public class Parser {
     public ArrayOfExpression parseArrayOfExpression() {
         ArrayList<Expression> arrayList = new ArrayList<>();
 
-        arrayList.add(parseExpression());
+        if (isSymbol(Token.OpeningParenthesis)){
+            pop();
+            arrayList.add(parseSubExpression());
+        } else{
+            arrayList.add(parseExpression());
+        }
         Symbol operatorSymbol = whichSymbol(operatorValues);
 
         while (operatorSymbol != null) {
@@ -147,7 +152,12 @@ public class Parser {
         while (operatorSymbol != null) {
             arrayList.add(parseOperator((String) operatorSymbol.getAttribute()));
             pop();
-            arrayList.add(parseExpression());
+            if (isSymbol(Token.OpeningParenthesis)){
+                pop();
+                arrayList.add(parseSubExpression());
+            } else{
+                arrayList.add(parseExpression());
+            }
             if (isSymbol(Token.ClosingParenthesis)){
                 pop();
                 return new SubExpression(new ArrayOfExpression(arrayList));
