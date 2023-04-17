@@ -1,6 +1,8 @@
 package compiler.Semantic;
 
+import compiler.BinaryTree;
 import compiler.Lexer.Identifier;
+import compiler.MyNode;
 import compiler.Parser.*;
 import compiler.SemanticAnalysisException;
 
@@ -68,5 +70,9 @@ public interface SemanticVisitor {
     void visit(WhileLoop whileLoop) throws SemanticAnalysisException;
 
     void visit(Identifier identifier) throws SemanticAnalysisException;
+
+    void visit(BinaryTree binaryTree) throws SemanticAnalysisException;
+
+    void visit(MyNode myNode) throws SemanticAnalysisException;
 
 }

@@ -1,20 +1,25 @@
 package compiler.Semantic;
 
 import compiler.ASTNode;
+import compiler.BinaryTree;
 import compiler.Lexer.Identifier;
 import compiler.Parser.ArrayOfExpression;
 import compiler.Parser.Expression;
 import compiler.Parser.Type;
 import compiler.SemanticAnalysisException;
 
+import static compiler.Semantic.ExpressionTypeVisitor.typeCheckingVisitor;
+
 public class TreatSemanticCases {
+
 
     public TreatSemanticCases() {
 
     }
 
     public Type treatExpression(ArrayOfExpression arrayOfExpression) {
-        return null;
+        BinaryTree binaryTree = arrayOfExpression.getMyTree();
+        return binaryTree.accept(typeCheckingVisitor);
     }
 
     public Type treatExpression(Expression expression) {

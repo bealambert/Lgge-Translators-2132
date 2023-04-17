@@ -10,16 +10,16 @@ import java.util.ArrayList;
 
 public class FunctionCall extends Expression implements Visitable {
 
-    Symbol identifier;
+    Identifier identifier;
     ArrayList<ArrayOfExpression> params;
 
-    public FunctionCall(Symbol identifier, ArrayList<ArrayOfExpression> params) {
+    public FunctionCall(Identifier identifier, ArrayList<ArrayOfExpression> params) {
         this.params = params;
         this.identifier = identifier;
     }
 
 
-    public Symbol getIdentifier() {
+    public Identifier getIdentifier() {
         return identifier;
     }
 

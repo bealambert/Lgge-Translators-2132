@@ -335,7 +335,7 @@ public class Parser {
         return lookahead != null && (lookahead.getName().equals(token.getName()) || lookahead.getAttribute().equals(token.getName()));
     }
 
-    public FunctionCall parseFunctionCall(Symbol identifier) {
+    public FunctionCall parseFunctionCall(Identifier identifier) {
 
         ArrayList<ArrayOfExpression> arrayList = new ArrayList<>();
         match(Token.OpeningParenthesis);

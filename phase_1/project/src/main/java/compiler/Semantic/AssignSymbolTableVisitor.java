@@ -214,4 +214,5 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(Identifier identifier, SymbolTable symbolTable) {
         identifier.setSymbolTable(symbolTable);
     }
+
 }

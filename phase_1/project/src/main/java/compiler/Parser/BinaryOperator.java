@@ -1,13 +1,10 @@
 package compiler.Parser;
 
 import compiler.ASTNode;
-import compiler.Semantic.SemanticVisitor;
-import compiler.Semantic.SymbolTable;
-import compiler.Semantic.Visitable;
-import compiler.Semantic.Visitor;
+import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
-public abstract class BinaryOperator extends ASTNode implements Visitable {
+public abstract class BinaryOperator extends Expression implements Visitable {
 
     private final Expression left;
     private final Expression right;
@@ -17,12 +14,12 @@ public abstract class BinaryOperator extends ASTNode implements Visitable {
         this.right = right;
     }
 
-    public Expression getRight() {
-        return right;
-    }
-
     public Expression getLeft() {
         return left;
+    }
+
+    public Expression getRight() {
+        return right;
     }
 
     @Override

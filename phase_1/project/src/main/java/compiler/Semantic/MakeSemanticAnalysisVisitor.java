@@ -1,12 +1,9 @@
 package compiler.Semantic;
 
-import compiler.ASTNode;
-import compiler.ClassName;
+import compiler.*;
 import compiler.Lexer.Identifier;
 import compiler.Lexer.Symbol;
 import compiler.Parser.*;
-import compiler.SemanticAnalysisException;
-import compiler.Token;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -294,6 +291,29 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(Identifier identifier) throws SemanticAnalysisException {
         //
+    }
+
+    @Override
+    public void visit(BinaryTree binaryTree) throws SemanticAnalysisException {
+        MyNode myNode = binaryTree.getRoot();
+
+        MyNode left = myNode.getLeft();
+        MyNode right = myNode.getRight();
+
+    }
+
+    @Override
+    public void visit(MyNode myNode) throws SemanticAnalysisException {
+        Expression expression = (Expression) myNode.getValue();
+        expression.accept(this);
+        MyNode left = myNode.getLeft();
+        MyNode right = myNode.getRight();
+        if (left != null) {
+            left.accept(this);
+        }
+        if (right != null) {
+            right.accept(this);
+        }
     }
 }
 

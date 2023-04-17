@@ -1,6 +1,8 @@
 package compiler;
 
 import compiler.Lexer.Symbol;
+import compiler.Parser.Type;
+import compiler.Semantic.ExpressionTypeVisitor;
 
 import java.util.ArrayList;
 import java.util.RandomAccess;
@@ -37,7 +39,12 @@ public class BinaryTree {
     public BinaryTree(ArrayList<Object> symbolArrayList) {
         this.root = BinaryTreeHelperRun(symbolArrayList);
     }
-    public MyNode BinaryTreeHelperRun(ArrayList<Object> symbolArrayList){
+
+    public MyNode getRoot() {
+        return root;
+    }
+
+    public MyNode BinaryTreeHelperRun(ArrayList<Object> symbolArrayList) {
         ArrayList<Object> firstP = BinaryTreeHelper(symbolArrayList, firstPrecedence);
         ArrayList<Object> secondP = BinaryTreeHelper(firstP, secondPrecedence);
         ArrayList<Object> thirdP = BinaryTreeHelper(secondP, thirdPrecedence);
@@ -45,7 +52,7 @@ public class BinaryTree {
         return (MyNode) fourthP.get(0);
     }
 
-    public ArrayList<Object> BinaryTreeHelper(ArrayList<Object> symbolArrayList, Token[] validTokens){
+    public ArrayList<Object> BinaryTreeHelper(ArrayList<Object> symbolArrayList, Token[] validTokens) {
         ArrayList<Object> resultingList = new ArrayList<>();
         int n = symbolArrayList.size();
         Object current_elem;
@@ -99,30 +106,10 @@ public class BinaryTree {
         }
         return false;
     }
+
+    public Type accept(ExpressionTypeVisitor expressionTypeVisitor) {
+        return this.accept(expressionTypeVisitor);
+    }
 }
 
 
-class MyNode{
-    Object value;
-    String type;
-    MyNode left;
-    MyNode right;
-
-    public MyNode(Object v){
-        this.value = v;
-        if (v instanceof Symbol){
-            this.type = ((Symbol) v).getName();
-        }
-        left=null;
-        right=null;
-    }
-    public MyNode(Object v, MyNode left, MyNode right){
-        this.value = v;
-        if (v instanceof Symbol){
-            this.type = ((Symbol) v).getName();
-        }
-        this.left=left;
-        this.right=right;
-    }
-
-}

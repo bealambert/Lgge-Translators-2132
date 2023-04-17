@@ -69,4 +69,5 @@ public interface Visitor {
 
     void visit(Identifier identifier, SymbolTable symbolTable);
 
+
 }

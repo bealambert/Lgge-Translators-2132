@@ -16,6 +16,7 @@ public class Variable extends Expression {
         return identifier;
     }
 
+
     @Override
     public Expression getExpression() {
         return this;
