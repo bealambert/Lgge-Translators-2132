@@ -1,5 +1,6 @@
 import compiler.ASTNode;
 import compiler.Lexer.Lexer;
+import compiler.MyNode;
 import compiler.Parser.*;
 import org.junit.Test;
 

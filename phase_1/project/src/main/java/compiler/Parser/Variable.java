@@ -27,4 +27,8 @@ public class Variable extends Expression {
     public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
         return typeCheckingVisitor.visit(this);
     }
+
+    public String toString() {
+        return this.identifier.toString();
+    }
 }
