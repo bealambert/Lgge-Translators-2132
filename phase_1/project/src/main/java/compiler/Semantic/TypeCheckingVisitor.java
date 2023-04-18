@@ -10,9 +10,9 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(Variable variable) throws SemanticAnalysisException {
         SymbolTable symbolTable = variable.getSymbolTable();
-        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(variable.getIdentifier(), symbolTable).accept(this);
+        CreateVariables createVariables = (CreateVariables) treatSemanticCases.getFirstDeclarationInsideSymbolTable(variable.getIdentifier(), symbolTable);
 
-        return astNode.accept(typeCheckingVisitor);
+        return createVariables.getType();
     }
 
     @Override
@@ -81,7 +81,14 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     @Override
     public Type visit(CreateExpressionVariable createExpressionVariable) throws SemanticAnalysisException {
-        return null;
+        createExpressionVariable.getVariableIdentifier().accept(this);
+
+        Type expectedType = createExpressionVariable.getType();
+        ArrayOfExpression arrayOfExpression = createExpressionVariable.getArrayOfExpression();
+        Type observed = arrayOfExpression.accept(this);
+        treatSemanticCases.isEqual(expectedType, observed);
+
+        return expectedType;
     }
 
     @Override

@@ -8,12 +8,12 @@ import compiler.SemanticAnalysisException;
 
 public abstract class CreateVariables extends ASTNode implements Visitable {
 
-    Identifier variableIdentifier;
+    Variable variableIdentifier;
     Keyword stateKeyword;
     Type type;
 
     public CreateVariables(Keyword stateKeyword, Identifier variableIdentifier, Type type) {
-        this.variableIdentifier = variableIdentifier;
+        this.variableIdentifier = new Variable(variableIdentifier);
         this.stateKeyword = stateKeyword;
         this.type = type;
     }
@@ -22,9 +22,10 @@ public abstract class CreateVariables extends ASTNode implements Visitable {
         return type;
     }
 
-    public Identifier getVariableIdentifier() {
+    public Variable getVariableIdentifier() {
         return variableIdentifier;
     }
+
 
     public Keyword getStateKeyword() {
         return stateKeyword;

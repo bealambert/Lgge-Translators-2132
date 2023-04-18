@@ -51,11 +51,12 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(Condition condition, SymbolTable symbolTable) {
         condition.setSymbolTable(symbolTable);
+        condition.getArrayOfExpression().accept(this, symbolTable);
     }
 
     @Override
     public void visit(CreateArrayVariable createArrayVariable, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createArrayVariable.getVariableIdentifier().getAttribute(), createArrayVariable);
+        symbolTable.symbolTable.put(createArrayVariable.getVariableIdentifier().getIdentifier().getAttribute(), createArrayVariable);
         createArrayVariable.setSymbolTable(symbolTable);
         createArrayVariable.getArrayInitializer().accept(this, symbolTable);
         createArrayVariable.getVariableIdentifier().accept(this, symbolTable);
@@ -65,8 +66,11 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(CreateExpressionVariable createExpressionVariable, SymbolTable symbolTable) {
 
-        symbolTable.symbolTable.put(createExpressionVariable.getVariableIdentifier().getAttribute(), createExpressionVariable);
+        symbolTable.symbolTable.put(createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute(), createExpressionVariable);
         createExpressionVariable.setSymbolTable(symbolTable);
+        createExpressionVariable.getType().accept(this, symbolTable);
+        createExpressionVariable.getVariableIdentifier().accept(this, symbolTable);
+        createExpressionVariable.getArrayOfExpression().accept(this, symbolTable);
     }
 
     @Override
@@ -86,25 +90,25 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(CreateRecordVariables createRecordVariables, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createRecordVariables.getVariableIdentifier().getAttribute(), createRecordVariables);
+        symbolTable.symbolTable.put(createRecordVariables.getVariableIdentifier().getIdentifier().getAttribute(), createRecordVariables);
         createRecordVariables.setSymbolTable(symbolTable);
     }
 
     @Override
     public void visit(CreateReferencedVariable createReferencedVariable, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createReferencedVariable.getVariableIdentifier().getAttribute(), createReferencedVariable);
+        symbolTable.symbolTable.put(createReferencedVariable.getVariableIdentifier().getIdentifier().getAttribute(), createReferencedVariable);
         createReferencedVariable.setSymbolTable(symbolTable);
     }
 
     @Override
     public void visit(CreateVariables createVariables, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createVariables.getVariableIdentifier().getAttribute(), createVariables);
+        symbolTable.symbolTable.put(createVariables.getVariableIdentifier().getIdentifier().getAttribute(), createVariables);
         createVariables.setSymbolTable(symbolTable);
     }
 
     @Override
     public void visit(CreateVoidVariable createVoidVariable, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(createVoidVariable.getVariableIdentifier().getAttribute(), createVoidVariable);
+        symbolTable.symbolTable.put(createVoidVariable.getVariableIdentifier().getIdentifier().getAttribute(), createVoidVariable);
         createVoidVariable.setSymbolTable(symbolTable);
     }
 
@@ -133,7 +137,9 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(IfCondition ifCondition, SymbolTable symbolTable) {
         ifCondition.setSymbolTable(symbolTable);
         SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
+
         Block body = ifCondition.getIfBlock();
+        ifCondition.getCondition().accept(this, nestedScopeSymbolTable);
         body.accept(this, nestedScopeSymbolTable);
     }
 
@@ -142,6 +148,8 @@ public class AssignSymbolTableVisitor implements Visitor {
         ifElse.setSymbolTable(symbolTable);
         SymbolTable nestedScopeSymbolTable1 = new SymbolTable(symbolTable);
         SymbolTable nestedScopeSymbolTable2 = new SymbolTable(symbolTable);
+
+        ifElse.getCondition().accept(this, symbolTable);
 
         Block ifBlock = ifElse.getIfBlock();
         ifBlock.accept(this, nestedScopeSymbolTable1);
