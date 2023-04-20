@@ -23,7 +23,7 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(FunctionCall functionCall) throws SemanticAnalysisException {
         SymbolTable symbolTable = functionCall.getSymbolTable();
-        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionCall.getIdentifier(), symbolTable).accept(this);
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionCall.getIdentifier(), symbolTable);
         return astNode.accept(typeCheckingVisitor);
     }
 
@@ -125,6 +125,27 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     public Type visit(Type type) throws SemanticAnalysisException {
         return type;
     }
+
+    @Override
+    public Type visit(InitializeRecords initializeRecords) throws SemanticAnalysisException {
+        return new Type(initializeRecords.getRecords().getIdentifier());
+    }
+
+    @Override
+    public Type visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException {
+        return expressionParameter.getExpression().accept(this);
+    }
+
+    @Override
+    public Type visit(ArrayInitializerParameter arrayInitializerParameter) {
+        return null;
+    }
+
+    @Override
+    public Type visit(FunctionCallParameter functionCallParameter) {
+        return null;
+    }
+
 
     @Override
     public Type visit(Param param) throws SemanticAnalysisException {

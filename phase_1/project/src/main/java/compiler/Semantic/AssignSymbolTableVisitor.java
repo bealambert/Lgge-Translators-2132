@@ -10,6 +10,23 @@ public class AssignSymbolTableVisitor implements Visitor {
 
 
     @Override
+    public void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable) {
+        expressionParameter.setSymbolTable(symbolTable);
+        expressionParameter.getExpression().accept(this, symbolTable);
+    }
+
+    @Override
+    public void visit(ArrayInitializerParameter arrayInitializerParameter, SymbolTable symbolTable) {
+        arrayInitializerParameter.setSymbolTable(symbolTable);
+        arrayInitializerParameter.getArrayInitializer().accept(this, symbolTable);
+    }
+
+    @Override
+    public void visit(FunctionCallParameter functionCallParameter, SymbolTable symbolTable) {
+        functionCallParameter.setSymbolTable(symbolTable);
+    }
+
+    @Override
     public void visit(ArrayOfExpression arrayOfExpression, SymbolTable symbolTable) {
         arrayOfExpression.setSymbolTable(symbolTable);
         for (int i = 0; i < arrayOfExpression.getExpressions().size(); i++) {
@@ -92,6 +109,9 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(CreateRecordVariables createRecordVariables, SymbolTable symbolTable) {
         symbolTable.symbolTable.put(createRecordVariables.getVariableIdentifier().getIdentifier().getAttribute(), createRecordVariables);
         createRecordVariables.setSymbolTable(symbolTable);
+        createRecordVariables.getRecordCall().accept(this, symbolTable);
+        createRecordVariables.getType().accept(this, symbolTable);
+        createRecordVariables.getVariableIdentifier().accept(this, symbolTable);
     }
 
     @Override
@@ -130,6 +150,11 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(FunctionCall functionCall, SymbolTable symbolTable) {
         functionCall.setSymbolTable(symbolTable);
+        ArrayList<ArrayOfExpression> arrayOfExpressions = functionCall.getParams();
+        for (int i = 0; i < arrayOfExpressions.size(); i++) {
+            arrayOfExpressions.get(i).accept(this, symbolTable);
+        }
+        functionCall.getIdentifier().accept(this, symbolTable);
     }
 
 
@@ -162,7 +187,12 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(InitializeRecords initializeRecords, SymbolTable symbolTable) {
         symbolTable.symbolTable.put(initializeRecords.getRecords().getIdentifier().getAttribute(), initializeRecords);
-        initializeRecords.setSymbolTable(symbolTable);
+        SymbolTable nestedSymbolTable = new SymbolTable(symbolTable);
+        initializeRecords.setSymbolTable(nestedSymbolTable);
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        for (int i = 0; i < recordParameters.size(); i++) {
+            recordParameters.get(i).accept(this, nestedSymbolTable);
+        }
     }
 
 
@@ -194,10 +224,16 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(RecordCall recordCall, SymbolTable symbolTable) {
         recordCall.setSymbolTable(symbolTable);
+        recordCall.getRecords().accept(this, symbolTable);
+        ArrayList<FunctionCallParameter> functionCallParameters = recordCall.getFunctionCallParameters();
+        for (int i = 0; i < functionCallParameters.size(); i++) {
+            functionCallParameters.get(i).accept(this, symbolTable);
+        }
     }
 
     @Override
     public void visit(RecordParameter recordParameter, SymbolTable symbolTable) {
+        symbolTable.symbolTable.put(recordParameter.getIdentifier().getAttribute(), recordParameter);
         recordParameter.setSymbolTable(symbolTable);
     }
 

@@ -6,15 +6,19 @@ import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
-public class RecordCall extends Records implements Visitable {
+public class RecordCall extends FunctionCallParameter implements Visitable {
 
+    Records records;
     ArrayList<FunctionCallParameter> functionCallParameters;
 
     public RecordCall(Identifier identifier, ArrayList<FunctionCallParameter> functionCallParameters) {
-        super(identifier);
+        this.records = new Records(identifier);
         this.functionCallParameters = functionCallParameters;
     }
 
+    public Records getRecords() {
+        return records;
+    }
 
     public ArrayList<FunctionCallParameter> getFunctionCallParameters() {
         return functionCallParameters;

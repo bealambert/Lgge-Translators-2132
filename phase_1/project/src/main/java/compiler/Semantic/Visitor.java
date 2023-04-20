@@ -6,6 +6,12 @@ import compiler.Parser.*;
 
 public interface Visitor {
 
+    void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable);
+
+    void visit(ArrayInitializerParameter arrayInitializerParameter, SymbolTable symbolTable);
+
+    void visit(FunctionCallParameter functionCallParameter, SymbolTable symbolTable);
+
     void visit(ArrayOfExpression arrayOfExpression, SymbolTable symbolTable);
 
     void visit(AccessToIndexArray accessToIndexArray, SymbolTable symbolTable);

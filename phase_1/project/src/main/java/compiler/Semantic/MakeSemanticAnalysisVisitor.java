@@ -12,6 +12,22 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
 
     @Override
+    public void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable) {
+
+
+    }
+
+    @Override
+    public void visit(ArrayInitializerParameter arrayInitializerParameter, SymbolTable symbolTable) {
+
+    }
+
+    @Override
+    public void visit(FunctionCallParameter functionCallParameter) throws SemanticAnalysisException {
+
+    }
+
+    @Override
     public void visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException {
         //String input = "var c int[] = int[](5);";
         // var p int = c[0];
@@ -90,19 +106,16 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
         // var d Person = Person(\"me\", Point(3,7), int[](a*2));  // new record";
 
-        /*SymbolTable symbolTable = createRecordVariables.getSymbolTable();
+        SymbolTable symbolTable = createRecordVariables.getSymbolTable();
+        Identifier identifier = createRecordVariables.getType();
+        // Person - Person
+        treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
+        if (!createRecordVariables.getRecordCall().getRecords().getIdentifier().getAttribute().equals(identifier.getAttribute())) {
+            throw new SemanticAnalysisException("");
+        }
 
-        Identifier identifier = createRecordVariables.getVariableIdentifier();
-        InitializeRecords value = (InitializeRecords) treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
+        createRecordVariables.getRecordCall().accept(this);
 
-        // expression is an arrayList
-        ArrayList<Expression> expression = createRecordVariables.getRecordCall().getExpression();
-        for (int i = 0; i < expression.size() ; i++) {
-            Type observed = treatSemanticCases.treatExpression(expression.get(i));
-            Type expected = value.getRecordVariable().get(i).getType();
-            treatSemanticCases.isEqual(expected, observed);
-        }*/
-        // ...
     }
 
     @Override
@@ -172,12 +185,13 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     public void visit(InitializeRecords initializeRecords) throws SemanticAnalysisException {
         Records records = initializeRecords.getRecords();
         SymbolTable symbolTable = initializeRecords.getSymbolTable();
+        treatSemanticCases.getFirstDeclarationInsideSymbolTable(records.getIdentifier(), symbolTable);
 
         ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
         for (int i = 0; i < recordParameters.size(); i++) {
-            ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable
-                    (recordParameters.get(i).getType(), symbolTable);
-            astNode.accept(this);
+            RecordParameter recordParam = (RecordParameter) treatSemanticCases.getFirstDeclarationInsideSymbolTable
+                    (recordParameters.get(i).getIdentifier(), symbolTable);
+            recordParam.accept(this);
         }
 
     }
@@ -234,19 +248,44 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(RecordCall recordCall) throws SemanticAnalysisException {
 
-        /*SymbolTable symbolTable = recordCall.getSymbolTable();
+        SymbolTable symbolTable = recordCall.getSymbolTable();
+        Identifier identifier = recordCall.getRecords().getIdentifier();
 
-        for (int i = 0; i < recordCall.getExpression().size(); i++) {
-
-        }*/
+        InitializeRecords value = (InitializeRecords) treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
+        ArrayList<RecordParameter> recordParameters = value.getRecordVariable();
+        ArrayList<FunctionCallParameter> functionCallParameters = recordCall.getFunctionCallParameters();
+        if (recordParameters.size() != functionCallParameters.size()) {
+            throw new SemanticAnalysisException("expected " + recordParameters.size() + " parameters, but got " + functionCallParameters.size() + " parameters");
+        }
+        for (int i = 0; i < recordParameters.size(); i++) {
+            Type expected = recordParameters.get(i).getType(); // int
+            FunctionCallParameter functionCallParameter = functionCallParameters.get(i);
+            if (functionCallParameter instanceof ExpressionParameter) {
+                ExpressionParameter expressionParameter = (ExpressionParameter) functionCallParameter;
+                Type observed = expressionParameter.getExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+                treatSemanticCases.isEqual(expected, observed);
+            } else if (functionCallParameter instanceof RecordCall) {
+                RecordCall cast = (RecordCall) functionCallParameter;
+                cast.accept(this);
+            } else {
+                ArrayInitializerParameter arrayInitializerParameter = (ArrayInitializerParameter) functionCallParameter;
+                arrayInitializerParameter.getArrayInitializer().accept(this);
+                Type observed = arrayInitializerParameter.getArrayInitializer().getType();
+                treatSemanticCases.isEqual(expected, observed);
+            }
+        }
     }
 
     @Override
     public void visit(RecordParameter recordParameter) throws SemanticAnalysisException {
         // check the type exists
         SymbolTable symbolTable = recordParameter.getSymbolTable();
-        treatSemanticCases.getFirstDeclarationInsideSymbolTable(recordParameter.getType(), symbolTable);
+        RecordParameter storedRecordParameter = (RecordParameter)
+                treatSemanticCases.getFirstDeclarationInsideSymbolTable(recordParameter.getIdentifier(), symbolTable);
 
+        Type expected = storedRecordParameter.getType();
+        Type observed = recordParameter.getType();
+        treatSemanticCases.isEqual(expected, observed);
         // check for i-th param is of type <> should be inside the CreateRecordVariables
 
     }

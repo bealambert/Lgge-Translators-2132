@@ -12,7 +12,14 @@ import java.util.Stack;
 public interface SemanticVisitor {
 
     TreatSemanticCases treatSemanticCases = new TreatSemanticCases();
+    AssignSymbolTableVisitor assignSymbolTableVisitor = new AssignSymbolTableVisitor();
     Stack<Identifier> functionNameStack = new Stack<>();
+
+    void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable) throws SemanticAnalysisException;
+
+    void visit(ArrayInitializerParameter arrayInitializerParameter, SymbolTable symbolTable) throws SemanticAnalysisException;
+
+    void visit(FunctionCallParameter functionCallParameter) throws SemanticAnalysisException;
 
     void visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException;
 

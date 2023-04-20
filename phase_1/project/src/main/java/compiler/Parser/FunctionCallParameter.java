@@ -9,12 +9,12 @@ public class FunctionCallParameter extends ASTNode {
 
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {
-        this.accept(visitor, symbolTable);
+        visitor.visit(this, symbolTable);
     }
 
     @Override
     public void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException {
-        this.accept(semanticVisitor);
+        semanticVisitor.visit(this);
     }
 
     public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {

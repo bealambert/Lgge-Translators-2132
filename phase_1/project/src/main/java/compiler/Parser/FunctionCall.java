@@ -23,6 +23,9 @@ public class FunctionCall extends Expression implements Visitable {
         return identifier;
     }
 
+    public ArrayList<ArrayOfExpression> getParams() {
+        return params;
+    }
 
     @Override
     public void accept(Visitor visitor, SymbolTable symbolTable) {

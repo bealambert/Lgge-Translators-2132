@@ -4,10 +4,7 @@ import compiler.ASTNode;
 import compiler.BinaryTree;
 import compiler.Lexer.Identifier;
 import compiler.MyNode;
-import compiler.Parser.ArrayOfExpression;
-import compiler.Parser.Expression;
-import compiler.Parser.Param;
-import compiler.Parser.Type;
+import compiler.Parser.*;
 import compiler.SemanticAnalysisException;
 
 import java.util.HashMap;
@@ -25,7 +22,6 @@ public class TreatSemanticCases {
         mapping.put("RealNumber", "real");
         mapping.put("Boolean", "bool");
         mapping.put("Strings", "string");
-        mapping.put("NaturalNumber", "int");
     }
 
     public Type treatExpression(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {
@@ -34,6 +30,10 @@ public class TreatSemanticCases {
     }
 
     public Type treatExpression(Expression expression) {
+        return null;
+    }
+
+    public Type treatFunctionCallParameters(FunctionCallParameter functionCallParameter) {
         return null;
     }
 

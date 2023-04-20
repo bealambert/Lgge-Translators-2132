@@ -152,7 +152,70 @@ public class TestSemanticAnalysis {
 
     @Test
     public void TestConditionWithVariableCreatedBefore() {
-        String input = "var x int = 3;" + "var value int = 2;" + "if value <> 3 { var y int = x*x;} else{ var y int = 2*3;}";
+        String input = "var x int = 3;" + "var value int = 2;" + "if value <> 3 { var y int = x*2;} else{ var y int = 2*3;}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestCreateRecordDefinedNewTypes() {
+        String input = "record Person {\n" +
+                "    name string;\n" +
+                "    location int[];\n" +   // changed Point object to int
+                "    history int[];\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestCreateNewTypesAndUseAfterInsideRecord() {
+        String input =
+                "record Person {\n" +
+                        "    name string;\n" +
+                        "    location Point;\n" +
+                        "    history int[];\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestCreateRecordVariable() {
+        String input =
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "}"
+                        +
+                        "record Person {\n" +
+                        "    name string;\n" +
+                        "    location Point;\n" +
+                        "    history int[];\n" +
+                        "}\n"
+                        + "var d Person = Person(\"me\", Point(3,7), int[](a*2));  // new record;\n";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
