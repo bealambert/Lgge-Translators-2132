@@ -9,6 +9,9 @@ public interface ExpressionTypeVisitor {
 
     TreatSemanticCases treatSemanticCases = new TreatSemanticCases();
     TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor();
+    MakeSemanticAnalysisVisitor makeSemanticAnalysisVisitor = new MakeSemanticAnalysisVisitor();
+
+    Type visit(RecordParameter recordParameter) throws SemanticAnalysisException;
 
     Type visit(InitializeRecords initializeRecords) throws SemanticAnalysisException;
 

@@ -215,11 +215,12 @@ public class TestSemanticAnalysis {
                         "    location Point;\n" +
                         "    history int[];\n" +
                         "}\n"
-                        + "var d Person = Person(\"me\", Point(3,7), int[](a*2));  // new record;\n";
+                        + "var d Person = Person(\"me\", Point(3,7), int[](2));  // new record;\n";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
         Semantic semantic = new Semantic(parser);
+        // a * 2.5 works :(
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {

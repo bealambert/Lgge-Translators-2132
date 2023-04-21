@@ -48,7 +48,10 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ArrayInitializer arrayInitializer) throws SemanticAnalysisException {
-
+        Type observed = treatSemanticCases.treatExpression(arrayInitializer.getArraySize());
+        if (!observed.getAttribute().equals("NaturalNumber")) {
+            throw new SemanticAnalysisException("");
+        }
     }
 
 
@@ -152,13 +155,26 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(FunctionCall functionCall) throws SemanticAnalysisException {
 
-        /*SymbolTable symbolTable = functionCall.getSymbolTable();
-        CreateProcedure createProcedure = treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionCall.get)
-        ArrayList<Expression> expressionArrayList = functionCall.getExpression();
-        for (int i = 0; i < expressionArrayList.size(); i++) {
-            Type observed = treatSemanticCases.treatExpression(expressionArrayList.get(i));
-            Type expected =
-        }*/
+        SymbolTable symbolTable = functionCall.getSymbolTable();
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionCall.getIdentifier(), symbolTable);
+        if (astNode instanceof CreateProcedure) {
+            CreateProcedure createProcedure = (CreateProcedure) astNode;
+            ArrayList<Param> params = createProcedure.getParams();
+            for (int i = 0; i < params.size(); i++) {
+                Type expected = params.get(i).getType();
+                Type observed = treatSemanticCases.treatExpression(functionCall.getParams().get(i));
+                treatSemanticCases.isEqual(expected, observed);
+            }
+        } else {
+            InitializeRecords initializeRecords = (InitializeRecords) astNode;
+            ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+            for (int i = 0; i < recordParameters.size(); i++) {
+                RecordParameter recordParameter = recordParameters.get(i);
+                Type expected = recordParameter.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+                Type observed = treatSemanticCases.treatExpression(functionCall.getParams().get(i));
+                treatSemanticCases.isEqual(expected, observed);
+            }
+        }
     }
 
     @Override
