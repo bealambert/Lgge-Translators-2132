@@ -1,13 +1,42 @@
 package compiler.Semantic;
 
 import compiler.ASTNode;
+import compiler.ClassName;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
+import compiler.SemanticAnalysisException;
+import compiler.Token;
 
 import java.util.ArrayList;
 
 public class AssignSymbolTableVisitor implements Visitor {
 
+
+    @Override
+    public void visit(ForLoopAssignVariable forLoopAssignVariable, SymbolTable symbolTable) {
+        forLoopAssignVariable.setSymbolTable(symbolTable);
+        SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
+        nestedScopeSymbolTable.symbolTable.put(forLoopAssignVariable.getIdentifier().getAttribute(), forLoopAssignVariable);
+
+        Block body = forLoopAssignVariable.getBody();
+        body.accept(this, nestedScopeSymbolTable);
+
+        forLoopAssignVariable.getIncrementBy().accept(this, nestedScopeSymbolTable);
+        forLoopAssignVariable.getEnd().accept(this, nestedScopeSymbolTable);
+    }
+
+    @Override
+    public void visit(ForLoopCreateVariable forLoopCreateVariable, SymbolTable symbolTable) {
+        forLoopCreateVariable.setSymbolTable(symbolTable);
+        SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
+        nestedScopeSymbolTable.symbolTable.put(forLoopCreateVariable.getCreateVariables().getVariableIdentifier().getIdentifier().getAttribute(), forLoopCreateVariable);
+
+        Block body = forLoopCreateVariable.getBody();
+        body.accept(this, nestedScopeSymbolTable);
+
+        forLoopCreateVariable.getIncrementBy().accept(this, nestedScopeSymbolTable);
+        forLoopCreateVariable.getEnd().accept(this, nestedScopeSymbolTable);
+    }
 
     @Override
     public void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable) {
@@ -140,11 +169,16 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(ForLoop forLoop, SymbolTable symbolTable) {
         forLoop.setSymbolTable(symbolTable);
-        SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
-        nestedScopeSymbolTable.symbolTable.put(forLoop.getIdentifier().getAttribute(), forLoop);
 
-        Block body = forLoop.getBody();
-        body.accept(this, nestedScopeSymbolTable);
+/*        Type endType = forLoop.getEnd().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (! endType.getAttribute().equals(Token.IntIdentifier.getName())){
+            throw new SemanticAnalysisException("");
+        }
+
+        Type incrementType = forLoop.getIncrementBy().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (! incrementType.getAttribute().equals(Token.IntIdentifier.getName())){
+            throw new SemanticAnalysisException("");
+        }*/
     }
 
     @Override
@@ -218,7 +252,9 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(Reassignment reassignment, SymbolTable symbolTable) {
-
+        reassignment.setSymbolTable(symbolTable);
+        reassignment.getIdentifier().accept(this, symbolTable);
+        reassignment.getArrayOfExpression().accept(this, symbolTable);
     }
 
     @Override
@@ -266,6 +302,9 @@ public class AssignSymbolTableVisitor implements Visitor {
 
         Block body = whileLoop.getBody();
         body.accept(this, nestedScopeSymbolTable);
+
+        Condition condition = whileLoop.getCondition();
+        condition.accept(this, nestedScopeSymbolTable);
 
     }
 

@@ -220,7 +220,136 @@ public class TestSemanticAnalysis {
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
         Semantic semantic = new Semantic(parser);
-        // a * 2.5 works :(
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestCreateRecordVariableShouldFailArrayInitializer() {
+        String input =
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "}"
+                        +
+                        "record Person {\n" +
+                        "    name string;\n" +
+                        "    location Point;\n" +
+                        "    history int[];\n" +
+                        "}\n"
+                        + "var d Person = Person(\"me\", Point(3,7), int[](2.5));  // new record;\n";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+
+    @Test
+    public void TestCreateRecordVariableShouldFailRecordCall() {
+        String input =
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "}"
+                        +
+                        "record Person {\n" +
+                        "    name string;\n" +
+                        "    location Point;\n" +
+                        "    history int[];\n" +
+                        "}\n"
+                        + "var d Person = Person(\"me\", Point(3.5,7), int[](2.5));  // new record;\n";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+    @Test
+    public void TestCreateRecordVariableShouldFailParameter() {
+        String input =
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "}"
+                        +
+                        "record Person {\n" +
+                        "    name string;\n" +
+                        "    location Point;\n" +
+                        "    history int[];\n" +
+                        "}\n"
+                        + "var d Person = Person(10, Point(3,7), int[](2.5));  // new record;\n";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+    }
+
+    @Test
+    public void TestReassignment() {
+        String input = "var x int = 4; var y int = 5; x = y;";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestWrongReassignment() {
+        String input = "var x int = 4; var y real = 5.0; x = y;";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+    }
+
+    @Test
+    public void TestForLoop() {
+        String input = "var value int = 5; " +
+                "for i=1 to 100 by 2 {\n" +
+                "        while value <> 3 {\n" +
+                "            // ...\n" +
+                "        }\n" +
+                "    }";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestWhileLoop() {
+        String input = "var value int = 5;" +
+                "while value <> 3 {\n" +
+                "            // ...\n" +
+                "        }";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {

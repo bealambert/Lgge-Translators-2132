@@ -444,7 +444,7 @@ public class Parser {
             match(Token.ByKeyword);
             Expression incrementByExpression = parseExpression();
             Block body = parseBlock();
-            return new ForLoop(identifier, startExpression, endExpression, incrementByExpression, body);
+            return new ForLoopAssignVariable(identifier, startExpression, endExpression, incrementByExpression, body);
         } else {
             CreateVariables createVariables = (parseCreationStateVariable());
             match(Token.ToKeyword);
@@ -452,7 +452,7 @@ public class Parser {
             match(Token.ByKeyword);
             Expression incrementByExpression = parseExpression();
             Block body = parseBlock();
-            return new ForLoop(createVariables, endExpression, incrementByExpression, body);
+            return new ForLoopCreateVariable(createVariables, endExpression, incrementByExpression, body);
         }
     }
 

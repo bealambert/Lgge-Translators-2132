@@ -31,8 +31,9 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     public void visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException {
         //String input = "var c int[] = int[](5);";
         // var p int = c[0];
+        accessToIndexArray.accept(ExpressionTypeVisitor.typeCheckingVisitor);
 
-        CreateArrayVariable createArrayVariable =
+/*        CreateArrayVariable createArrayVariable =
                 (CreateArrayVariable) treatSemanticCases.getFirstDeclarationInsideSymbolTable
                         (accessToIndexArray.getIdentifier(), accessToIndexArray.getSymbolTable());
         if (!createArrayVariable.getType().getName().equals(ClassName.ArrayType.getName())) {
@@ -42,7 +43,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         Type type = treatSemanticCases.treatExpression(expression);
         if (!type.getAttribute().equals(Token.IntIdentifier.getName())) {
             throw new SemanticAnalysisException("");
-        }
+        }*/
 
     }
 
@@ -91,6 +92,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         Type expectedType = createExpressionVariable.getType();
         Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getArrayOfExpression());
         treatSemanticCases.isEqual(expectedType, observedType);
+        createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
     }
 
     @Override
@@ -148,6 +150,8 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ForLoop forLoop) throws SemanticAnalysisException {
+
+        // TODO
         Block body = forLoop.getBody();
         body.accept(this);
     }
@@ -258,6 +262,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         // x = y;
         SymbolTable symbolTable = reassignment.getSymbolTable();
         treatSemanticCases.getFirstDeclarationInsideSymbolTable(reassignment.getIdentifier(), symbolTable);
+        reassignment.accept(ExpressionTypeVisitor.typeCheckingVisitor);
         // implement visitor pattern for Expression to check types
     }
 

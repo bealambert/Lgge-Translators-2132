@@ -3,8 +3,13 @@ package compiler.Semantic;
 import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
+import compiler.SemanticAnalysisException;
 
 public interface Visitor {
+
+    void visit(ForLoopAssignVariable forLoopAssignVariable, SymbolTable symbolTable);
+
+    void visit(ForLoopCreateVariable forLoopCreateVariable, SymbolTable symbolTable);
 
     void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable);
 
