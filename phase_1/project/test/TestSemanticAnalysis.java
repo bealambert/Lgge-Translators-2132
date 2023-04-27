@@ -320,10 +320,30 @@ public class TestSemanticAnalysis {
     }
 
     @Test
-    public void TestForLoop() {
-        String input = "var value int = 5; " +
+    public void TestForLoopAssignVariable() {
+        String input = "var value int = 5; var i int; " +
                 "for i=1 to 100 by 2 {\n" +
                 "        while value <> 3 {\n" +
+                "            // ...\n" +
+                "        }\n" +
+                "    }";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestForLoopCreateVariables() {
+        String input = "var value int = 5; " +
+                "for var i int =1 to 100 by 2 {\n" +
+                "        while value <> i {\n" +
                 "            // ...\n" +
                 "        }\n" +
                 "    }";

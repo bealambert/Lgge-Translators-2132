@@ -12,6 +12,52 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
 
     @Override
+    public void visit(ForLoop forLoop) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(ForLoopAssignVariable forLoopAssignVariable) throws SemanticAnalysisException {
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(forLoopAssignVariable.getIdentifier(), forLoopAssignVariable.getSymbolTable());
+        Type expectedInt = astNode.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (!expectedInt.getAttribute().equals(Token.IntIdentifier.getName())) {
+            throw new SemanticAnalysisException("");
+        }
+        Type observedType = forLoopAssignVariable.getStart().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        treatSemanticCases.isEqual(expectedInt, observedType);
+
+        Type observedEndExpression = forLoopAssignVariable.getEnd().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        treatSemanticCases.isEqual(expectedInt, observedEndExpression);
+
+        Type observedIncrementExpression = forLoopAssignVariable.getIncrementBy().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        treatSemanticCases.isEqual(expectedInt, observedIncrementExpression);
+        Block body = forLoopAssignVariable.getBody();
+        body.accept(this);
+
+    }
+
+    @Override
+    public void visit(ForLoopCreateVariable forLoopCreateVariable) throws SemanticAnalysisException {
+
+        CreateVariables createVariables = forLoopCreateVariable.getCreateVariables();
+        createVariables.accept(this);
+
+        Type type = createVariables.getType();
+
+        if (!type.getAttribute().equals(Token.IntIdentifier.getName())) {
+            throw new SemanticAnalysisException("");
+        }
+
+        Type observedEndExpression = forLoopCreateVariable.getEnd().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        treatSemanticCases.isEqual(type, observedEndExpression);
+
+        Type observedIncrementExpression = forLoopCreateVariable.getIncrementBy().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        treatSemanticCases.isEqual(type, observedIncrementExpression);
+        Block body = forLoopCreateVariable.getBody();
+        body.accept(this);
+    }
+
+    @Override
     public void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable) {
 
 
@@ -148,13 +194,6 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         //
     }
 
-    @Override
-    public void visit(ForLoop forLoop) throws SemanticAnalysisException {
-
-        // TODO
-        Block body = forLoop.getBody();
-        body.accept(this);
-    }
 
     @Override
     public void visit(FunctionCall functionCall) throws SemanticAnalysisException {

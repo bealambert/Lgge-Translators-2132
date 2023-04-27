@@ -16,7 +16,6 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(ForLoopAssignVariable forLoopAssignVariable, SymbolTable symbolTable) {
         forLoopAssignVariable.setSymbolTable(symbolTable);
         SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
-        nestedScopeSymbolTable.symbolTable.put(forLoopAssignVariable.getIdentifier().getAttribute(), forLoopAssignVariable);
 
         Block body = forLoopAssignVariable.getBody();
         body.accept(this, nestedScopeSymbolTable);
@@ -29,7 +28,11 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(ForLoopCreateVariable forLoopCreateVariable, SymbolTable symbolTable) {
         forLoopCreateVariable.setSymbolTable(symbolTable);
         SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
-        nestedScopeSymbolTable.symbolTable.put(forLoopCreateVariable.getCreateVariables().getVariableIdentifier().getIdentifier().getAttribute(), forLoopCreateVariable);
+
+        nestedScopeSymbolTable.symbolTable.put(forLoopCreateVariable.getCreateVariables().getVariableIdentifier().getIdentifier().getAttribute(), forLoopCreateVariable.getCreateVariables());
+
+
+        //nestedScopeSymbolTable.symbolTable.put(forLoopCreateVariable.getCreateVariables().getVariableIdentifier().getIdentifier().getAttribute(), forLoopCreateVariable);
 
         Block body = forLoopCreateVariable.getBody();
         body.accept(this, nestedScopeSymbolTable);

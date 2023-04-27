@@ -49,8 +49,11 @@ public interface SemanticVisitor {
 
     void visit(ForLoop forLoop) throws SemanticAnalysisException;
 
-    void visit(FunctionCall functionCall) throws SemanticAnalysisException;
+    void visit(ForLoopAssignVariable forLoopAssignVariable) throws SemanticAnalysisException;
 
+    void visit(ForLoopCreateVariable forLoopCreateVariable) throws SemanticAnalysisException;
+
+    void visit(FunctionCall functionCall) throws SemanticAnalysisException;
 
     void visit(IfCondition ifCondition) throws SemanticAnalysisException;
 

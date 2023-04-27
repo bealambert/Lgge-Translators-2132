@@ -72,12 +72,12 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     @Override
     public Type visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
-        return null;
+        return createProcedure.getReturnType();
     }
 
     @Override
     public Type visit(CreateArrayVariable createArrayVariable) throws SemanticAnalysisException {
-        return null;
+        return createArrayVariable.getType();
     }
 
     @Override
@@ -94,27 +94,27 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     @Override
     public Type visit(CreateFunctionCallParameterVariable createFunctionCallParameterVariable) throws SemanticAnalysisException {
-        return null;
+        return createFunctionCallParameterVariable.getType();
     }
 
     @Override
     public Type visit(CreateRecordVariables createRecordVariables) throws SemanticAnalysisException {
-        return null;
+        return createRecordVariables.getType();
     }
 
     @Override
     public Type visit(CreateReferencedVariable createReferencedVariable) throws SemanticAnalysisException {
-        return null;
+        return createReferencedVariable.getType();
     }
 
     @Override
     public Type visit(CreateVariables createVariables) throws SemanticAnalysisException {
-        return null;
+        return createVariables.getType();
     }
 
     @Override
     public Type visit(CreateVoidVariable createVoidVariable) throws SemanticAnalysisException {
-        return null;
+        return createVoidVariable.getType();
     }
 
     @Override
