@@ -27,9 +27,9 @@ public interface ExpressionTypeVisitor {
 
     Type visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException;
 
-    Type visit(ArrayInitializerParameter arrayInitializerParameter);
+    Type visit(ArrayInitializerParameter arrayInitializerParameter) throws SemanticAnalysisException;
 
-    Type visit(FunctionCallParameter functionCallParameter);
+    Type visit(FunctionCallParameter functionCallParameter) throws SemanticAnalysisException;
 
     Type visit(Param param) throws SemanticAnalysisException;
 

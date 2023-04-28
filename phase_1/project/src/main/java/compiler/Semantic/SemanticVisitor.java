@@ -15,9 +15,9 @@ public interface SemanticVisitor {
     AssignSymbolTableVisitor assignSymbolTableVisitor = new AssignSymbolTableVisitor();
     Stack<Identifier> functionNameStack = new Stack<>();
 
-    void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable) throws SemanticAnalysisException;
+    void visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException;
 
-    void visit(ArrayInitializerParameter arrayInitializerParameter, SymbolTable symbolTable) throws SemanticAnalysisException;
+    void visit(ArrayInitializerParameter arrayInitializerParameter) throws SemanticAnalysisException;
 
     void visit(FunctionCallParameter functionCallParameter) throws SemanticAnalysisException;
 

@@ -9,6 +9,7 @@ import compiler.SemanticAnalysisException;
 
 import java.util.HashMap;
 
+import static compiler.Semantic.ExpressionTypeVisitor.treatSemanticCases;
 import static compiler.Semantic.ExpressionTypeVisitor.typeCheckingVisitor;
 
 public class TreatSemanticCases {
@@ -22,6 +23,11 @@ public class TreatSemanticCases {
         mapping.put("RealNumber", "real");
         mapping.put("Boolean", "bool");
         mapping.put("Strings", "string");
+
+        mapping.put("int", "int");
+        mapping.put("real", "real");
+        mapping.put("bool", "bool");
+        mapping.put("string", "string");
     }
 
     public Type treatExpression(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {
@@ -35,6 +41,17 @@ public class TreatSemanticCases {
 
     public Type treatFunctionCallParameters(FunctionCallParameter functionCallParameter) {
         return null;
+    }
+
+    public void TypeExists(Type type) throws SemanticAnalysisException {
+        if (mapping.get(type.getAttribute()) != null) {
+            return;
+        }
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(type, type.getSymbolTable());
+        if (astNode instanceof InitializeRecords) {
+            return;
+        }
+        throw new SemanticAnalysisException("Type : " + type.getAttribute() + " does not exist");
     }
 
     public void isEqual(Type expected, Type observed) throws SemanticAnalysisException {

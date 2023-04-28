@@ -13,7 +13,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ForLoop forLoop) throws SemanticAnalysisException {
-
+        // parent class
     }
 
     @Override
@@ -58,19 +58,20 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     }
 
     @Override
-    public void visit(ExpressionParameter expressionParameter, SymbolTable symbolTable) {
-
+    public void visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException {
+        expressionParameter.getExpression().accept(this);
 
     }
 
     @Override
-    public void visit(ArrayInitializerParameter arrayInitializerParameter, SymbolTable symbolTable) {
+    public void visit(ArrayInitializerParameter arrayInitializerParameter) throws SemanticAnalysisException {
+        arrayInitializerParameter.getArrayInitializer().accept(this);
 
     }
 
     @Override
     public void visit(FunctionCallParameter functionCallParameter) throws SemanticAnalysisException {
-
+        // parent class
     }
 
     @Override
@@ -78,40 +79,35 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         //String input = "var c int[] = int[](5);";
         // var p int = c[0];
         accessToIndexArray.accept(ExpressionTypeVisitor.typeCheckingVisitor);
-
-/*        CreateArrayVariable createArrayVariable =
-                (CreateArrayVariable) treatSemanticCases.getFirstDeclarationInsideSymbolTable
-                        (accessToIndexArray.getIdentifier(), accessToIndexArray.getSymbolTable());
-        if (!createArrayVariable.getType().getName().equals(ClassName.ArrayType.getName())) {
-            throw new SemanticAnalysisException("");
+        Identifier identifier = accessToIndexArray.getIdentifier();
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, identifier.getSymbolTable());
+        Type type = astNode.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (!type.getAttribute().equals(ClassName.ArrayType.getName())) {
+            throw new SemanticAnalysisException("Trying to access an array through index but the variable is not an array");
         }
-        Expression expression = accessToIndexArray.getExpression();
-        Type type = treatSemanticCases.treatExpression(expression);
-        if (!type.getAttribute().equals(Token.IntIdentifier.getName())) {
-            throw new SemanticAnalysisException("");
-        }*/
-
     }
 
     @Override
     public void visit(ArrayInitializer arrayInitializer) throws SemanticAnalysisException {
         Type observed = treatSemanticCases.treatExpression(arrayInitializer.getArraySize());
         if (!observed.getAttribute().equals("NaturalNumber")) {
-            throw new SemanticAnalysisException("");
+            throw new SemanticAnalysisException("expected int \t  observed : " + observed.getAttribute());
         }
+        treatSemanticCases.TypeExists(arrayInitializer.getType());
     }
 
 
     @Override
     public void visit(ArrayType arrayType) throws SemanticAnalysisException {
-
+        treatSemanticCases.TypeExists(arrayType);
     }
 
     @Override
     public void visit(Block block) throws SemanticAnalysisException {
         ArrayList<ASTNode> astNodeArrayList = block.getAttribute();
         for (int i = 0; i < astNodeArrayList.size(); i++) {
-            astNodeArrayList.get(i).accept(this);
+            ASTNode astNode = astNodeArrayList.get(i);
+            astNode.accept(this);
         }
     }
 
@@ -122,6 +118,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         if (!observedType.getAttribute().equals("bool")) {
             throw new SemanticAnalysisException("");
         }
+
     }
 
     @Override
@@ -129,6 +126,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         ArrayInitializer arrayInitializer = createArrayVariable.getArrayInitializer();
 
         ArrayType left = (ArrayType) createArrayVariable.getType();
+        treatSemanticCases.TypeExists(left);
         ArrayType right = arrayInitializer.getType();
         treatSemanticCases.isEqual(left, right);
     }
@@ -136,6 +134,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(CreateExpressionVariable createExpressionVariable) throws SemanticAnalysisException {
         Type expectedType = createExpressionVariable.getType();
+        treatSemanticCases.TypeExists(expectedType);
         Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getArrayOfExpression());
         treatSemanticCases.isEqual(expectedType, observedType);
 
@@ -177,6 +176,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         SymbolTable symbolTable = createReferencedVariable.getSymbolTable();
         CreateVariables createVariables = (CreateVariables) treatSemanticCases.getFirstDeclarationInsideSymbolTable(referencedIdentifier, symbolTable);
         Type expected = createVariables.getType();
+        treatSemanticCases.TypeExists(expected);
         Type observed = createReferencedVariable.getType();
         treatSemanticCases.isEqual(expected, observed);
     }
@@ -188,12 +188,12 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateVoidVariable createVoidVariable) throws SemanticAnalysisException {
-        //
+        treatSemanticCases.TypeExists(createVoidVariable.getType());
     }
 
     @Override
     public void visit(Expression expression) throws SemanticAnalysisException {
-        //
+        // parent class
     }
 
 

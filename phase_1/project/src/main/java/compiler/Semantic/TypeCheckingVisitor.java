@@ -48,6 +48,7 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     @Override
     public Type visit(MethodCall methodCall) throws SemanticAnalysisException {
+        // parent class
         return null;
     }
 
@@ -122,6 +123,7 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     @Override
     public Type visit(ASTNode astNode) throws SemanticAnalysisException {
+        // parent root
         return null;
     }
 
@@ -133,21 +135,36 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(MethodCallFromIdentifier methodCallFromIdentifier) throws SemanticAnalysisException {
         Identifier objectIdentifier = methodCallFromIdentifier.getObjectIdentifier();
+        // MethodCall are applied only by records at least for now (no built-in functions yet)
         InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, objectIdentifier.getSymbolTable());
-
         ArrayList<RecordParameter> arrayList = initializeRecords.getRecordVariable();
         for (int i = 0; i < arrayList.size(); i++) {
             if (arrayList.get(i).getIdentifier().getAttribute().equals(methodCallFromIdentifier.getMethodIdentifier().getAttribute())) {
                 return arrayList.get(i).getType();
             }
         }
-
-        return null;
+        throw new SemanticAnalysisException(
+                "could not find attribute \"" + methodCallFromIdentifier.getMethodIdentifier().getAttribute() + "\"" +
+                        "for the record " + initializeRecords.getRecords().getIdentifier().getAttribute());
     }
 
     @Override
     public Type visit(MethodCallFromIndexArray methodCallFromIndexArray) throws SemanticAnalysisException {
-        return null;
+
+        AccessToIndexArray accessToIndexArray = methodCallFromIndexArray.getAccessToIndexArray();
+        ArrayType arrayType = (ArrayType) accessToIndexArray.accept(typeCheckingVisitor);
+        // MethodCall are applied only by records at least for now (no built-in functions yet)
+
+        InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration(arrayType, arrayType.getSymbolTable());
+        ArrayList<RecordParameter> arrayList = initializeRecords.getRecordVariable();
+        for (int i = 0; i < arrayList.size(); i++) {
+            if (arrayList.get(i).getIdentifier().getAttribute().equals(methodCallFromIndexArray.getMethodIdentifier().getAttribute())) {
+                return arrayList.get(i).getType();
+            }
+        }
+        throw new SemanticAnalysisException(
+                "could not find attribute \"" + methodCallFromIndexArray.getMethodIdentifier().getAttribute() + "\"" +
+                        "for the record " + initializeRecords.getRecords().getIdentifier().getAttribute());
     }
 
     @Override
@@ -187,12 +204,13 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     }
 
     @Override
-    public Type visit(ArrayInitializerParameter arrayInitializerParameter) {
-        return null;
+    public Type visit(ArrayInitializerParameter arrayInitializerParameter) throws SemanticAnalysisException {
+        return arrayInitializerParameter.getArrayInitializer().accept(this);
     }
 
     @Override
     public Type visit(FunctionCallParameter functionCallParameter) {
+        // parent class
         return null;
     }
 
