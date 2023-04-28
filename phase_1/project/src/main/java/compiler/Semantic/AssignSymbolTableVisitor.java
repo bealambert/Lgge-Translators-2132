@@ -69,6 +69,8 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(AccessToIndexArray accessToIndexArray, SymbolTable symbolTable) {
         accessToIndexArray.setSymbolTable(symbolTable);
+        accessToIndexArray.getIdentifier().accept(this, symbolTable);
+        accessToIndexArray.getArrayOfExpression().accept(this, symbolTable);
     }
 
     @Override
@@ -150,18 +152,25 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(CreateReferencedVariable createReferencedVariable, SymbolTable symbolTable) {
         symbolTable.symbolTable.put(createReferencedVariable.getVariableIdentifier().getIdentifier().getAttribute(), createReferencedVariable);
         createReferencedVariable.setSymbolTable(symbolTable);
+        createReferencedVariable.getType().accept(this, symbolTable);
+        createReferencedVariable.getReferencedIdentifier().accept(this, symbolTable);
+        createReferencedVariable.getVariableIdentifier().accept(this, symbolTable);
     }
 
     @Override
     public void visit(CreateVariables createVariables, SymbolTable symbolTable) {
         symbolTable.symbolTable.put(createVariables.getVariableIdentifier().getIdentifier().getAttribute(), createVariables);
         createVariables.setSymbolTable(symbolTable);
+        createVariables.getType().accept(this, symbolTable);
+        createVariables.getVariableIdentifier().accept(this, symbolTable);
     }
 
     @Override
     public void visit(CreateVoidVariable createVoidVariable, SymbolTable symbolTable) {
         symbolTable.symbolTable.put(createVoidVariable.getVariableIdentifier().getIdentifier().getAttribute(), createVoidVariable);
         createVoidVariable.setSymbolTable(symbolTable);
+        createVoidVariable.getType().accept(this, symbolTable);
+        createVoidVariable.getVariableIdentifier().accept(this, symbolTable);
     }
 
     @Override
@@ -171,17 +180,8 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(ForLoop forLoop, SymbolTable symbolTable) {
+        // implemented in child classes as it is only a parent class not used itself in practice
         forLoop.setSymbolTable(symbolTable);
-
-/*        Type endType = forLoop.getEnd().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        if (! endType.getAttribute().equals(Token.IntIdentifier.getName())){
-            throw new SemanticAnalysisException("");
-        }
-
-        Type incrementType = forLoop.getIncrementBy().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        if (! incrementType.getAttribute().equals(Token.IntIdentifier.getName())){
-            throw new SemanticAnalysisException("");
-        }*/
     }
 
     @Override
@@ -230,12 +230,15 @@ public class AssignSymbolTableVisitor implements Visitor {
         for (int i = 0; i < recordParameters.size(); i++) {
             recordParameters.get(i).accept(this, nestedSymbolTable);
         }
+        initializeRecords.getRecords().accept(this, symbolTable);
     }
 
 
     @Override
     public void visit(MethodCall methodCall, SymbolTable symbolTable) {
+        // Parent class of two children that implements their own visit
         methodCall.setSymbolTable(symbolTable);
+
     }
 
     @Override
@@ -281,11 +284,14 @@ public class AssignSymbolTableVisitor implements Visitor {
     public void visit(RecordParameter recordParameter, SymbolTable symbolTable) {
         symbolTable.symbolTable.put(recordParameter.getIdentifier().getAttribute(), recordParameter);
         recordParameter.setSymbolTable(symbolTable);
+        recordParameter.getType().accept(this, symbolTable);
+        recordParameter.getIdentifier().accept(this, symbolTable);
     }
 
     @Override
     public void visit(Records records, SymbolTable symbolTable) {
         records.setSymbolTable(symbolTable);
+        records.getIdentifier().accept(this, symbolTable);
     }
 
     @Override
@@ -303,6 +309,7 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(Values values, SymbolTable symbolTable) {
         values.setSymbolTable(symbolTable);
+        values.getType().accept(this, symbolTable);
     }
 
     @Override
