@@ -138,7 +138,9 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         Type expectedType = createExpressionVariable.getType();
         Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getArrayOfExpression());
         treatSemanticCases.isEqual(expectedType, observedType);
+
         createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        createExpressionVariable.getArrayOfExpression().accept(this);
     }
 
     @Override
@@ -207,6 +209,9 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
                 Type expected = params.get(i).getType();
                 Type observed = treatSemanticCases.treatExpression(functionCall.getParams().get(i));
                 treatSemanticCases.isEqual(expected, observed);
+
+                functionCall.getParams().get(i).accept(this);
+
             }
         } else {
             InitializeRecords initializeRecords = (InitializeRecords) astNode;
@@ -417,6 +422,9 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {
 
+        for (int i = 0; i < arrayOfExpression.getExpressions().size(); i++) {
+            arrayOfExpression.getExpressions().get(i).accept(this);
+        }
     }
 }
 

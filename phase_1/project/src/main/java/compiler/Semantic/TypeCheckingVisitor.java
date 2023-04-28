@@ -4,6 +4,9 @@ import compiler.*;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
 
+
+import java.util.ArrayList;
+
 public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
 
@@ -125,6 +128,26 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(Type type) throws SemanticAnalysisException {
         return type;
+    }
+
+    @Override
+    public Type visit(MethodCallFromIdentifier methodCallFromIdentifier) throws SemanticAnalysisException {
+        Identifier objectIdentifier = methodCallFromIdentifier.getObjectIdentifier();
+        InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, objectIdentifier.getSymbolTable());
+
+        ArrayList<RecordParameter> arrayList = initializeRecords.getRecordVariable();
+        for (int i = 0; i < arrayList.size(); i++) {
+            if (arrayList.get(i).getIdentifier().getAttribute().equals(methodCallFromIdentifier.getMethodIdentifier().getAttribute())) {
+                return arrayList.get(i).getType();
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Type visit(MethodCallFromIndexArray methodCallFromIndexArray) throws SemanticAnalysisException {
+        return null;
     }
 
     @Override

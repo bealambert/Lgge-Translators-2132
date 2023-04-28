@@ -11,6 +11,10 @@ public interface ExpressionTypeVisitor {
     TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor();
     MakeSemanticAnalysisVisitor makeSemanticAnalysisVisitor = new MakeSemanticAnalysisVisitor();
 
+    public Type visit(MethodCallFromIdentifier methodCallFromIdentifier) throws SemanticAnalysisException;
+
+    public Type visit(MethodCallFromIndexArray methodCallFromIndexArray) throws SemanticAnalysisException;
+
     public Type visit(Reassignment reassignment) throws SemanticAnalysisException;
 
     public Type visit(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException;

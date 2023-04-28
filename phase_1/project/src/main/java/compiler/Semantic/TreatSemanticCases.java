@@ -49,6 +49,26 @@ public class TreatSemanticCases {
         }
     }
 
+    public InitializeRecords getAccessToRecordDeclaration(Identifier identifier, SymbolTable symbolTable) throws SemanticAnalysisException {
+        ASTNode astNode = symbolTable.symbolTable.get(identifier.getAttribute());
+
+        if (astNode instanceof Param) {
+            Param param = (Param) astNode;
+            Type type = param.getType();
+            return (InitializeRecords) getFirstDeclarationInsideSymbolTable(type, param.getSymbolTable());
+        }
+
+        if (astNode instanceof InitializeRecords) {
+            return (InitializeRecords) astNode;
+        }
+
+        if (symbolTable.previous != null) {
+            return getAccessToRecordDeclaration(identifier, symbolTable.previous);
+        }
+
+        throw new SemanticAnalysisException("Could not find identifier : " + identifier + " in this scope");
+    }
+
     public ASTNode getFirstDeclarationInsideSymbolTable(Identifier identifier, SymbolTable symbolTable) throws SemanticAnalysisException {
         ASTNode astNode = symbolTable.symbolTable.get(identifier.getAttribute());
 

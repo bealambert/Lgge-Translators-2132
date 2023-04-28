@@ -131,9 +131,9 @@ public class AssignSymbolTableVisitor implements Visitor {
         ArrayList<Param> procedureParameters = createProcedure.getParams();
         for (int i = 0; i < createProcedure.getParams().size(); i++) {
             nestedScopeSymbolTable.symbolTable.put(procedureParameters.get(i).getIdentifier().getAttribute(), procedureParameters.get(i));
+            procedureParameters.get(i).accept(this, nestedScopeSymbolTable);
         }
         Block body = createProcedure.getBody();
-        body.setSymbolTable(nestedScopeSymbolTable);
         body.accept(this, nestedScopeSymbolTable);
     }
 
@@ -241,16 +241,23 @@ public class AssignSymbolTableVisitor implements Visitor {
     @Override
     public void visit(MethodCallFromIdentifier methodCallFromIdentifier, SymbolTable symbolTable) {
         methodCallFromIdentifier.setSymbolTable(symbolTable);
+        methodCallFromIdentifier.getObjectIdentifier().accept(this, symbolTable);
+        methodCallFromIdentifier.getMethodIdentifier().accept(this, symbolTable);
+
     }
 
     @Override
     public void visit(MethodCallFromIndexArray methodCallFromIndexArray, SymbolTable symbolTable) {
         methodCallFromIndexArray.setSymbolTable(symbolTable);
+        methodCallFromIndexArray.getAccessToIndexArray().accept(this, symbolTable);
+        methodCallFromIndexArray.getMethodIdentifier().accept(this, symbolTable);
     }
 
     @Override
     public void visit(Param param, SymbolTable symbolTable) {
         param.setSymbolTable(symbolTable);
+        param.getIdentifier().accept(this, symbolTable);
+        param.getType().accept(this, symbolTable);
     }
 
     @Override
