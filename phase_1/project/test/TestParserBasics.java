@@ -321,6 +321,43 @@ public class TestParserBasics {
     }
 
     @Test
+    public void TestAssignToIndexArray() {
+        String input = "a[3] = 1234";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        //System.out.println(root);
+        assertTrue(root instanceof AssignToIndexArray);
+    }
+
+    @Test
+    public void TestAssignToRecordAttribute() {
+        String input = "a.x = 1234";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        //System.out.println(root);
+        assertTrue(root instanceof AssignToRecordAttribute);
+    }
+
+    @Test
+    public void TestAssignToRecordAttributeAtIndex() {
+        String input = "a[3].x = 1234";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+
+        ASTNode root = parser.getAST();
+        //System.out.println(root);
+        assertTrue(root instanceof AssignToRecordAttributeAtIndex);
+    }
+
+
+    @Test
     public void TestProcedureExample() {
         String input = "proc main() void {\n" +
                 "    var value int = readInt();                             \n" +

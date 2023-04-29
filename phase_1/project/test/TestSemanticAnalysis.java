@@ -400,5 +400,71 @@ public class TestSemanticAnalysis {
         }
     }
 
+    @Test
+    public void TestFunctionCallWrongCallToRecord() {
+        String input = "record Point {\n" +
+                "    x int;\n" +
+                "    y int;\n" +
+                "}" +
+                "proc square(v int, a int, p Point) int {\n" +
+                "    return v*a + p.x + p.y;\n" +
+                "}"
+
+                + "var i int = 0; var j int = 1; var d Point = Point(i, 2);"
+                + "var result int = square(1, j, Point(1, 1.0));"; // 1.0 -> expected an int
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+    @Test
+    public void TestFunctionCallWrongParameterProcedure() {
+        String input = "record Point {\n" +
+                "    x int;\n" +
+                "    y int;\n" +
+                "}" +
+                "proc square(v int, a int, p Point) int {\n" +
+                "    return v*a + p.x + p.y;\n" +
+                "}"
+
+                + "var i int = 0; var j int = 1; var d Point = Point(i, 2);"
+                + "var result int = square(1.5, j, Point(1,1));"; // first argument expected int
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+    @Test
+    public void TestFunctionCallAndMethodWithAccessArray() {
+        String input = "record Point {\n" +
+                "    x int;\n" +
+                "    y int;\n" +
+                "}" +
+                "proc copyPoints(p Point[]) Point {\n" +
+                "     return Point(p[0].x+p[1].x, p[0].y+p[1].y);\n" +
+                "} \n"
+                + "var points Point[] = Point[](2);"
+                + "var first Point = Point(1, 5);"
+                + "var second Point = Point(2, 4);"
+                + "points[0] = first;"
+                + "points[1] = second;"
+                + "var copy Point = copyPoints(points);";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
 
 }

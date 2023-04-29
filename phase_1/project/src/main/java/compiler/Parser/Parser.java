@@ -110,7 +110,6 @@ public class Parser {
         return new Values(symbol);
     }
 
-    // todo Bea
     // var a int = 2;
     // this method is called after the match() of "=" Symbol
     // so the look ahead points to "NaturalNumber, 2" here
@@ -529,18 +528,63 @@ public class Parser {
                 ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
                 match(Token.ClosingBracket);
                 AccessToIndexArray accessToIndexArray = new AccessToIndexArray(identifier, arrayOfExpression);
+
+                // parse AssignVariables
                 if (isSymbol(Token.Point)) {
-                    return parseMethodCall(accessToIndexArray);
+                    return parseAssignmentOrMethodAccess(accessToIndexArray);
                 }
+
+                if (isSymbol(Token.Assignment)) {
+                    match(Token.Assignment);
+                    ArrayOfExpression assignmentExpression = parseArrayOfExpression();
+                    return new AssignToIndexArray(accessToIndexArray, assignmentExpression);
+                }
+                return accessToIndexArray;
 
             }
             if (isSymbol(Token.Point)) {
-                return parseMethodCall(identifier);
+                return parseAssignmentOrMethodAccess(identifier);
             }
         }
 
 
         return null;
+    }
+
+    // parseAssignmentOrMethodAccess
+    public ASTNode parseAssignmentOrMethodAccess(AccessToIndexArray accessToIndexArray) {
+        MethodCall methodCall = parseMethodCall(accessToIndexArray);
+        if (isSymbol(Token.Assignment)) {
+            match(Token.Assignment);
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            return createAssignment(methodCall, arrayOfExpression);
+        }
+        return methodCall;
+    }
+
+    public ASTNode parseAssignmentOrMethodAccess(Identifier identifier) {
+        MethodCall methodCall = parseMethodCall(identifier);
+        if (isSymbol(Token.Assignment)) {
+            match(Token.Assignment);
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            return createAssignment(methodCall, arrayOfExpression);
+        }
+        return methodCall;
+    }
+
+    public AssignVariable createAssignment(MethodCall methodCall, ArrayOfExpression arrayOfExpression) {
+        if (methodCall instanceof MethodCallFromIdentifier) {
+            return createAssignment((MethodCallFromIdentifier) methodCall, arrayOfExpression);
+        }
+        return createAssignment((MethodCallFromIndexArray) methodCall, arrayOfExpression);
+    }
+
+    public AssignToRecordAttribute createAssignment(MethodCallFromIdentifier methodCallFromIdentifier, ArrayOfExpression arrayOfExpression) {
+        return new AssignToRecordAttribute(methodCallFromIdentifier, arrayOfExpression);
+    }
+
+    public AssignToRecordAttributeAtIndex createAssignment(MethodCallFromIndexArray methodCallFromIndexArray, ArrayOfExpression arrayOfExpression) {
+        return new AssignToRecordAttributeAtIndex(methodCallFromIndexArray, arrayOfExpression);
     }
 
     public Condition parseCondition() {
