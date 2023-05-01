@@ -15,6 +15,14 @@ public interface SemanticVisitor {
     AssignSymbolTableVisitor assignSymbolTableVisitor = new AssignSymbolTableVisitor();
     Stack<Identifier> functionNameStack = new Stack<>();
 
+    void visit(AssignVariable assignVariable) throws SemanticAnalysisException;
+
+    void visit(AssignToIndexArray assignToIndexArray) throws SemanticAnalysisException;
+
+    void visit(AssignToRecordAttribute assignToRecordAttribute) throws SemanticAnalysisException;
+
+    void visit(AssignToRecordAttributeAtIndex assignToRecordAttributeAtIndex) throws SemanticAnalysisException;
+
     void visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException;
 
     void visit(ArrayInitializerParameter arrayInitializerParameter) throws SemanticAnalysisException;

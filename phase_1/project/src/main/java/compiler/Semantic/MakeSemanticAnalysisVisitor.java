@@ -58,6 +58,42 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     }
 
     @Override
+    public void visit(AssignVariable assignVariable) throws SemanticAnalysisException {
+        // parent class
+    }
+
+    @Override
+    public void visit(AssignToIndexArray assignToIndexArray) throws SemanticAnalysisException {
+        assignToIndexArray.getAccessToIndexArray().accept(this);
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable
+                (assignToIndexArray.getAccessToIndexArray().getIdentifier(), assignToIndexArray.getSymbolTable());
+        Type type = astNode.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        Type assignmentType = assignToIndexArray.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
+        treatSemanticCases.isEqual(type, assignmentType);
+
+
+    }
+
+    @Override
+    public void visit(AssignToRecordAttribute assignToRecordAttribute) throws SemanticAnalysisException {
+        assignToRecordAttribute.getMethodCallFromIdentifier().accept(this);
+        Type type = assignToRecordAttribute.getMethodCallFromIdentifier().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        Type assignmentType = assignToRecordAttribute.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
+        treatSemanticCases.isEqual(type, assignmentType);
+    }
+
+    @Override
+    public void visit(AssignToRecordAttributeAtIndex assignToRecordAttributeAtIndex) throws SemanticAnalysisException {
+        assignToRecordAttributeAtIndex.getMethodCallFromIndexArray().accept(this);
+        Type type = assignToRecordAttributeAtIndex.getMethodCallFromIndexArray().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        Type assignmentType = assignToRecordAttributeAtIndex.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
+        treatSemanticCases.isEqual(type, assignmentType);
+    }
+
+    @Override
     public void visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException {
         expressionParameter.getExpression().accept(this);
 
@@ -82,7 +118,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         Identifier identifier = accessToIndexArray.getIdentifier();
         ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, identifier.getSymbolTable());
         Type type = astNode.accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        if (!type.getAttribute().equals(ClassName.ArrayType.getName())) {
+        if (!(type instanceof ArrayType)) {
             throw new SemanticAnalysisException("Trying to access an array through index but the variable is not an array");
         }
     }
@@ -162,7 +198,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         Identifier identifier = createRecordVariables.getType();
         // Person - Person
         treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
-        if (!createRecordVariables.getRecordCall().getRecords().getIdentifier().getAttribute().equals(identifier.getAttribute())) {
+        if (!createRecordVariables.getType().getAttribute().equals(identifier.getAttribute())) {
             throw new SemanticAnalysisException("");
         }
 
@@ -214,6 +250,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
             }
         } else {
+            astNode = treatSemanticCases.getAccessToRecordDeclaration(functionCall.getIdentifier(), symbolTable);
             InitializeRecords initializeRecords = (InitializeRecords) astNode;
             ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
             for (int i = 0; i < recordParameters.size(); i++) {
@@ -270,13 +307,23 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         // <Object>.<method>
         SymbolTable symbolTable = methodCallFromIdentifier.getSymbolTable();
         Identifier objectIdentifier = methodCallFromIdentifier.getObjectIdentifier();
-        treatSemanticCases.getFirstDeclarationInsideSymbolTable(objectIdentifier, symbolTable);
+        //treatSemanticCases.getFirstDeclarationInsideSymbolTable(objectIdentifier, symbolTable);
+        InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
+        // Initialize Records or ArrayInitializer :'(
+
         // Do I have to check if the function can be applied on that object?
         // no class or something -> maybe built-in functions that are not yet implemented
-
         Identifier identifier = methodCallFromIdentifier.getMethodIdentifier();
-        CreateProcedure createProcedure = (CreateProcedure) treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
-        createProcedure.accept(this);
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        boolean found = false;
+        for (int i = 0; i < recordParameters.size() && !found; i++) {
+            if (recordParameters.get(i).getIdentifier().getAttribute().equals(identifier.getAttribute())) {
+                found = true;
+            }
+        }
+        if (!found) {
+            throw new SemanticAnalysisException("attribute " + identifier.getAttribute() + " was not found inside record " + objectIdentifier.getAttribute());
+        }
     }
 
     @Override
@@ -286,9 +333,22 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         AccessToIndexArray accessToIndexArray = methodCallFromIndexArray.getAccessToIndexArray();
         accessToIndexArray.accept(this);
 
+        InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration
+                (methodCallFromIndexArray.getAccessToIndexArray().getIdentifier(), symbolTable);
+
         Identifier identifier = methodCallFromIndexArray.getMethodIdentifier();
-        CreateProcedure createProcedure = (CreateProcedure) treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
-        createProcedure.accept(this);
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        boolean found = false;
+        for (int i = 0; i < recordParameters.size() && !found; i++) {
+            if (recordParameters.get(i).getIdentifier().getAttribute().equals(identifier.getAttribute())) {
+                found = true;
+            }
+        }
+        if (!found) {
+            throw new SemanticAnalysisException
+                    ("attribute " + identifier.getAttribute() + " was not found inside record "
+                            + initializeRecords.getRecords().getIdentifier().getAttribute());
+        }
     }
 
     @Override
@@ -315,29 +375,13 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
         SymbolTable symbolTable = recordCall.getSymbolTable();
         Identifier identifier = recordCall.getRecords().getIdentifier();
-
-        InitializeRecords value = (InitializeRecords) treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
-        ArrayList<RecordParameter> recordParameters = value.getRecordVariable();
         ArrayList<FunctionCallParameter> functionCallParameters = recordCall.getFunctionCallParameters();
-        if (recordParameters.size() != functionCallParameters.size()) {
-            throw new SemanticAnalysisException("expected " + recordParameters.size() + " parameters, but got " + functionCallParameters.size() + " parameters");
-        }
-        for (int i = 0; i < recordParameters.size(); i++) {
-            Type expected = recordParameters.get(i).getType(); // int
-            FunctionCallParameter functionCallParameter = functionCallParameters.get(i);
-            if (functionCallParameter instanceof ExpressionParameter) {
-                ExpressionParameter expressionParameter = (ExpressionParameter) functionCallParameter;
-                Type observed = expressionParameter.getExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-                treatSemanticCases.isEqual(expected, observed);
-            } else if (functionCallParameter instanceof RecordCall) {
-                RecordCall cast = (RecordCall) functionCallParameter;
-                cast.accept(this);
-            } else {
-                ArrayInitializerParameter arrayInitializerParameter = (ArrayInitializerParameter) functionCallParameter;
-                arrayInitializerParameter.getArrayInitializer().accept(this);
-                Type observed = arrayInitializerParameter.getArrayInitializer().getType();
-                treatSemanticCases.isEqual(expected, observed);
-            }
+
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(identifier, symbolTable);
+        if (astNode instanceof CreateProcedure) {
+            treatSemanticCases.helperRecordCall((CreateProcedure) astNode, functionCallParameters);
+        } else {
+            treatSemanticCases.helperRecordCall((InitializeRecords) astNode, functionCallParameters);
         }
     }
 

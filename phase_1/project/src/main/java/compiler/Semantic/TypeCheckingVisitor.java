@@ -35,13 +35,13 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException {
         SymbolTable symbolTable = accessToIndexArray.getSymbolTable();
-        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(accessToIndexArray.getIdentifier(), symbolTable).accept(this);
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(accessToIndexArray.getIdentifier(), symbolTable);
         Type type = astNode.accept(typeCheckingVisitor);
         ArrayOfExpression arrayOfExpression = accessToIndexArray.getArrayOfExpression();
         BinaryTree myTree = arrayOfExpression.getMyTree();
         Type indexType = myTree.accept(typeCheckingVisitor);
-        if (type.getAttribute().equals(ClassName.ArrayType.getName()) && indexType.getAttribute().equals(Token.IntIdentifier.getName())) {
-            return indexType;
+        if (type instanceof ArrayType && indexType.getAttribute().equals(Token.NaturalNumber.getName())) {
+            return type;
         }
         throw new SemanticAnalysisException("");
     }
@@ -54,6 +54,9 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     @Override
     public Type visit(MyNode myNode) throws SemanticAnalysisException {
+
+        myNode.getValue().accept(makeSemanticAnalysisVisitor);
+
         MyNode left = myNode.getLeft();
         MyNode right = myNode.getRight();
         // left == null && right == null
@@ -133,6 +136,18 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     }
 
     @Override
+    public Type visit(ArrayInitializer arrayInitializer) throws SemanticAnalysisException {
+        treatSemanticCases.TypeExists(arrayInitializer.getType());
+        Type indexType = arrayInitializer.getArraySize().accept(this);
+
+        if (!indexType.getAttribute().equals(Token.NaturalNumber.getName())) {
+            throw new SemanticAnalysisException("expected int as index, got : " + indexType.getAttribute());
+        }
+        return arrayInitializer.getType();
+
+    }
+
+    @Override
     public Type visit(MethodCallFromIdentifier methodCallFromIdentifier) throws SemanticAnalysisException {
         Identifier objectIdentifier = methodCallFromIdentifier.getObjectIdentifier();
         // MethodCall are applied only by records at least for now (no built-in functions yet)
@@ -152,10 +167,10 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     public Type visit(MethodCallFromIndexArray methodCallFromIndexArray) throws SemanticAnalysisException {
 
         AccessToIndexArray accessToIndexArray = methodCallFromIndexArray.getAccessToIndexArray();
-        ArrayType arrayType = (ArrayType) accessToIndexArray.accept(typeCheckingVisitor);
+        Type type = accessToIndexArray.accept(typeCheckingVisitor);
         // MethodCall are applied only by records at least for now (no built-in functions yet)
 
-        InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration(arrayType, arrayType.getSymbolTable());
+        InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration(type, type.getSymbolTable());
         ArrayList<RecordParameter> arrayList = initializeRecords.getRecordVariable();
         for (int i = 0; i < arrayList.size(); i++) {
             if (arrayList.get(i).getIdentifier().getAttribute().equals(methodCallFromIndexArray.getMethodIdentifier().getAttribute())) {

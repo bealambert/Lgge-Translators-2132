@@ -396,6 +396,7 @@ public class TestSemanticAnalysis {
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
             fail();
         }
     }
@@ -447,7 +448,7 @@ public class TestSemanticAnalysis {
                 "    y int;\n" +
                 "}" +
                 "proc copyPoints(p Point[]) Point {\n" +
-                "     return Point(p[0].x+p[1].x, p[0].y+p[1].y);\n" +
+                "     return Point(p[0].x+p[1].x, p[0].y+p[1].y);" +
                 "} \n"
                 + "var points Point[] = Point[](2);"
                 + "var first Point = Point(1, 5);"
@@ -462,6 +463,7 @@ public class TestSemanticAnalysis {
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
             fail();
         }
     }

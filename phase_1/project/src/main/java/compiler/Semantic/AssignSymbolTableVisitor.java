@@ -13,6 +13,33 @@ public class AssignSymbolTableVisitor implements Visitor {
 
 
     @Override
+    public void visit(AssignVariable assignVariable, SymbolTable symbolTable) {
+        assignVariable.setSymbolTable(symbolTable);
+        assignVariable.getAssignmentExpression().accept(this, symbolTable);
+    }
+
+    @Override
+    public void visit(AssignToRecordAttribute assignToRecordAttribute, SymbolTable symbolTable) {
+        assignToRecordAttribute.setSymbolTable(symbolTable);
+        assignToRecordAttribute.getMethodCallFromIdentifier().accept(this, symbolTable);
+        assignToRecordAttribute.getAssignmentExpression().accept(this, symbolTable);
+    }
+
+    @Override
+    public void visit(AssignToRecordAttributeAtIndex assignToRecordAttributeAtIndex, SymbolTable symbolTable) {
+        assignToRecordAttributeAtIndex.setSymbolTable(symbolTable);
+        assignToRecordAttributeAtIndex.getMethodCallFromIndexArray().accept(this, symbolTable);
+        assignToRecordAttributeAtIndex.getAssignmentExpression().accept(this, symbolTable);
+    }
+
+    @Override
+    public void visit(AssignToIndexArray assignToIndexArray, SymbolTable symbolTable) {
+        assignToIndexArray.setSymbolTable(symbolTable);
+        assignToIndexArray.getAccessToIndexArray().accept(this, symbolTable);
+        assignToIndexArray.getAssignmentExpression().accept(this, symbolTable);
+    }
+
+    @Override
     public void visit(ForLoopAssignVariable forLoopAssignVariable, SymbolTable symbolTable) {
         forLoopAssignVariable.setSymbolTable(symbolTable);
         SymbolTable nestedScopeSymbolTable = new SymbolTable(symbolTable);
@@ -75,7 +102,7 @@ public class AssignSymbolTableVisitor implements Visitor {
 
     @Override
     public void visit(ArrayInitializer arrayInitializer, SymbolTable symbolTable) {
-        symbolTable.symbolTable.put(arrayInitializer.getType().getAttribute(), arrayInitializer);
+        //symbolTable.symbolTable.put(arrayInitializer.getType().getAttribute(), arrayInitializer);
         arrayInitializer.getArraySize().accept(this, symbolTable);
         arrayInitializer.getType().accept(this, symbolTable);
     }
