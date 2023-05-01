@@ -7,6 +7,8 @@ import compiler.SemanticAnalysisException;
 
 public interface Visitor {
 
+    void visit(ReturnVoid returnVoid, SymbolTable symbolTable);
+
     void visit(AssignVariable assignVariable, SymbolTable symbolTable);
 
     void visit(AssignToRecordAttribute assignToRecordAttribute, SymbolTable symbolTable);

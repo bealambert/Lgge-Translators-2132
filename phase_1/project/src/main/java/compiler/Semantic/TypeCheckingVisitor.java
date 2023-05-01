@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
+    Type voidType = new Type(new Identifier(Token.VoidIdentifier.getName()));
 
     @Override
     public Type visit(Variable variable) throws SemanticAnalysisException {
@@ -133,6 +134,11 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(Type type) throws SemanticAnalysisException {
         return type;
+    }
+
+    @Override
+    public Type visit(ReturnVoid returnVoid) throws SemanticAnalysisException {
+        return voidType;
     }
 
     @Override

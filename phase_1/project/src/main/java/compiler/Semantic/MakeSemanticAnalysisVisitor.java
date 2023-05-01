@@ -58,6 +58,18 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     }
 
     @Override
+    public void visit(ReturnVoid returnVoid) throws SemanticAnalysisException {
+
+        SymbolTable symbolTable = returnVoid.getSymbolTable();
+        Type observedType = returnVoid.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        Identifier functionName = functionNameStack.peek();
+        CreateProcedure createProcedure = (CreateProcedure) treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionName, symbolTable);
+        Type expectedType = createProcedure.getReturnType();
+        treatSemanticCases.isEqual(expectedType, observedType);
+
+    }
+
+    @Override
     public void visit(AssignVariable assignVariable) throws SemanticAnalysisException {
         // parent class
     }

@@ -119,6 +119,10 @@ public class TreatSemanticCases {
             return (InitializeRecords) getFirstDeclarationInsideSymbolTable(type, param.getSymbolTable());
         }
         // ArrayInitializer -> call the identifier corresponding to the record
+        if (astNode instanceof ArrayInitializer) {
+            ArrayInitializer arrayInitializer = (ArrayInitializer) astNode;
+            return (InitializeRecords) getFirstDeclarationInsideSymbolTable(arrayInitializer.getType(), arrayInitializer.getSymbolTable());
+        }
 
         if (astNode instanceof InitializeRecords) {
             return (InitializeRecords) astNode;

@@ -469,4 +469,29 @@ public class TestSemanticAnalysis {
     }
 
 
+    @Test
+    public void TestVoidFunction() {
+        String input = "record Point {\n" +
+                "    x int;\n" +
+                "    y int;\n" +
+                "}" +
+                "proc square(v int, a int, p Point) void {\n" +
+                "    return ;\n" +
+                "}"
+
+                + "var i int = 0; var j int = 1; var d Point = Point(i, 2);"
+                + "square(1, j, Point(2, 5));"; // 1.0 -> expected an int
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
+
 }

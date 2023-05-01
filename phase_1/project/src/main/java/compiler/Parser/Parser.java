@@ -481,6 +481,9 @@ public class Parser {
             }
             if (isSymbol(Token.ReturnKeyword)) {
                 match(Token.ReturnKeyword);
+                if (isSymbol(Token.Semicolon)) {
+                    return new ReturnVoid();
+                }
                 ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
                 match(Token.Semicolon);
                 return new ReturnStatement(arrayOfExpression);

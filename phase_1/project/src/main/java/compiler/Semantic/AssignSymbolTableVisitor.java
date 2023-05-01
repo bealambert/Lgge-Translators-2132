@@ -13,6 +13,11 @@ public class AssignSymbolTableVisitor implements Visitor {
 
 
     @Override
+    public void visit(ReturnVoid returnVoid, SymbolTable symbolTable) {
+        returnVoid.setSymbolTable(symbolTable);
+    }
+
+    @Override
     public void visit(AssignVariable assignVariable, SymbolTable symbolTable) {
         assignVariable.setSymbolTable(symbolTable);
         assignVariable.getAssignmentExpression().accept(this, symbolTable);
