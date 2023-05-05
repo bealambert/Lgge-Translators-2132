@@ -480,7 +480,7 @@ public class TestSemanticAnalysis {
                 "}"
 
                 + "var i int = 0; var j int = 1; var d Point = Point(i, 2);"
-                + "square(1, j, Point(2, 5));"; // 1.0 -> expected an int
+                + "square(1, j, Point(2, 5));";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);

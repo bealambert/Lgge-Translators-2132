@@ -47,4 +47,8 @@ public class Semantic {
         setSymbolTableFieldToASTNodes();
         performSemanticAnalysis();
     }
+
+    public ASTNode getRoot() {
+        return root;
+    }
 }
