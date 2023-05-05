@@ -64,27 +64,36 @@ public class Generator {
             }
             astNode.accept(asmClassWriterVisitor);
             astNode = astNode.getNext();
+        }
+        if (!asmClassWriterVisitor.methodVisitorStack.isEmpty()) {
+            mv.visitEnd();
+        }
+        /*mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
 
+        mv.visitCode();
+        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 
-            cw.visitEnd();
+        mv.visitFieldInsn(GETSTATIC, "Test", "i",  "I");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V");
+        mv.visitEnd();*/
+        cw.visitEnd();
 
-            byte[] bytecode = cw.toByteArray();
+        byte[] bytecode = cw.toByteArray();
         /*ByteArrayClassLoader loader = new ByteArrayClassLoader();
         Class<?> test = loader.defineClass(className, bytecode);*/
-            try {
-                try (FileOutputStream outputStream = new FileOutputStream("./Test.class")) {
-                    outputStream.write(bytecode);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            try (FileOutputStream outputStream = new FileOutputStream("./Test.class")) {
+                outputStream.write(bytecode);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         /*try {
             test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
         }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
             e.printStackTrace();
         }*/
-
-        }
 
     }
 }

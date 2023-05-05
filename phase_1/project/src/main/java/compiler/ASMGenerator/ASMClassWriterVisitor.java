@@ -10,6 +10,7 @@ import compiler.SemanticAnalysisException;
 import compiler.Token;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.util.HashMap;
@@ -25,6 +26,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     MethodVisitor mv;
     ClassWriter cw;
     HashMap<String, String> mapTypeToASMTypes;
+    HashMap<String, Integer> mapVariableToIndex;
+    int i;
 
     public ASMClassWriterVisitor() {
         mapTypeToASMTypes = new HashMap<>();
@@ -38,6 +41,9 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         mapTypeToASMTypes.put(Token.BooleanIdentifier.getName(), "Z");
         methodVisitorStack = new Stack<>();
         flags = new Stack<>();
+        mapVariableToIndex = new HashMap<>();
+        i = 2;
+
     }
 
     public void setCw(ClassWriter cw) {
@@ -103,11 +109,108 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                 mv.visitInsn(FSUB);
             }
         } else if (myNode.getValue() instanceof OperatorEquality) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName())) {
-                mv.visitInsn(IF_ICMPEQ);
+            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
+                    type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName()) ||
+                    type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName())) {
+                Label label = new Label();
+                mv.visitJumpInsn(IF_ACMPEQ, label);
+
+                mv.visitInsn(ICONST_0);
+                Label endLabel = new Label();
+                mv.visitJumpInsn(GOTO, endLabel);
+
+                mv.visitLabel(label);
+                mv.visitInsn(ICONST_1);
+                mv.visitLabel(endLabel);
             } else {
-                mv.visitInsn(IF_ICMPEQ);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
             }
+        } else if (myNode.getValue() instanceof OperatorNotEqual) {
+            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
+                    type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName()) ||
+                    type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName())) {
+                Label label = new Label();
+                mv.visitJumpInsn(IF_ICMPNE, label);
+
+                mv.visitInsn(ICONST_0);
+                Label endLabel = new Label();
+                mv.visitJumpInsn(GOTO, endLabel);
+
+                mv.visitLabel(label);
+                mv.visitInsn(ICONST_1);
+                mv.visitLabel(endLabel);
+
+            } else {
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
+                mv.visitInsn(ICONST_1);
+                mv.visitInsn(IXOR);
+            }
+        } else if (myNode.getValue() instanceof OperatorLessThan) {
+            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
+                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
+
+                Label label = new Label();
+                mv.visitJumpInsn(IF_ICMPLT, label);
+
+                mv.visitInsn(ICONST_0);
+                Label endLabel = new Label();
+                mv.visitJumpInsn(GOTO, endLabel);
+
+                mv.visitLabel(label);
+                mv.visitInsn(ICONST_1);
+                mv.visitLabel(endLabel);
+            }
+
+        } else if (myNode.getValue() instanceof OperatorLessThanOrEqual) {
+            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
+                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
+
+                Label label = new Label();
+                mv.visitJumpInsn(IF_ICMPLE, label);
+
+                mv.visitInsn(ICONST_0);
+                Label endLabel = new Label();
+                mv.visitJumpInsn(GOTO, endLabel);
+
+                mv.visitLabel(label);
+                mv.visitInsn(ICONST_1);
+                mv.visitLabel(endLabel);
+            }
+
+        } else if (myNode.getValue() instanceof OperatorGreaterThan) {
+            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
+                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
+
+                Label label = new Label();
+                mv.visitJumpInsn(IF_ICMPGT, label);
+
+                mv.visitInsn(ICONST_0);
+                Label endLabel = new Label();
+                mv.visitJumpInsn(GOTO, endLabel);
+
+                mv.visitLabel(label);
+                mv.visitInsn(ICONST_1);
+                mv.visitLabel(endLabel);
+            }
+
+        } else if (myNode.getValue() instanceof OperatorGreaterThanOrEqual) {
+            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
+                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
+
+                Label label = new Label();
+                mv.visitJumpInsn(IF_ICMPGE, label);
+
+                mv.visitInsn(ICONST_0);
+                Label endLabel = new Label();
+                mv.visitJumpInsn(GOTO, endLabel);
+
+                mv.visitLabel(label);
+                mv.visitInsn(ICONST_1);
+                mv.visitLabel(endLabel);
+            }
+
+        } else if (myNode.getValue() instanceof OperatorModulo) {
+            mv.visitInsn(IREM);
         }
     }
 
@@ -189,8 +292,13 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         String variableName = createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute();
         String desc = mapTypeToASMTypes.getOrDefault(createExpressionVariable.getType().getAttribute(), "A");
 
-        cw.visitField(access, variableName, desc, null, null);
-        //mv.visitVarInsn(ALOAD, 0);
+        if (flag != PUTSTATIC) {
+            mv.visitVarInsn(ALOAD, 0);
+        } else {
+            access |= ACC_STATIC;
+            cw.visitField(access, variableName, desc, null, null);
+        }
+
         BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
         binaryTree.getRoot().accept(this);
         mv.visitFieldInsn(PUTSTATIC, "Test", variableName, desc);
@@ -320,6 +428,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
         if (typeAttribute.equals(Token.IntIdentifier.getName()) || typeAttribute.equals(Token.NaturalNumber.getName())) {
             mv.visitIntInsn(BIPUSH, (Integer) values.getSymbol().getAttribute());
+
         } else if (typeAttribute.equals(Token.RealIdentifier.getName()) || typeAttribute.equals(Token.RealNumber.getName())) {
             mv.visitLdcInsn(((Double) values.getSymbol().getAttribute()).floatValue());
         } else if (typeAttribute.equals(Token.Boolean.getName()) || typeAttribute.equals(Token.BooleanIdentifier.getName())) {
