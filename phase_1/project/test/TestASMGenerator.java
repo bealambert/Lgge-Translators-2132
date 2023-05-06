@@ -44,7 +44,10 @@ public class TestASMGenerator {
 
     @Test
     public void TestExpression() {
-        String input = "var i int = 3;";
+        String input =
+                "proc square(v int) int {\n" +
+                        "    return 2*3;\n" +
+                        "}";
 
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);

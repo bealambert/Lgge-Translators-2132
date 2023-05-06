@@ -1,5 +1,6 @@
 package compiler.Semantic;
 
+import compiler.ASMGenerator.ASMClassWriterVisitor;
 import compiler.ASTNode;
 import compiler.MyNode;
 import compiler.Parser.*;

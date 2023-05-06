@@ -1,18 +1,16 @@
 package compiler.ASMGenerator;
 
-import compiler.BinaryTree;
+import compiler.*;
 import compiler.Lexer.Identifier;
-import compiler.MyNode;
 import compiler.Parser.*;
 import compiler.Semantic.ExpressionTypeVisitor;
 import compiler.Semantic.SemanticVisitor;
-import compiler.SemanticAnalysisException;
-import compiler.Token;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -27,7 +25,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     ClassWriter cw;
     HashMap<String, String> mapTypeToASMTypes;
     HashMap<String, Integer> mapVariableToIndex;
-    int i;
+    HashMap<String, Integer> mapReturnType;
+    int storeCount;
 
     public ASMClassWriterVisitor() {
         mapTypeToASMTypes = new HashMap<>();
@@ -42,7 +41,17 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         methodVisitorStack = new Stack<>();
         flags = new Stack<>();
         mapVariableToIndex = new HashMap<>();
-        i = 2;
+        storeCount = 2;
+
+        mapReturnType = new HashMap<>();
+        mapReturnType.put(Token.Strings.getName(), ARETURN);
+        mapReturnType.put(Token.StringIdentifier.getName(), ARETURN);
+        mapReturnType.put(Token.NaturalNumber.getName(), IRETURN);
+        mapReturnType.put(Token.IntIdentifier.getName(), IRETURN);
+        mapReturnType.put(Token.RealNumber.getName(), FRETURN);
+        mapReturnType.put(Token.RealIdentifier.getName(), FRETURN);
+        mapReturnType.put(Token.Boolean.getName(), IRETURN);
+        mapReturnType.put(Token.BooleanIdentifier.getName(), IRETURN);
 
     }
 
@@ -214,6 +223,22 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         }
     }
 
+    public String createDescFromParam(ArrayList<Param> params, Type returnType) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("(");
+        for (int j = 0; j < params.size(); j++) {
+            Type paramType = params.get(j).getType();
+            String asmParamType = mapTypeToASMTypes.getOrDefault(paramType.getAttribute(), "A");
+            stringBuilder.append(asmParamType);
+            if (j < params.size() - 1) {
+                stringBuilder.append(";");
+            }
+        }
+        stringBuilder.append(")");
+        stringBuilder.append(mapTypeToASMTypes.getOrDefault(returnType.getAttribute(), "A"));
+        return stringBuilder.toString();
+    }
+
     @Override
     public void visit(ReturnVoid returnVoid) throws SemanticAnalysisException {
 
@@ -308,6 +333,23 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
 
+        String desc = createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
+        MethodVisitor methodVisitor = cw.visitMethod(ACC_STATIC, createProcedure.getProcedureName().getAttribute(), desc, null, null);
+        this.addMethodVisitor(methodVisitor, PUTFIELD);
+        mv.visitCode();
+        /*ArrayList<Param> params = createProcedure.getParams();
+        for (int i = 0; i < params.size(); i++) {
+            mv.visitVarInsn(ILOAD, i+1);
+        }*/
+        ArrayList<ASTNode> astNodes = createProcedure.getBody().getAttribute();
+        for (int i = 0; i < astNodes.size(); i++) {
+            ASTNode astNode = astNodes.get(i);
+            astNode.accept(this);
+        }
+        mv.visitInsn(mapReturnType.getOrDefault(createProcedure.getReturnType().getAttribute(), ARETURN));
+        mv.visitEnd();
+        methodVisitorStack.pop();
+        flags.pop();
     }
 
     @Override
@@ -412,6 +454,10 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ReturnStatement returnStatement) throws SemanticAnalysisException {
+        BinaryTree binaryTree = returnStatement.getArrayOfExpression().getMyTree();
+        binaryTree.getRoot().accept(this);
+
+        mv.visitInsn(IRETURN);
 
     }
 

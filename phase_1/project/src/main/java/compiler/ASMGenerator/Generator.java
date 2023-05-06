@@ -58,6 +58,8 @@ public class Generator {
         while (astNode != null) {
             if (astNode instanceof CreateProcedure && flag == PUTSTATIC) {
                 if (!asmClassWriterVisitor.methodVisitorStack.isEmpty()) {
+                    asmClassWriterVisitor.methodVisitorStack.pop();
+                    asmClassWriterVisitor.flags.pop();
                     mv.visitEnd();
                     flag = PUTFIELD;
                 }
