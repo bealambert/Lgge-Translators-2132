@@ -1,6 +1,7 @@
 package compiler;
 
 
+import compiler.ASMGenerator.OperatorVisitor;
 import compiler.Lexer.Symbol;
 import compiler.Parser.Expression;
 import compiler.Parser.Operator;
@@ -9,6 +10,7 @@ import compiler.Parser.Type;
 import compiler.Semantic.ExpressionTypeVisitor;
 import compiler.Semantic.SemanticVisitor;
 import compiler.Semantic.TypeCheckingVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 public class MyNode extends Expression {
     Expression value;
@@ -77,5 +79,9 @@ public class MyNode extends Expression {
 
     public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
         return typeCheckingVisitor.visit(this);
+    }
+
+    public void accept(OperatorVisitor operatorVisitor, Type type, MethodVisitor methodVisitor) {
+        operatorVisitor.visit(this.getValue(), type, methodVisitor);
     }
 }

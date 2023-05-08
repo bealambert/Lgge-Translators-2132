@@ -46,7 +46,7 @@ public class TestASMGenerator {
     public void TestExpression() {
         String input =
                 "proc square(v int) int {\n" +
-                        "    return 2*3;\n" +
+                        "    return v*v;\n" +
                         "}";
 
         StringReader reader = new StringReader(input);

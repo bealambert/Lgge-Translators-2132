@@ -14,6 +14,4 @@ public class SymbolTable {
     public SymbolTable(SymbolTable previous) {
         this.previous = previous;
     }
-
-
 }

@@ -1,5 +1,6 @@
 package compiler.Semantic;
 
+import compiler.ASMGenerator.MakeOperationVisitor;
 import compiler.ASTNode;
 import compiler.BinaryTree;
 import compiler.Lexer.Identifier;
@@ -12,8 +13,8 @@ import java.util.Stack;
 public interface SemanticVisitor {
 
     TreatSemanticCases treatSemanticCases = new TreatSemanticCases();
-    AssignSymbolTableVisitor assignSymbolTableVisitor = new AssignSymbolTableVisitor();
     Stack<Identifier> functionNameStack = new Stack<>();
+    MakeOperationVisitor makeOperationVisitor = new MakeOperationVisitor();
 
 
     void visit(ReturnVoid returnVoid) throws SemanticAnalysisException;

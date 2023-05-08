@@ -5,6 +5,8 @@ import compiler.Lexer.Identifier;
 import compiler.Parser.*;
 import compiler.Semantic.ExpressionTypeVisitor;
 import compiler.Semantic.SemanticVisitor;
+import compiler.Semantic.SymbolTable;
+import org.checkerframework.checker.units.qual.A;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -20,39 +22,19 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     Stack<MethodVisitor> methodVisitorStack;
     Stack<Integer> flags;
-    int flag;
     MethodVisitor mv;
     ClassWriter cw;
-    HashMap<String, String> mapTypeToASMTypes;
-    HashMap<String, Integer> mapVariableToIndex;
-    HashMap<String, Integer> mapReturnType;
+    int flag;
     int storeCount;
+    ASMUtils asmUtils;
+    StoreTable storeTable;
 
     public ASMClassWriterVisitor() {
-        mapTypeToASMTypes = new HashMap<>();
-        mapTypeToASMTypes.put(Token.Strings.getName(), "Ljava/lang/String");
-        mapTypeToASMTypes.put(Token.StringIdentifier.getName(), "Ljava/lang/String;");
-        mapTypeToASMTypes.put(Token.NaturalNumber.getName(), "I");
-        mapTypeToASMTypes.put(Token.IntIdentifier.getName(), "I");
-        mapTypeToASMTypes.put(Token.RealNumber.getName(), "F");
-        mapTypeToASMTypes.put(Token.RealIdentifier.getName(), "F");
-        mapTypeToASMTypes.put(Token.Boolean.getName(), "Z");
-        mapTypeToASMTypes.put(Token.BooleanIdentifier.getName(), "Z");
+        storeCount = 2;
         methodVisitorStack = new Stack<>();
         flags = new Stack<>();
-        mapVariableToIndex = new HashMap<>();
-        storeCount = 2;
-
-        mapReturnType = new HashMap<>();
-        mapReturnType.put(Token.Strings.getName(), ARETURN);
-        mapReturnType.put(Token.StringIdentifier.getName(), ARETURN);
-        mapReturnType.put(Token.NaturalNumber.getName(), IRETURN);
-        mapReturnType.put(Token.IntIdentifier.getName(), IRETURN);
-        mapReturnType.put(Token.RealNumber.getName(), FRETURN);
-        mapReturnType.put(Token.RealIdentifier.getName(), FRETURN);
-        mapReturnType.put(Token.Boolean.getName(), IRETURN);
-        mapReturnType.put(Token.BooleanIdentifier.getName(), IRETURN);
-
+        asmUtils = new ASMUtils();
+        storeTable = new StoreTable(null);
     }
 
     public void setCw(ClassWriter cw) {
@@ -66,177 +48,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         this.mv = methodVisitor;
         this.flag = flag;
 
-    }
-
-    public int getAccess(String keyword) {
-        int access = 0;
-        if (keyword.equals(Token.VarKeyword.getName())) {
-            access = ACC_PUBLIC;
-        } else if (keyword.equals(Token.ValKeyword.getName())) {
-            access = ACC_PUBLIC;
-        } else if (keyword.equals(Token.ConstKeyword.getName())) {
-            access |= ACC_PUBLIC | ACC_FINAL;
-        }
-        return access;
-    }
-
-    public void makeLeftRightValueInstruction(MyNode myNode) throws SemanticAnalysisException {
-        myNode.getLeft().accept(this);
-        myNode.getRight().accept(this);
-    }
-
-    public void makeOperatorInstruction(MyNode myNode, Type type) throws SemanticAnalysisException {
-/*        Type leftType = myNode.getLeft().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        Type rightType = myNode.getRight().accept(ExpressionTypeVisitor.typeCheckingVisitor);*/
-        if (myNode.getValue() instanceof OperatorAdd) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName())) {
-                mv.visitInsn(IADD);
-            } else if (type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
-                mv.visitInsn(FADD);
-            } else {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
-
-            }
-        } else if (myNode.getValue() instanceof OperatorDivide) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName())) {
-                mv.visitInsn(IDIV);
-            } else {
-                mv.visitInsn(FDIV);
-            }
-        } else if (myNode.getValue() instanceof OperatorMultiply) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName())) {
-                mv.visitInsn(IMUL);
-            } else {
-                mv.visitInsn(FMUL);
-            }
-        } else if (myNode.getValue() instanceof OperatorMinus) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName())) {
-                mv.visitInsn(ISUB);
-            } else {
-                mv.visitInsn(FSUB);
-            }
-        } else if (myNode.getValue() instanceof OperatorEquality) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
-                    type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName()) ||
-                    type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName())) {
-                Label label = new Label();
-                mv.visitJumpInsn(IF_ACMPEQ, label);
-
-                mv.visitInsn(ICONST_0);
-                Label endLabel = new Label();
-                mv.visitJumpInsn(GOTO, endLabel);
-
-                mv.visitLabel(label);
-                mv.visitInsn(ICONST_1);
-                mv.visitLabel(endLabel);
-            } else {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
-            }
-        } else if (myNode.getValue() instanceof OperatorNotEqual) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
-                    type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName()) ||
-                    type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName())) {
-                Label label = new Label();
-                mv.visitJumpInsn(IF_ICMPNE, label);
-
-                mv.visitInsn(ICONST_0);
-                Label endLabel = new Label();
-                mv.visitJumpInsn(GOTO, endLabel);
-
-                mv.visitLabel(label);
-                mv.visitInsn(ICONST_1);
-                mv.visitLabel(endLabel);
-
-            } else {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
-                mv.visitInsn(ICONST_1);
-                mv.visitInsn(IXOR);
-            }
-        } else if (myNode.getValue() instanceof OperatorLessThan) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
-                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
-
-                Label label = new Label();
-                mv.visitJumpInsn(IF_ICMPLT, label);
-
-                mv.visitInsn(ICONST_0);
-                Label endLabel = new Label();
-                mv.visitJumpInsn(GOTO, endLabel);
-
-                mv.visitLabel(label);
-                mv.visitInsn(ICONST_1);
-                mv.visitLabel(endLabel);
-            }
-
-        } else if (myNode.getValue() instanceof OperatorLessThanOrEqual) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
-                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
-
-                Label label = new Label();
-                mv.visitJumpInsn(IF_ICMPLE, label);
-
-                mv.visitInsn(ICONST_0);
-                Label endLabel = new Label();
-                mv.visitJumpInsn(GOTO, endLabel);
-
-                mv.visitLabel(label);
-                mv.visitInsn(ICONST_1);
-                mv.visitLabel(endLabel);
-            }
-
-        } else if (myNode.getValue() instanceof OperatorGreaterThan) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
-                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
-
-                Label label = new Label();
-                mv.visitJumpInsn(IF_ICMPGT, label);
-
-                mv.visitInsn(ICONST_0);
-                Label endLabel = new Label();
-                mv.visitJumpInsn(GOTO, endLabel);
-
-                mv.visitLabel(label);
-                mv.visitInsn(ICONST_1);
-                mv.visitLabel(endLabel);
-            }
-
-        } else if (myNode.getValue() instanceof OperatorGreaterThanOrEqual) {
-            if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
-                    type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
-
-                Label label = new Label();
-                mv.visitJumpInsn(IF_ICMPGE, label);
-
-                mv.visitInsn(ICONST_0);
-                Label endLabel = new Label();
-                mv.visitJumpInsn(GOTO, endLabel);
-
-                mv.visitLabel(label);
-                mv.visitInsn(ICONST_1);
-                mv.visitLabel(endLabel);
-            }
-
-        } else if (myNode.getValue() instanceof OperatorModulo) {
-            mv.visitInsn(IREM);
-        }
-    }
-
-    public String createDescFromParam(ArrayList<Param> params, Type returnType) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(");
-        for (int j = 0; j < params.size(); j++) {
-            Type paramType = params.get(j).getType();
-            String asmParamType = mapTypeToASMTypes.getOrDefault(paramType.getAttribute(), "A");
-            stringBuilder.append(asmParamType);
-            if (j < params.size() - 1) {
-                stringBuilder.append(";");
-            }
-        }
-        stringBuilder.append(")");
-        stringBuilder.append(mapTypeToASMTypes.getOrDefault(returnType.getAttribute(), "A"));
-        return stringBuilder.toString();
     }
 
     @Override
@@ -313,9 +124,9 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     public void visit(CreateExpressionVariable createExpressionVariable) throws SemanticAnalysisException {
 
         String keyword = createExpressionVariable.getStateKeyword().getAttribute();
-        int access = getAccess(keyword);
+        int access = asmUtils.getAccess(keyword);
         String variableName = createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute();
-        String desc = mapTypeToASMTypes.getOrDefault(createExpressionVariable.getType().getAttribute(), "A");
+        String desc = asmUtils.mapTypeToASMTypes.getOrDefault(createExpressionVariable.getType().getAttribute(), "A");
 
         if (flag != PUTSTATIC) {
             mv.visitVarInsn(ALOAD, 0);
@@ -333,7 +144,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
 
-        String desc = createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
+        String desc = asmUtils.createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
         MethodVisitor methodVisitor = cw.visitMethod(ACC_STATIC, createProcedure.getProcedureName().getAttribute(), desc, null, null);
         this.addMethodVisitor(methodVisitor, PUTFIELD);
         mv.visitCode();
@@ -346,7 +157,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
             ASTNode astNode = astNodes.get(i);
             astNode.accept(this);
         }
-        mv.visitInsn(mapReturnType.getOrDefault(createProcedure.getReturnType().getAttribute(), ARETURN));
+        mv.visitInsn(asmUtils.mapReturnType.getOrDefault(createProcedure.getReturnType().getAttribute(), ARETURN));
         mv.visitEnd();
         methodVisitorStack.pop();
         flags.pop();
@@ -508,7 +319,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
             // IF ELSE
             myNode.getLeft().accept(this);
             myNode.getRight().accept(this);
-            makeOperatorInstruction(myNode, myNode.getLeft().accept(ExpressionTypeVisitor.typeCheckingVisitor));
+
+            myNode.getValue().accept(makeOperationVisitor, myNode.getLeft().accept(ExpressionTypeVisitor.typeCheckingVisitor), mv);
         }
     }
 
