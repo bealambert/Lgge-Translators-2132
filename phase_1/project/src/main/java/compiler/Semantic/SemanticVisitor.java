@@ -16,6 +16,7 @@ public interface SemanticVisitor {
     Stack<Identifier> functionNameStack = new Stack<>();
     MakeOperationVisitor makeOperationVisitor = new MakeOperationVisitor();
 
+    void visit(SubExpression subExpression) throws SemanticAnalysisException;
 
     void visit(ReturnVoid returnVoid) throws SemanticAnalysisException;
 
@@ -104,5 +105,7 @@ public interface SemanticVisitor {
     void visit(MyNode myNode) throws SemanticAnalysisException;
 
     void visit(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException;
+
+    void visit(Variable variable) throws SemanticAnalysisException;
 
 }

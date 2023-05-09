@@ -7,6 +7,10 @@ import compiler.SemanticAnalysisException;
 
 public interface Visitor {
 
+    void visit(SubExpression subExpression, SymbolTable symbolTable);
+
+    void visit(Variable variable, SymbolTable symbolTable);
+
     void visit(ReturnVoid returnVoid, SymbolTable symbolTable);
 
     void visit(AssignVariable assignVariable, SymbolTable symbolTable);

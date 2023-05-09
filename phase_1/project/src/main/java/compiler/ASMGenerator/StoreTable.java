@@ -7,10 +7,10 @@ import java.util.HashMap;
 
 public class StoreTable {
 
-    SymbolTable previous;
+    StoreTable previous;
     HashMap<String, Integer> storeTable = new HashMap<>();
 
-    public StoreTable(SymbolTable previous) {
+    public StoreTable(StoreTable previous) {
         this.previous = previous;
     }
 }

@@ -26,7 +26,9 @@ public class TestASMGenerator {
                 "var gt bool = 5 >5;" +
                 "var ge bool = 7 >=4;" +
                 "var comp2 bool = true == true;" +
-                "var comp3 bool = true <> true;";
+                "var comp3 bool = true <> true;" +
+                "var aaaa bool = (1 + 3 *2) > 5;";
+        // add array
 
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
@@ -45,8 +47,8 @@ public class TestASMGenerator {
     @Test
     public void TestExpression() {
         String input =
-                "proc square(v int) int {\n" +
-                        "    return v*v;\n" +
+                "proc square(v int, j int, r int) int {\n" +
+                        "    return (v + j * 2) / r;\n" +
                         "}";
 
         StringReader reader = new StringReader(input);

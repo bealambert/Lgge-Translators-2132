@@ -9,6 +9,11 @@ import compiler.SemanticAnalysisException;
 
 public class ASMVisitorMethod implements SemanticVisitor {
     @Override
+    public void visit(SubExpression subExpression) throws SemanticAnalysisException {
+
+    }
+
+    @Override
     public void visit(ReturnVoid returnVoid) throws SemanticAnalysisException {
 
     }
@@ -225,6 +230,11 @@ public class ASMVisitorMethod implements SemanticVisitor {
 
     @Override
     public void visit(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(Variable variable) throws SemanticAnalysisException {
 
     }
 }

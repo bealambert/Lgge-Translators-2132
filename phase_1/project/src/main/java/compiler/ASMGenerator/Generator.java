@@ -44,7 +44,7 @@ public class Generator {
 
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(V1_8, ACC_PUBLIC, className, null, "java/lang/Object", null);
-        asmClassWriterVisitor.setCw(cw);
+        asmClassWriterVisitor.setCw(cw, className);
 
 
         MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);

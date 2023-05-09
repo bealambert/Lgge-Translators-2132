@@ -1,8 +1,8 @@
 package compiler.Parser;
 
+import compiler.ASMGenerator.ASMClassWriterVisitor;
 import compiler.Lexer.Identifier;
-import compiler.Semantic.TypeCheckingVisitor;
-import compiler.Semantic.Visitable;
+import compiler.Semantic.*;
 import compiler.SemanticAnalysisException;
 
 public class Variable extends Expression {
@@ -20,13 +20,19 @@ public class Variable extends Expression {
 
 
     @Override
-    public Expression getExpression() {
-        return this;
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
     }
 
     public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
         return typeCheckingVisitor.visit(this);
     }
+
+    @Override
+    public void accept(SemanticVisitor visitor) throws SemanticAnalysisException {
+        visitor.visit(this);
+    }
+
     @Override
     public String toString() {
         return this.identifier.toString();

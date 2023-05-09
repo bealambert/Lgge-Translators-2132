@@ -58,6 +58,12 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     }
 
     @Override
+    public void visit(SubExpression subExpression) throws SemanticAnalysisException {
+        ArrayOfExpression arrayOfExpression = subExpression.getSubExpression();
+        arrayOfExpression.accept(this);
+    }
+
+    @Override
     public void visit(ReturnVoid returnVoid) throws SemanticAnalysisException {
 
         SymbolTable symbolTable = returnVoid.getSymbolTable();
@@ -481,6 +487,11 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         for (int i = 0; i < arrayOfExpression.getExpressions().size(); i++) {
             arrayOfExpression.getExpressions().get(i).accept(this);
         }
+    }
+
+    @Override
+    public void visit(Variable variable) throws SemanticAnalysisException {
+        //
     }
 }
 
