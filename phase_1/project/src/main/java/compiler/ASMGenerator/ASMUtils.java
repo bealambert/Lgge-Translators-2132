@@ -63,6 +63,7 @@ public class ASMUtils {
         mapReturnType.put(Token.RealIdentifier.getName(), FRETURN);
         mapReturnType.put(Token.Boolean.getName(), IRETURN);
         mapReturnType.put(Token.BooleanIdentifier.getName(), IRETURN);
+        mapReturnType.put(Token.VoidIdentifier.getName(), RETURN);
     }
 
     public int getAccess(String keyword) {

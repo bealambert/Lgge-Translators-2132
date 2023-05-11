@@ -58,7 +58,14 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         Type type = treatSemanticCases.getFirstDeclarationInsideSymbolTable
                 (variable.getIdentifier(), symbolTable).accept(ExpressionTypeVisitor.typeCheckingVisitor);
         int mapped_type = asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD);
-        mv.visitVarInsn(mapped_type, store_index);
+
+        if (flag == PUTSTATIC) {
+            String desc = asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
+            String name = variable.getIdentifier().getAttribute();
+            mv.visitFieldInsn(GETSTATIC, this.className, name, desc);
+        } else {
+            mv.visitVarInsn(mapped_type, store_index);
+        }
 
     }
 
@@ -150,21 +157,26 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         String desc = asmUtils.mapTypeToASMTypes.getOrDefault(createExpressionVariable.getType().getAttribute(), "A");
 
         if (flag != PUTSTATIC) {
-            mv.visitVarInsn(ALOAD, 0);
+            BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
+            binaryTree.getRoot().accept(this);
+            mv.visitVarInsn(ISTORE, storeCount);
         } else {
             access |= ACC_STATIC;
             cw.visitField(access, variableName, desc, null, null);
+            BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
+            binaryTree.getRoot().accept(this);
+            mv.visitFieldInsn(flag, "Test", variableName, desc);
         }
+        storeTable.storeTable.put(createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
+        storeCount++;
 
-        BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
-        binaryTree.getRoot().accept(this);
-        mv.visitFieldInsn(PUTSTATIC, "Test", variableName, desc);
 
     }
 
     @Override
     public void visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
 
+        storeTable.storeTable.clear();
         String desc = asmUtils.createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
         MethodVisitor methodVisitor = cw.visitMethod(ACC_STATIC, createProcedure.getProcedureName().getAttribute(), desc, null, null);
         this.addMethodVisitor(methodVisitor, PUTFIELD);
@@ -178,6 +190,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
             mv.visitVarInsn(store_value, i);
             storeTable.storeTable.put(param.getIdentifier().getAttribute(), i);
         }
+        storeCount = params.size();
         Block body = createProcedure.getBody();
         body.accept(this);
         mv.visitInsn(asmUtils.mapReturnType.getOrDefault(createProcedure.getReturnType().getAttribute(), ARETURN));

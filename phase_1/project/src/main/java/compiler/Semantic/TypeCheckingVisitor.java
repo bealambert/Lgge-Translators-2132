@@ -15,6 +15,10 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     public Type visit(Variable variable) throws SemanticAnalysisException {
         SymbolTable symbolTable = variable.getSymbolTable();
         ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(variable.getIdentifier(), symbolTable);
+        if (astNode instanceof CreateVariables) {
+            CreateVariables createVariables = (CreateVariables) astNode;
+            return createVariables.getType();
+        }
         return astNode.accept(this);
     }
 

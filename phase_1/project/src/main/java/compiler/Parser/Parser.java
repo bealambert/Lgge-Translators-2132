@@ -1,10 +1,8 @@
 package compiler.Parser;
 
-import compiler.AST;
-import compiler.ASTNode;
-import compiler.ClassName;
+import compiler.*;
 import compiler.Lexer.*;
-import compiler.Token;
+
 import java.io.StringReader;
 import java.util.*;
 
@@ -666,19 +664,19 @@ public class Parser {
 
                     match(Token.ClosingParenthesis);
                     RecordCall recordCall = new RecordCall(referenceOrTypeIdentifier, functionCallParameters);
-                    CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type);
+                    CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type, referenceOrTypeIdentifier);
                     if (expression != null) return expression;
                     return new CreateRecordVariables(create_variable_identifier, identifier, type, recordCall);
                 } else {
                     ArrayList<Expression> arrayList = new ArrayList<>();
                     FunctionCall functionCall = parseFunctionCall(referenceOrTypeIdentifier);
                     arrayList.add(functionCall);
-                    CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type);
+                    CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type, referenceOrTypeIdentifier);
                     if (expression != null) return expression;
                     return new CreateExpressionVariable(create_variable_identifier, identifier, type, new ArrayOfExpression(arrayList));
                 }
             }
-            CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type);
+            CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type, referenceOrTypeIdentifier);
             if (expression != null) return expression;
 
         }
@@ -693,14 +691,15 @@ public class Parser {
 
     }
 
-    private CreateVariables extendCreateExpressionVariable(Keyword create_variable_identifier, Identifier identifier, Type type) {
+    private CreateVariables extendCreateExpressionVariable(Keyword create_variable_identifier, Identifier identifier, Type type, Identifier lastValue) {
         Symbol operatorSymbol = whichSymbol(operatorValues);
         if (operatorSymbol != null) {
             pop();
             ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
             Operator operator = parseOperator((String) operatorSymbol.getAttribute());
             arrayOfExpression.expressions.add(0, (operator));
-            arrayOfExpression.expressions.add(0, (new Variable(identifier)));
+            arrayOfExpression.expressions.add(0, (new Variable(lastValue)));
+            arrayOfExpression.myTree = new BinaryTree(arrayOfExpression.expressions);
             return new CreateExpressionVariable(create_variable_identifier, identifier, type, arrayOfExpression);
         }
         return null;

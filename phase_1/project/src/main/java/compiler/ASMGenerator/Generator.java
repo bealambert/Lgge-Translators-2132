@@ -62,6 +62,7 @@ public class Generator {
                     asmClassWriterVisitor.flags.pop();
                     mv.visitEnd();
                     flag = PUTFIELD;
+                    asmClassWriterVisitor.storeTable = new StoreTable(asmClassWriterVisitor.storeTable);
                 }
             }
             astNode.accept(asmClassWriterVisitor);

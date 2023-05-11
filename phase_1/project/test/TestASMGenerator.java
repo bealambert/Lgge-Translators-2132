@@ -21,7 +21,7 @@ public class TestASMGenerator {
                 "var notEqual bool = \"aaa\" <> \"aba\";" +
                 "var equalIntegers bool = 1.0 <> 2.4;" +
                 "var moduloIntegers int = 10 % 4;" +
-                "var lt bool = 4 < 3;" +
+                "var lt bool = 4 < i;" +
                 "var le bool = 7 <=2;" +
                 "var gt bool = 5 >5;" +
                 "var ge bool = 7 >=4;" +
@@ -49,6 +49,53 @@ public class TestASMGenerator {
         String input =
                 "proc square(v int, j int, r int) int {\n" +
                         "    return (v + j * 2) / r;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+
+    @Test
+    public void TestCreateVariable() {
+        String input =
+                "proc square(v int, j int, r int) int {\n" +
+                        "var xcv int = 3 + 2;" +
+                        "    return xcv;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestCreateVariable2() {
+        String input =
+                "proc square(v int, j int, r int) int {\n" +
+                        "var xcv int = v + j;" +
+                        "var bn int = r *j;" +
+                        "var wx int = xcv + bn;" +
+                        "    return xcv;\n" +
                         "}";
 
         StringReader reader = new StringReader(input);
