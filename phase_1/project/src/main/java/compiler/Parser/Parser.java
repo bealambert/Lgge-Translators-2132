@@ -657,7 +657,19 @@ public class Parser {
             }
             if (isSymbol(Token.OpeningParenthesis)) {
                 // pointer is not set to the start of the expression
+                // if ArrayType
+                if (type.getName().equals(ClassName.ArrayType.getName())) {
+                    match(Token.OpeningParenthesis);
+                    match(Token.ClosingParenthesis);
+                    match(Token.OpeningBracket);
+                    ArrayOfExpression sizeOfArray = parseArrayOfExpression();
+                    match(Token.ClosingBracket);
+                    //var c int[] = int[](5);  // new array of length 5
+                    // var d Person = Person("me", Point(3,7), int[](a*2));
 
+                    ArrayInitializer arrayInitializer = new ArrayInitializer((ArrayType) type, sizeOfArray);
+                    return new CreateArrayVariable(create_variable_identifier, identifier, (ArrayType) type, arrayInitializer);
+                }
                 if (symbol == null) {
                     match(Token.OpeningParenthesis);
                     ArrayList<FunctionCallParameter> functionCallParameters = parseFunctionCallParameters();
@@ -679,12 +691,6 @@ public class Parser {
             CreateVariables expression = extendCreateExpressionVariable(create_variable_identifier, identifier, type, referenceOrTypeIdentifier);
             if (expression != null) return expression;
 
-        }
-        // TODO
-        // if ArrayType
-        if (type.getName().equals(ClassName.ArrayType.getName())) {
-            //var c int[] = int[](5);  // new array of length 5
-            // var d Person = Person("me", Point(3,7), int[](a*2));
         }
         ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
         return new CreateExpressionVariable(create_variable_identifier, identifier, type, arrayOfExpression);

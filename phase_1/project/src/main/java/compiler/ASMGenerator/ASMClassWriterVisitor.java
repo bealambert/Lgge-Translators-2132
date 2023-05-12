@@ -59,6 +59,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                 (variable.getIdentifier(), symbolTable).accept(ExpressionTypeVisitor.typeCheckingVisitor);
         int mapped_type = asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD);
 
+        // assumption -> only 2 storeTable (no function inside function but in java it is forbidden)
         if (storeTable.previous == null || (storeTable.storeTable.getOrDefault(variable.getIdentifier().getAttribute(), -1) == -1 && storeTable.previous != null)) {
             String desc = asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
             String name = variable.getIdentifier().getAttribute();
@@ -145,6 +146,13 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateArrayVariable createArrayVariable) throws SemanticAnalysisException {
+        createArrayVariable.getArrayInitializer().getArraySize().accept(this);
+        int newArrayValue = asmUtils.mapArrayType.getOrDefault(createArrayVariable.getType().getAttribute(), -1);
+        if (newArrayValue == -1) {
+            // check type
+        } else {
+            mv.visitIntInsn(NEWARRAY, newArrayValue);
+        }
 
     }
 
@@ -365,7 +373,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {
-
+        BinaryTree binaryTree = arrayOfExpression.getMyTree();
+        binaryTree.getRoot().accept(this);
     }
 
     public void visit(OperatorAdd operatorAdd, MyNode myNode) {

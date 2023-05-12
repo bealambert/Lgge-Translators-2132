@@ -138,5 +138,28 @@ public class TestASMGenerator {
 
     }
 
+    @Test
+    public void TestNewArray() {
+        String input =
+                "var x int = 7;" +
+                        "var i int[] = int()[(5 *3) + x];" +
+                        "proc square(a int, b int) int {\n" +
+                        "var j int[] = int()[x + b];" +
+                        "    return a;\n" +
+                        "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
 
 }

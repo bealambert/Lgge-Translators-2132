@@ -21,6 +21,8 @@ public class ASMUtils {
     HashMap<String, Integer> mapReturnType;
     HashMap<String, Integer> mapLoadType;
     HashMap<String, Integer> mapStoreType;
+    HashMap<String, Integer> mapArrayType;
+    HashMap<String, Integer> mapArrayParameter;
 
     public ASMUtils() {
         mapTypeToASMTypes = new HashMap<>();
@@ -64,6 +66,14 @@ public class ASMUtils {
         mapReturnType.put(Token.Boolean.getName(), IRETURN);
         mapReturnType.put(Token.BooleanIdentifier.getName(), IRETURN);
         mapReturnType.put(Token.VoidIdentifier.getName(), RETURN);
+
+        mapArrayType = new HashMap<>();
+        mapArrayType.put(Token.NaturalNumber.getName(), T_INT);
+        mapArrayType.put(Token.IntIdentifier.getName(), T_INT);
+        mapArrayType.put(Token.RealNumber.getName(), T_FLOAT);
+        mapArrayType.put(Token.RealIdentifier.getName(), T_FLOAT);
+        mapArrayType.put(Token.Boolean.getName(), T_BOOLEAN);
+        mapArrayType.put(Token.BooleanIdentifier.getName(), T_BOOLEAN);
     }
 
     public int getAccess(String keyword) {

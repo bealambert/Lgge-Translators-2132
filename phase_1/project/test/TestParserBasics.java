@@ -271,7 +271,7 @@ public class TestParserBasics {
         Parser parser = new Parser(lexer);
 
         ASTNode root = parser.getAST();
-        assertTrue(root instanceof CreateVariables);
+        assertTrue(root instanceof CreateArrayVariable);
     }
 
     @Test
