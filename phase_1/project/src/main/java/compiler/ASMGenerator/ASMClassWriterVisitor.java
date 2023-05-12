@@ -59,7 +59,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                 (variable.getIdentifier(), symbolTable).accept(ExpressionTypeVisitor.typeCheckingVisitor);
         int mapped_type = asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD);
 
-        if (flag == PUTSTATIC) {
+        if (storeTable.previous == null || (storeTable.storeTable.getOrDefault(variable.getIdentifier().getAttribute(), -1) == -1 && storeTable.previous != null)) {
             String desc = asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
             String name = variable.getIdentifier().getAttribute();
             mv.visitFieldInsn(GETSTATIC, this.className, name, desc);

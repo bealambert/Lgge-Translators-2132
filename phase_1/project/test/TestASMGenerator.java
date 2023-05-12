@@ -111,4 +111,32 @@ public class TestASMGenerator {
         }
 
     }
+
+    @Test
+    public void TestLocalAndGlobalVariables() {
+        String input =
+                "var i int = 3 + 2; " +
+                        "var j int = i * 4;" +
+                        "proc square(a int, b int) int {\n" +
+                        "var xcv int = a + i;" +
+                        "var bn int = b * j;" +
+                        "var wx int = xcv + bn;" +
+                        "    return wx;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+
 }
