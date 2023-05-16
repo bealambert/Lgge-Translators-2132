@@ -31,7 +31,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     String className;
 
     public ASMClassWriterVisitor() {
-        storeCount = 2;
+        storeCount = 1;
         methodVisitorStack = new Stack<>();
         flags = new Stack<>();
         asmUtils = new ASMUtils();
@@ -42,6 +42,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         this.cw = cw;
         this.className = className;
     }
+
 
     public void addMethodVisitor(MethodVisitor methodVisitor, int flag) {
         methodVisitorStack.add(methodVisitor);
@@ -88,6 +89,35 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(AssignToIndexArray assignToIndexArray) throws SemanticAnalysisException {
 
+        Identifier identifier = assignToIndexArray.getAccessToIndexArray().getIdentifier();
+        int array_reference = storeTable.storeTable.get(identifier.getAttribute());
+        if (flag != PUTSTATIC) {
+
+            int mapLoadType = asmUtils.mapLoadType.get(identifier.getAttribute());
+            int store_index = storeTable.storeTable.get(identifier.getAttribute());
+            mv.visitVarInsn(mapLoadType, store_index);
+        } else {
+            Type type = assignToIndexArray.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+            String desc = asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
+            String name = assignToIndexArray.getAccessToIndexArray().getIdentifier().getAttribute();
+            // TODO : change access
+            int access = ACC_PUBLIC;
+            //cw.visitField(access, name, desc, null, null);
+            mv.visitFieldInsn(GETSTATIC, this.className, name, desc);
+
+        }
+
+        assignToIndexArray.getAccessToIndexArray().getArrayOfExpression().accept(this);
+        assignToIndexArray.getAssignmentExpression().accept(this);
+        Type type = assignToIndexArray.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
+
+        //mv.visitVarInsn(asmUtils.mapStoreType.getOrDefault(type.getAttribute(), ASTORE), storeCount);
+        //mv.visitVarInsn(asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD), storeCount);
+        storeCount++;
+
+        int array_store = asmUtils.mapAssignToIndex.getOrDefault(type.getAttribute(), -1);
+        mv.visitInsn(array_store);
     }
 
     @Override
@@ -146,13 +176,27 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateArrayVariable createArrayVariable) throws SemanticAnalysisException {
+        String desc = "[" + asmUtils.mapTypeToASMTypes.get(createArrayVariable.getType().getAttribute());
+        String name = createArrayVariable.getVariableIdentifier().getIdentifier().getAttribute();
+        cw.visitField(ACC_PUBLIC, name, desc, null, null);
         createArrayVariable.getArrayInitializer().getArraySize().accept(this);
         int newArrayValue = asmUtils.mapArrayType.getOrDefault(createArrayVariable.getType().getAttribute(), -1);
         if (newArrayValue == -1) {
             // check type
         } else {
             mv.visitIntInsn(NEWARRAY, newArrayValue);
+            if (flag == PUTSTATIC) {
+
+                mv.visitFieldInsn(flag, this.className,
+                        name,
+                        desc);
+            }
+
+            //mv.visitVarInsn(asmUtils.mapStoreType.get(createArrayVariable.getType().getAttribute()), storeCount);
         }
+
+        storeTable.storeTable.put(createArrayVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
+        storeCount++;
 
     }
 
@@ -173,7 +217,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
             cw.visitField(access, variableName, desc, null, null);
             BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
             binaryTree.getRoot().accept(this);
-            mv.visitFieldInsn(flag, "Test", variableName, desc);
+            mv.visitFieldInsn(flag, this.className, variableName, desc);
         }
         storeTable.storeTable.put(createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
         storeCount++;
@@ -202,6 +246,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         Block body = createProcedure.getBody();
         body.accept(this);
         mv.visitInsn(asmUtils.mapReturnType.getOrDefault(createProcedure.getReturnType().getAttribute(), ARETURN));
+        mv.visitMaxs(-1, -1);
         mv.visitEnd();
         methodVisitorStack.pop();
         flags.pop();
@@ -224,7 +269,21 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateVoidVariable createVoidVariable) throws SemanticAnalysisException {
+        String keyword = createVoidVariable.getStateKeyword().getAttribute();
+        int access = asmUtils.getAccess(keyword);
+        String variableName = createVoidVariable.getVariableIdentifier().getIdentifier().getAttribute();
+        String desc = asmUtils.mapTypeToASMTypes.getOrDefault(createVoidVariable.getType().getAttribute(), "A");
 
+        if (flag != PUTSTATIC) {
+            mv.visitInsn(ACONST_NULL);
+            mv.visitVarInsn(ISTORE, storeCount);
+        } else {
+            access |= ACC_STATIC;
+            cw.visitField(access, variableName, desc, null, null);
+            //mv.visitFieldInsn(flag, "Test", variableName, desc);
+        }
+        storeTable.storeTable.put(createVoidVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
+        storeCount++;
     }
 
     @Override
@@ -316,7 +375,9 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         BinaryTree binaryTree = returnStatement.getArrayOfExpression().getMyTree();
         binaryTree.getRoot().accept(this);
 
-        mv.visitInsn(IRETURN);
+        Type type = binaryTree.getRoot().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        int returnType = asmUtils.mapReturnType.getOrDefault(type.getAttribute(), ARETURN);
+        mv.visitInsn(returnType);
 
     }
 

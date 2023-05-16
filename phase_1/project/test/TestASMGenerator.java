@@ -1,4 +1,5 @@
 import compiler.ASMGenerator.Generator;
+import compiler.ASMGenerator.Properinit;
 import compiler.Lexer.Lexer;
 import compiler.Parser.Parser;
 import compiler.Semantic.Semantic;
@@ -28,6 +29,7 @@ public class TestASMGenerator {
                 "var comp2 bool = true == true;" +
                 "var comp3 bool = true <> true;" +
                 "var aaaa bool = (1 + 3 *2) > 5;";
+
         // add array
 
         StringReader reader = new StringReader(input);
@@ -147,6 +149,47 @@ public class TestASMGenerator {
                         "var j int[] = int()[x + b];" +
                         "    return a;\n" +
                         "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestCreateVoidVariable() {
+        String input =
+                "var x int[] = int() [5];" +
+                        "var y int;" +
+                        "proc square(a int, b int) int {\n" +
+                        "    return a;\n" +
+                        "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestUniqueVariable() {
+        String input =
+                "var x int[] = int() [5];" +
+                        "x[2] = 3;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);

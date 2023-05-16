@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -43,16 +44,32 @@ public class Generator {
     public void generateBytecode() throws SemanticAnalysisException {
 
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V1_8, ACC_PUBLIC, className, null, "java/lang/Object", null);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null);
         asmClassWriterVisitor.setCw(cw, className);
 
 
         MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
         int flag = PUTSTATIC;
         asmClassWriterVisitor.addMethodVisitor(mv, flag);
+        mv.visitCode();
+
         mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
         mv.visitInsn(DUP);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
+        /*mv.visitTypeInsn(NEW, className);
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, className, "<init>", "()V", false);*/
+
+        /*mv.visitIntInsn(BIPUSH, 3);
+        mv.visitIntInsn(NEWARRAY, T_INT);
+        mv.visitFieldInsn(flag, className, "y",
+                "[I");
+
+        mv.visitFieldInsn(GETSTATIC, "Test", "y", "[I");
+        mv.visitInsn(ICONST_2);
+        mv.visitInsn(ICONST_3);
+        mv.visitInsn(IASTORE);*/
+
 
         ASTNode astNode = this.root;
         while (astNode != null) {
@@ -60,6 +77,8 @@ public class Generator {
                 if (!asmClassWriterVisitor.methodVisitorStack.isEmpty()) {
                     asmClassWriterVisitor.methodVisitorStack.pop();
                     asmClassWriterVisitor.flags.pop();
+                    mv.visitInsn(RETURN);
+                    mv.visitMaxs(-1, -1);
                     mv.visitEnd();
                     flag = PUTFIELD;
                     asmClassWriterVisitor.storeTable = new StoreTable(asmClassWriterVisitor.storeTable);
@@ -71,20 +90,23 @@ public class Generator {
         if (!asmClassWriterVisitor.methodVisitorStack.isEmpty()) {
             mv.visitEnd();
         }
-        /*mv = cw.visitMethod
+        MethodVisitor mainMethodWriter = cw.visitMethod
                 (ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
 
-        mv.visitCode();
-        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mainMethodWriter.visitCode();
+        mainMethodWriter.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 
-        mv.visitFieldInsn(GETSTATIC, "Test", "i",  "I");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V");
-        mv.visitEnd();*/
+        mainMethodWriter.visitLdcInsn("hello");
+        mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
+
+        mainMethodWriter.visitInsn(RETURN);
+        mainMethodWriter.visitMaxs(-1, -1);
+        mainMethodWriter.visitEnd();
         cw.visitEnd();
 
         byte[] bytecode = cw.toByteArray();
-        /*ByteArrayClassLoader loader = new ByteArrayClassLoader();
-        Class<?> test = loader.defineClass(className, bytecode);*/
+        ByteArrayClassLoader loader = new ByteArrayClassLoader();
+        Class<?> test = loader.defineClass(className, bytecode);
         try {
             try (FileOutputStream outputStream = new FileOutputStream("./Test.class")) {
                 outputStream.write(bytecode);
@@ -92,11 +114,13 @@ public class Generator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*try {
+        try {
+            System.out.println(Arrays.toString(test.getFields()));
+            //System.out.println(test.getSimpleName());
             test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
-        }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
-        }*/
+        }
 
     }
 }
