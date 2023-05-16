@@ -90,6 +90,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(AssignToIndexArray assignToIndexArray) throws SemanticAnalysisException {
 
+        System.out.println("ASSIGN TO INDEX ARRAY");
         Identifier identifier = assignToIndexArray.getAccessToIndexArray().getIdentifier();
         Pair pair = asmUtils.getFirstDeclarationInsideStoreStable
                 (assignToIndexArray.getAccessToIndexArray().getIdentifier(), storeTable);
@@ -98,10 +99,12 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
         if (!pair.getStaticField()) {
 
+            System.out.println("LOCAL STORE");
             int mapLoadType = asmUtils.mapLoadType.get(identifier.getAttribute());
             int store_index = storeTable.storeTable.get(identifier.getAttribute());
             mv.visitVarInsn(mapLoadType, store_index);
         } else {
+            System.out.println("VISIT STATIC FIELD");
             String desc = "[" + asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
             String name = assignToIndexArray.getAccessToIndexArray().getIdentifier().getAttribute();
             //cw.visitField(access, name, desc, null, null);
@@ -116,8 +119,10 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         //mv.visitVarInsn(asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD), storeCount);
         storeCount++;
 
+        System.out.println("APPLYING _ASTORE TO STORE AT INDEX");
         int array_store = asmUtils.mapAssignToIndex.getOrDefault(type.getAttribute(), -1);
         mv.visitInsn(array_store);
+        System.out.println("ASSIGN TO INDEX ARRAY FINISHED");
     }
 
     @Override
@@ -176,27 +181,35 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateArrayVariable createArrayVariable) throws SemanticAnalysisException {
+        System.out.println("CREATING ARRAY VARIABLE");
         String desc = "[" + asmUtils.mapTypeToASMTypes.get(createArrayVariable.getType().getAttribute());
         String name = createArrayVariable.getVariableIdentifier().getIdentifier().getAttribute();
-        cw.visitField(ACC_PUBLIC | ACC_STATIC, name, desc, null, null).visitEnd();
+        if (flag == PUTSTATIC) {
+            System.out.println("VISITING FIELD " + name);
+            cw.visitField(ACC_PUBLIC | ACC_STATIC, name, desc, null, null).visitEnd();
+        }
         createArrayVariable.getArrayInitializer().getArraySize().accept(this);
         int newArrayValue = asmUtils.mapArrayType.getOrDefault(createArrayVariable.getType().getAttribute(), -1);
         if (newArrayValue == -1) {
             // check type
         } else {
+            System.out.println("CREATING NEW ARRAY : " + String.valueOf(newArrayValue == T_INT));
             mv.visitIntInsn(NEWARRAY, newArrayValue);
             if (flag == PUTSTATIC) {
-
+                System.out.println("PUSHING ARRAY TO VARIABLE : " + name);
                 mv.visitFieldInsn(flag, this.className,
                         name,
                         desc);
+            } else {
+                int array_store = asmUtils.mapStoreType.get(createArrayVariable.getType().getAttribute());
+                System.out.println("STORING RESULT (LOCAL VARIABLE)");
+                mv.visitVarInsn(ASTORE, storeCount);
             }
-
-            //mv.visitVarInsn(asmUtils.mapStoreType.get(createArrayVariable.getType().getAttribute()), storeCount);
         }
 
         storeTable.storeTable.put(createArrayVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
         storeCount++;
+        System.out.println("CREATING ARRAY VARIABLE FINISHED");
 
     }
 
@@ -209,15 +222,20 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         String desc = asmUtils.mapTypeToASMTypes.getOrDefault(createExpressionVariable.getType().getAttribute(), "A");
 
         if (flag != PUTSTATIC) {
+            System.out.println("EXPRESSION IS NOT STATIC");
             BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
             binaryTree.getRoot().accept(this);
+            System.out.println("STORING EXPRESSION");
             mv.visitVarInsn(ISTORE, storeCount);
         } else {
             access |= ACC_STATIC;
+            System.out.println("EXPRESSION IS STATIC : VISIT FIELD");
             cw.visitField(access, variableName, desc, null, null);
             BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
             binaryTree.getRoot().accept(this);
             mv.visitFieldInsn(flag, this.className, variableName, desc);
+            System.out.println("STORING EXPRESSION");
+
         }
         storeTable.storeTable.put(createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
         storeCount++;
@@ -227,7 +245,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
-
+        System.out.println("CREATING PROCEDURE");
         storeTable.storeTable.clear();
         String desc = asmUtils.createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
         MethodVisitor methodVisitor = cw.visitMethod(ACC_STATIC, createProcedure.getProcedureName().getAttribute(), desc, null, null);
@@ -250,6 +268,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         mv.visitEnd();
         methodVisitorStack.pop();
         flags.pop();
+        System.out.println("FINISHED PROCEDURE");
     }
 
     @Override
@@ -276,7 +295,9 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
         if (flag != PUTSTATIC) {
             mv.visitInsn(ACONST_NULL);
-            mv.visitVarInsn(ISTORE, storeCount);
+            int store = asmUtils.mapStoreType.get(createVoidVariable.getType().getAttribute());
+            mv.visitVarInsn(store, storeCount);
+            System.out.println("visit const then store");
         } else {
             access |= ACC_STATIC;
             cw.visitField(access, variableName, desc, null, null);
@@ -284,6 +305,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         }
         storeTable.storeTable.put(createVoidVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
         storeCount++;
+        System.out.println("CREATED VOID VARIABLE " + variableName);
     }
 
     @Override
@@ -378,6 +400,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         Type type = binaryTree.getRoot().accept(ExpressionTypeVisitor.typeCheckingVisitor);
         int returnType = asmUtils.mapReturnType.getOrDefault(type.getAttribute(), ARETURN);
         mv.visitInsn(returnType);
+        System.out.println("APPLIED RETURN");
 
     }
 
@@ -394,12 +417,16 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
         if (typeAttribute.equals(Token.IntIdentifier.getName()) || typeAttribute.equals(Token.NaturalNumber.getName())) {
             mv.visitIntInsn(BIPUSH, (Integer) values.getSymbol().getAttribute());
+            System.out.println("BIPUSH INT ON STACK");
         } else if (typeAttribute.equals(Token.RealIdentifier.getName()) || typeAttribute.equals(Token.RealNumber.getName())) {
             mv.visitLdcInsn(((Double) values.getSymbol().getAttribute()).floatValue());
+            System.out.println("DOUBLE ON STACK");
         } else if (typeAttribute.equals(Token.Boolean.getName()) || typeAttribute.equals(Token.BooleanIdentifier.getName())) {
             mv.visitLdcInsn(Boolean.parseBoolean((String) values.getSymbol().getAttribute()));
+            System.out.println("BOOLEAN ON STACK");
         } else if (typeAttribute.equals(Token.Strings.getName()) || typeAttribute.equals(Token.StringIdentifier.getName())) {
             mv.visitLdcInsn(values.getSymbol().getAttribute());
+            System.out.println("STRING ON STACK");
         }
 
     }
