@@ -118,11 +118,12 @@ public class ASMUtils {
         return stringBuilder.toString();
     }
 
-    public Integer getFirstDeclarationInsideStoreStable(Identifier identifier, StoreTable storeTable) throws SemanticAnalysisException {
+    public Pair getFirstDeclarationInsideStoreStable(Identifier identifier, StoreTable storeTable) throws SemanticAnalysisException {
         Integer integer = storeTable.storeTable.get(identifier.getAttribute());
 
         if (integer != null) {
-            return integer;
+            boolean static_field = storeTable.previous == null;
+            return new Pair(integer, static_field);
         }
 
         if (storeTable.previous != null) {

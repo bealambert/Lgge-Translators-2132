@@ -54,14 +54,15 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
 
     public void visit(Variable variable) throws SemanticAnalysisException {
-        Integer store_index = asmUtils.getFirstDeclarationInsideStoreStable(variable.getIdentifier(), storeTable);
+        Pair pair = asmUtils.getFirstDeclarationInsideStoreStable(variable.getIdentifier(), storeTable);
+        Integer store_index = pair.getValue();
         SymbolTable symbolTable = variable.getSymbolTable();
         Type type = treatSemanticCases.getFirstDeclarationInsideSymbolTable
                 (variable.getIdentifier(), symbolTable).accept(ExpressionTypeVisitor.typeCheckingVisitor);
         int mapped_type = asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD);
 
         // assumption -> only 2 storeTable (no function inside function but in java it is forbidden)
-        if (storeTable.previous == null || (storeTable.storeTable.getOrDefault(variable.getIdentifier().getAttribute(), -1) == -1 && storeTable.previous != null)) {
+        if (pair.getStaticField()) {
             String desc = asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
             String name = variable.getIdentifier().getAttribute();
             mv.visitFieldInsn(GETSTATIC, this.className, name, desc);
@@ -90,18 +91,19 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     public void visit(AssignToIndexArray assignToIndexArray) throws SemanticAnalysisException {
 
         Identifier identifier = assignToIndexArray.getAccessToIndexArray().getIdentifier();
-        int array_reference = storeTable.storeTable.get(identifier.getAttribute());
-        if (flag != PUTSTATIC) {
+        Pair pair = asmUtils.getFirstDeclarationInsideStoreStable
+                (assignToIndexArray.getAccessToIndexArray().getIdentifier(), storeTable);
+
+        Type type = assignToIndexArray.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
+        if (!pair.getStaticField()) {
 
             int mapLoadType = asmUtils.mapLoadType.get(identifier.getAttribute());
             int store_index = storeTable.storeTable.get(identifier.getAttribute());
             mv.visitVarInsn(mapLoadType, store_index);
         } else {
-            Type type = assignToIndexArray.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-            String desc = asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
+            String desc = "[" + asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
             String name = assignToIndexArray.getAccessToIndexArray().getIdentifier().getAttribute();
-            // TODO : change access
-            int access = ACC_PUBLIC;
             //cw.visitField(access, name, desc, null, null);
             mv.visitFieldInsn(GETSTATIC, this.className, name, desc);
 
@@ -109,8 +111,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
         assignToIndexArray.getAccessToIndexArray().getArrayOfExpression().accept(this);
         assignToIndexArray.getAssignmentExpression().accept(this);
-        Type type = assignToIndexArray.getAssignmentExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-
 
         //mv.visitVarInsn(asmUtils.mapStoreType.getOrDefault(type.getAttribute(), ASTORE), storeCount);
         //mv.visitVarInsn(asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD), storeCount);
@@ -178,7 +178,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     public void visit(CreateArrayVariable createArrayVariable) throws SemanticAnalysisException {
         String desc = "[" + asmUtils.mapTypeToASMTypes.get(createArrayVariable.getType().getAttribute());
         String name = createArrayVariable.getVariableIdentifier().getIdentifier().getAttribute();
-        cw.visitField(ACC_PUBLIC, name, desc, null, null);
+        cw.visitField(ACC_PUBLIC | ACC_STATIC, name, desc, null, null).visitEnd();
         createArrayVariable.getArrayInitializer().getArraySize().accept(this);
         int newArrayValue = asmUtils.mapArrayType.getOrDefault(createArrayVariable.getType().getAttribute(), -1);
         if (newArrayValue == -1) {

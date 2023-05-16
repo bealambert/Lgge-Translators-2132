@@ -189,7 +189,8 @@ public class TestASMGenerator {
     public void TestUniqueVariable() {
         String input =
                 "var x int[] = int() [5];" +
-                        "x[2] = 3;";
+                        "x[2] = 3;" +
+                        "x[0] = 1;" + "x[1] = 6;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);

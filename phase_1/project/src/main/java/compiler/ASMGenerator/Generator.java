@@ -88,6 +88,8 @@ public class Generator {
             astNode = astNode.getNext();
         }
         if (!asmClassWriterVisitor.methodVisitorStack.isEmpty()) {
+            mv.visitInsn(RETURN);
+            mv.visitMaxs(-1, -1);
             mv.visitEnd();
         }
         MethodVisitor mainMethodWriter = cw.visitMethod
