@@ -100,7 +100,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         if (!pair.getStaticField()) {
 
             System.out.println("LOCAL STORE");
-            int mapLoadType = asmUtils.mapLoadType.get(identifier.getAttribute());
+            int mapLoadType = ALOAD; //asmUtils.mapLoadType.get(type.getAttribute());
             int store_index = storeTable.storeTable.get(identifier.getAttribute());
             mv.visitVarInsn(mapLoadType, store_index);
         } else {
@@ -114,10 +114,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
         assignToIndexArray.getAccessToIndexArray().getArrayOfExpression().accept(this);
         assignToIndexArray.getAssignmentExpression().accept(this);
-
-        //mv.visitVarInsn(asmUtils.mapStoreType.getOrDefault(type.getAttribute(), ASTORE), storeCount);
-        //mv.visitVarInsn(asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD), storeCount);
-        storeCount++;
 
         System.out.println("APPLYING _ASTORE TO STORE AT INDEX");
         int array_store = asmUtils.mapAssignToIndex.getOrDefault(type.getAttribute(), -1);
@@ -152,7 +148,33 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException {
-
+        // 22: aload_3
+        // 23: iconst_2
+        // 24: iaload
+        // myArray[2];
+        // mv.visitInsn(Opcodes.DUP);
+        //
+        //        // Load index 2
+        //        mv.visitInsn(Opcodes.ICONST_2); // Index
+        //
+        //        // Retrieve the element value at index 2 from the array
+        //        mv.visitInsn(Opcodes.IALOAD);
+        //
+        //        // Return the element value
+        //        mv.visitInsn(Opcodes.IRETURN);
+        Pair pair = asmUtils.getFirstDeclarationInsideStoreStable(accessToIndexArray.getIdentifier(), storeTable);
+        String name = accessToIndexArray.getIdentifier().getName();
+        Type type = accessToIndexArray.getArrayOfExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        String desc = "[" + asmUtils.mapTypeToASMTypes.get(type.getAttribute());
+        if (pair.getStaticField()) {
+            mv.visitFieldInsn(GETSTATIC, this.className, name, desc);
+        } else {
+            int mapLoadType = ALOAD; //asmUtils.mapLoadType.get(accessToIndexArray.getIdentifier().getAttribute());
+            int store_index = storeTable.storeTable.get(accessToIndexArray.getIdentifier().getAttribute());
+            mv.visitVarInsn(mapLoadType, store_index);
+        }
+        accessToIndexArray.getArrayOfExpression().accept(this);
+        mv.visitInsn(IALOAD);
     }
 
     @Override
