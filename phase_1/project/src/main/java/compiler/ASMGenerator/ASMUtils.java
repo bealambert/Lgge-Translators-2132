@@ -34,6 +34,7 @@ public class ASMUtils {
         mapTypeToASMTypes.put(Token.RealIdentifier.getName(), "F");
         mapTypeToASMTypes.put(Token.Boolean.getName(), "Z");
         mapTypeToASMTypes.put(Token.BooleanIdentifier.getName(), "Z");
+        mapTypeToASMTypes.put(Token.VoidIdentifier.getName(), "V");
 
         mapLoadType = new HashMap<>();
         //mapLoadType.put(Token.Strings.getName(), "Ljava/lang/String");

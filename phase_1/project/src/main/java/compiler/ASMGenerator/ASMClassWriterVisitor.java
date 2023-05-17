@@ -74,12 +74,15 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(SubExpression subExpression) throws SemanticAnalysisException {
-
+        BinaryTree binaryTree = subExpression.getSubExpression().getMyTree();
+        binaryTree.getRoot().accept(this);
     }
 
     @Override
     public void visit(ReturnVoid returnVoid) throws SemanticAnalysisException {
-
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
     }
 
     @Override
@@ -198,7 +201,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(Condition condition) throws SemanticAnalysisException {
-
+        BinaryTree binaryTree = condition.getArrayOfExpression().getMyTree();
+        binaryTree.getRoot().accept(this);
     }
 
     @Override
