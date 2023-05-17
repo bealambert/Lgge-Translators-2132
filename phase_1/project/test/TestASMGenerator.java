@@ -193,7 +193,7 @@ public class TestASMGenerator {
                         "x[0] = 1;" + "x[1] = 6;" +
                         "proc square(a int, b int) int {\n" +
                         "var y int[] = int() [4];" +
-                        "    return a;\n" +
+                        "    return a * b;\n" +
                         "}";
         ;
         StringReader reader = new StringReader(input);

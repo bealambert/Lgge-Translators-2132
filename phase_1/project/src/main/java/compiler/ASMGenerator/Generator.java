@@ -101,6 +101,15 @@ public class Generator {
         mainMethodWriter.visitLdcInsn("hello");
         mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
 
+        /*// Call the square method
+        mainMethodWriter.visitIntInsn(BIPUSH, 5); // Push the first argument
+        mainMethodWriter.visitIntInsn(BIPUSH, 7); // Push the second argument
+        mainMethodWriter.visitMethodInsn(INVOKESTATIC, "Test", "square", "(II)I", false);
+
+        mainMethodWriter.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mainMethodWriter.visitInsn(SWAP);
+        mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);*/
+
         mainMethodWriter.visitInsn(RETURN);
         mainMethodWriter.visitMaxs(-1, -1);
         mainMethodWriter.visitEnd();
