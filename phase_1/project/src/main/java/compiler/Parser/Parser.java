@@ -640,7 +640,10 @@ public class Parser {
             Identifier referenceOrTypeIdentifier = (Identifier) match(Token.Identifier);
             if (isSymbol(Token.Semicolon)) {
                 match(Token.Semicolon);
-                return new CreateReferencedVariable(create_variable_identifier, identifier, type, referenceOrTypeIdentifier);
+                ArrayList<Expression> expressions = new ArrayList<>();
+                expressions.add(0, (new Variable(referenceOrTypeIdentifier)));
+                ArrayOfExpression arrayOfExpression = new ArrayOfExpression(expressions);
+                return new CreateExpressionVariable(create_variable_identifier, identifier, type, arrayOfExpression);
             }
             if (isSymbol(Token.OpeningBracket)) {
                 match(Token.OpeningBracket);
