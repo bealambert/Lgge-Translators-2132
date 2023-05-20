@@ -12,6 +12,7 @@ import org.objectweb.asm.util.TraceClassVisitor;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -97,10 +98,10 @@ public class Generator {
                 (ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
 
         mainMethodWriter.visitCode();
-        mainMethodWriter.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+/*        mainMethodWriter.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 
         mainMethodWriter.visitFieldInsn(GETSTATIC, className, "s", "Ljava/lang/String;");
-        mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
+        mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");*/
 
 
 /*        // Declare the variable
@@ -169,6 +170,17 @@ public class Generator {
         }
         try {
             test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
+
+/*            Method squareMethod = test.getDeclaredMethod("square", int.class, int.class); // Retrieves the "square" method with two int parameters
+            squareMethod.setAccessible(true); // If the method is private, make it accessible
+
+            int var0 = 8; // Provide the value for var0
+            int var1 = 3; // Provide the value for var1
+
+            int result = (int) squareMethod.invoke(null, var0, var1); // Invokes the square method with the provided int arguments
+
+            // Process the result as needed
+            System.out.println("Result: " + result);*/
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();

@@ -274,15 +274,40 @@ public class TestASMGenerator {
     @Test
     public void TestIfCondition() {
         String input =
-                // GLOBAL
-                "var x int[] = int() [5];" +
-                        "x[2] = 3;" +
-                        // FUNCTION
-                        "proc square(a int, b int) void {\n" +
+                // FUNCTION
+                "proc square(a int, b int) int {\n" +
                         "if a > 3 {" +
-                        "var int i = 0;" +
+                        "return a;" +
                         "}" +
-                        "return;\n" +
+                        "return b;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestIfElseCondition() {
+        String input =
+                // FUNCTION
+                "proc square(a int, b int) int {\n" +
+                        "if a > 3 {" +
+                        "var i bool = true;" +
+                        "}" +
+                        "else {" +
+                        "var i int = 4;\n" +
+                        "}" +
+                        "return a;" +
                         "}";
 
         StringReader reader = new StringReader(input);
