@@ -16,16 +16,21 @@ public class TestASMGenerator {
     public void TestSimpleDeclarationVariable() {
         String input = "var i int = 3 + 2; " +
                 "var j real = 1.5 * 4.2;" +
+                "var k real = (1.0 + 3.2) * (4.1 - 6.2);" +
                 "const empty bool = true;" +
                 "const s string = \"abc\" + \"123\" + \"zzz\";" +
                 "var comp bool = \"abc\" == \"def\";" +
                 "var notEqual bool = \"aaa\" <> \"aba\";" +
                 "var equalIntegers bool = 1.0 <> 2.4;" +
                 "var moduloIntegers int = 10 % 4;" +
-                "var lt bool = 4 < i;" +
-                "var le bool = 7 <=2;" +
-                "var gt bool = 5 >5;" +
-                "var ge bool = 7 >=4;" +
+                "var lt1 bool = 4 < i;" +
+                "var lt2 bool = 4.2 < 7.3;" +
+                "var le1 bool = 7 <=2;" +
+                "var le2 bool = 7.4 <= 2.2;" +
+                "var gt1 bool = 5 >5;" +
+                "var gt2 bool = 5.4 > 7.2;" +
+                "var ge1 bool = 7 >=4;" +
+                "var ge2 bool = 7.1 >= 4.0;" +
                 "var comp2 bool = true == true;" +
                 "var comp3 bool = true <> true;" +
                 "var aaaa bool = (1 + 3 *2) > 5;";

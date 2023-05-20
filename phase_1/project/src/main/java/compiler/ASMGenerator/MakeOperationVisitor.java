@@ -131,7 +131,6 @@ public class MakeOperationVisitor implements OperatorVisitor {
     @Override
     public void visit(OperatorLessThan operatorLessThan, Type type, MethodVisitor mv) {
         int instruction = IF_ICMPLT;
-        ;
         if (type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName())) {
             mv.visitInsn(FCMPL);
             instruction = IFLT;
@@ -141,7 +140,7 @@ public class MakeOperationVisitor implements OperatorVisitor {
                 type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
 
             Label label = new Label();
-            mv.visitJumpInsn(IF_ICMPLT, label);
+            mv.visitJumpInsn(instruction, label);
 
             mv.visitInsn(ICONST_0);
             Label endLabel = new Label();
