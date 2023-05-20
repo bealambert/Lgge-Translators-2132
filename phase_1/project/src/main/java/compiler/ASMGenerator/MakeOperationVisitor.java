@@ -23,9 +23,25 @@ public class MakeOperationVisitor implements OperatorVisitor {
         } else if (type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
             mv.visitInsn(FADD);
         } else {
+            // Create a new StringBuilder instance
+            mv.visitInsn(SWAP); // Swap the top two elements on the stack
+            // Create a new StringBuilder
+            mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
+
+// Append the top string
+            mv.visitInsn(SWAP); // Swap the top two elements on the stack
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+
+// Append the second string
+            mv.visitInsn(SWAP); // Swap the top two elements on the stack again
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+
+// Invoke the toString method
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
+
+
         }
     }
 
@@ -58,11 +74,18 @@ public class MakeOperationVisitor implements OperatorVisitor {
 
     @Override
     public void visit(OperatorEquality operatorEquality, Type type, MethodVisitor mv) {
+        int instruction = IF_ICMPEQ;
+
+        if (type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName())) {
+            mv.visitInsn(FCMPL);
+            instruction = IFEQ;
+        }
+
         if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
                 type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName()) ||
                 type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName())) {
             Label label = new Label();
-            mv.visitJumpInsn(IF_ACMPEQ, label);
+            mv.visitJumpInsn(instruction, label);
 
             mv.visitInsn(ICONST_0);
             Label endLabel = new Label();
@@ -78,11 +101,17 @@ public class MakeOperationVisitor implements OperatorVisitor {
 
     @Override
     public void visit(OperatorNotEqual operatorNotEqual, Type type, MethodVisitor mv) {
+        int instruction = IF_ICMPNE;
+        ;
+        if (type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName())) {
+            mv.visitInsn(FCMPG);
+            instruction = IFNE;
+        }
         if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
-                type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName()) ||
-                type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName())) {
+                type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName()) ||
+                type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName())) {
             Label label = new Label();
-            mv.visitJumpInsn(IF_ICMPNE, label);
+            mv.visitJumpInsn(instruction, label);
 
             mv.visitInsn(ICONST_0);
             Label endLabel = new Label();
@@ -101,6 +130,13 @@ public class MakeOperationVisitor implements OperatorVisitor {
 
     @Override
     public void visit(OperatorLessThan operatorLessThan, Type type, MethodVisitor mv) {
+        int instruction = IF_ICMPLT;
+        ;
+        if (type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName())) {
+            mv.visitInsn(FCMPL);
+            instruction = IFLT;
+        }
+
         if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
                 type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
 
@@ -120,11 +156,17 @@ public class MakeOperationVisitor implements OperatorVisitor {
 
     @Override
     public void visit(OperatorLessThanOrEqual operatorLessThanOrEqual, Type type, MethodVisitor mv) {
+        int instruction = IF_ICMPLE;
+        if (type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName())) {
+            mv.visitInsn(FCMPL);
+            instruction = IFLE;
+        }
+
         if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
                 type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
 
             Label label = new Label();
-            mv.visitJumpInsn(IF_ICMPLE, label);
+            mv.visitJumpInsn(instruction, label);
 
             mv.visitInsn(ICONST_0);
             Label endLabel = new Label();
@@ -138,11 +180,17 @@ public class MakeOperationVisitor implements OperatorVisitor {
 
     @Override
     public void visit(OperatorGreaterThan operatorGreaterThan, Type type, MethodVisitor mv) {
+        int instruction = IF_ICMPGT;
+        if (type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
+            mv.visitInsn(FCMPG);
+            instruction = IFGT;
+
+        }
         if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
                 type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
 
             Label label = new Label();
-            mv.visitJumpInsn(IF_ICMPGT, label);
+            mv.visitJumpInsn(instruction, label);
 
             mv.visitInsn(ICONST_0);
             Label endLabel = new Label();
@@ -156,11 +204,17 @@ public class MakeOperationVisitor implements OperatorVisitor {
 
     @Override
     public void visit(OperatorGreaterThanOrEqual operatorGreaterThanOrEqual, Type type, MethodVisitor mv) {
+        int instruction = IF_ICMPGE;
+        if (type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
+            mv.visitInsn(FCMPG);
+            instruction = IFGE;
+
+        }
         if (type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()) ||
                 type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
 
             Label label = new Label();
-            mv.visitJumpInsn(IF_ICMPGE, label);
+            mv.visitJumpInsn(instruction, label);
 
             mv.visitInsn(ICONST_0);
             Label endLabel = new Label();

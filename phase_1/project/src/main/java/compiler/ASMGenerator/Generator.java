@@ -6,13 +6,11 @@ import compiler.Parser.CreateProcedure;
 import compiler.Parser.Parser;
 import compiler.SemanticAnalysisException;
 import jdk.nashorn.internal.codegen.types.Type;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.*;
+import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.TraceClassVisitor;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,12 +39,15 @@ public class Generator {
     }
 
 
+    public static void main(String[] args) {
+
+    }
+
     public void generateBytecode() throws SemanticAnalysisException {
 
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null);
         asmClassWriterVisitor.setCw(cw, className);
-
 
         MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
         int flag = PUTSTATIC;
@@ -98,9 +99,41 @@ public class Generator {
         mainMethodWriter.visitCode();
         mainMethodWriter.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 
-        mainMethodWriter.visitLdcInsn("hello");
+        mainMethodWriter.visitFieldInsn(GETSTATIC, className, "s", "Ljava/lang/String;");
         mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
 
+
+/*        // Declare the variable
+        mainMethodWriter.visitInsn(Opcodes.ICONST_0); // Initialize variable to 0
+        mainMethodWriter.visitVarInsn(Opcodes.ISTORE, 1); // Store the variable in index 1 of local variables
+
+        // Loop condition
+        Label loopCondition = new Label();
+        mainMethodWriter.visitLabel(loopCondition);
+        mainMethodWriter.visitVarInsn(Opcodes.ILOAD, 1); // Load the variable
+        mainMethodWriter.visitIntInsn(Opcodes.BIPUSH, 10); // Push a constant value (10) onto the stack
+        Label exitLoop = new Label();
+        mainMethodWriter.visitJumpInsn(Opcodes.IF_ICMPGT, exitLoop); // Exit the loop if the variable is greater than 10
+
+        // Loop body
+        mainMethodWriter.visitIincInsn(1, 1); // Increment the variable by 1
+
+        // Jump back to the loop condition
+        mainMethodWriter.visitJumpInsn(Opcodes.GOTO, loopCondition);
+
+        // Exit label
+        mainMethodWriter.visitLabel(exitLoop);*/
+
+
+        Label ifLabel = new Label();
+        mainMethodWriter.visitIntInsn(Opcodes.BIPUSH, 3);
+        mainMethodWriter.visitIntInsn(Opcodes.BIPUSH, 2);
+        mainMethodWriter.visitJumpInsn(Opcodes.IF_ICMPLE, ifLabel); // Jump if 3 <= 2
+        mainMethodWriter.visitLdcInsn("3 is greater than 2"); // Instruction to execute if the condition is true
+        mainMethodWriter.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mainMethodWriter.visitInsn(Opcodes.SWAP);
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+        mainMethodWriter.visitLabel(ifLabel);
         /*// Call the square method
         mainMethodWriter.visitIntInsn(BIPUSH, 5); // Push the first argument
         mainMethodWriter.visitIntInsn(BIPUSH, 7); // Push the second argument
@@ -121,14 +154,22 @@ public class Generator {
         try {
             try (FileOutputStream outputStream = new FileOutputStream("./Test.class")) {
                 outputStream.write(bytecode);
+                StringBuilder hexCode = new StringBuilder();
+                for (byte b : bytecode) {
+                    String hex = Integer.toHexString(b & 0xFF);
+                    if (hex.length() == 1) {
+                        hexCode.append('0'); // Pad single digit hexadecimal values with a leading zero
+                    }
+                    hexCode.append(hex);
+                }
+                System.out.println(hexCode.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            System.out.println(Arrays.toString(test.getFields()));
-            //System.out.println(test.getSimpleName());
             test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
+
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }

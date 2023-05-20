@@ -17,7 +17,7 @@ public class TestASMGenerator {
         String input = "var i int = 3 + 2; " +
                 "var j real = 1.5 * 4.2;" +
                 "const empty bool = true;" +
-                "const s string = \"abc\" + \"123\";" +
+                "const s string = \"abc\" + \"123\" + \"zzz\";" +
                 "var comp bool = \"abc\" == \"def\";" +
                 "var notEqual bool = \"aaa\" <> \"aba\";" +
                 "var equalIntegers bool = 1.0 <> 2.4;" +
@@ -235,6 +235,84 @@ public class TestASMGenerator {
             fail();
         }
 
+    }
+
+    @Test
+    public void TestWhileLoop() {
+        String input =
+                // GLOBAL
+                "var x int[] = int() [5];" +
+                        "x[2] = 3;" +
+                        // FUNCTION
+                        "proc square(a int, b int) void {\n" +
+                        "var i int = 0;" +
+                        "while i < 10 {" +
+                        "i = i + 1;" +
+                        "}" +
+                        "return;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestIfCondition() {
+        String input =
+                // GLOBAL
+                "var x int[] = int() [5];" +
+                        "x[2] = 3;" +
+                        // FUNCTION
+                        "proc square(a int, b int) void {\n" +
+                        "if a > 3 {" +
+                        "var int i = 0;" +
+                        "}" +
+                        "return;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestVoid() {
+        String input = "proc square(a int, b int) int {\n" +
+                "if a > 3 {" +
+                "return a;" +
+                "}" +
+                "return b;\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
     }
 
 

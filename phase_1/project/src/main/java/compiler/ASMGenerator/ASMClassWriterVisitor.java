@@ -3,14 +3,12 @@ package compiler.ASMGenerator;
 import compiler.*;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
+import compiler.Parser.Type;
 import compiler.Semantic.ExpressionTypeVisitor;
 import compiler.Semantic.SemanticVisitor;
 import compiler.Semantic.SymbolTable;
 import org.checkerframework.checker.units.qual.A;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -201,6 +199,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(Condition condition) throws SemanticAnalysisException {
+        System.out.println("CONDITION EXPRESSION");
         BinaryTree binaryTree = condition.getArrayOfExpression().getMyTree();
         binaryTree.getRoot().accept(this);
     }
@@ -299,17 +298,17 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateRecordVariables createRecordVariables) throws SemanticAnalysisException {
-
+        // if enough time
     }
 
     @Override
     public void visit(CreateReferencedVariable createReferencedVariable) throws SemanticAnalysisException {
-
+        // not used anymore
     }
 
     @Override
     public void visit(CreateVariables createVariables) throws SemanticAnalysisException {
-
+        // parent class
     }
 
     @Override
@@ -336,7 +335,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(Expression expression) throws SemanticAnalysisException {
-
+        //
     }
 
     @Override
@@ -361,7 +360,10 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(IfCondition ifCondition) throws SemanticAnalysisException {
-
+        ifCondition.getCondition().getArrayOfExpression().accept(this);
+        Label ifLabel = new Label();
+        ifCondition.getIfBlock().accept(this);
+        mv.visitLabel(ifLabel);
     }
 
     @Override
@@ -381,21 +383,17 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(MethodCallFromIdentifier methodCallFromIdentifier) throws SemanticAnalysisException {
-
+        //
     }
 
     @Override
     public void visit(MethodCallFromIndexArray methodCallFromIndexArray) throws SemanticAnalysisException {
-
+        //
     }
 
     @Override
     public void visit(Param param) throws SemanticAnalysisException {
-
-        /*Type type = param.getType();
-        int loadType = asmUtils.mapLoadType.get(type.getAttribute());
-
-        mv.visitVarInsn(loadType, );*/
+        // everything is done inside the createProcedure
     }
 
     @Override
@@ -405,19 +403,23 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(RecordCall recordCall) throws SemanticAnalysisException {
-
+        //
     }
 
     @Override
     public void visit(RecordParameter recordParameter) throws SemanticAnalysisException {
-
+        //
     }
 
     @Override
     public void visit(Records records) throws SemanticAnalysisException {
-
+        //
     }
 
+    /*Type type = param.getType();
+    int loadType = asmUtils.mapLoadType.get(type.getAttribute());
+
+    mv.visitVarInsn(loadType, );*/
     @Override
     public void visit(ReturnStatement returnStatement) throws SemanticAnalysisException {
         BinaryTree binaryTree = returnStatement.getArrayOfExpression().getMyTree();
@@ -460,6 +462,26 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(WhileLoop whileLoop) throws SemanticAnalysisException {
 
+        Label startLabel = new Label();
+        Label endLabel = new Label();
+
+        // Mark the start of the loop
+        mv.visitLabel(startLabel);
+
+        // Generate loop condition
+        System.out.println("WHILE LOOP : CONDITION");
+        whileLoop.getCondition().accept(this);
+        mv.visitJumpInsn(IFEQ, endLabel); // Jump to the end if condition is false
+
+        System.out.println("WHILE LOOP : BODY");
+        whileLoop.getBody().accept(this); // Generate loop body
+
+        // Jump back to the start of the loop
+        mv.visitJumpInsn(GOTO, startLabel);
+
+        // Mark the end of the loop
+        mv.visitLabel(endLabel);
+        System.out.println("EXIT WHILE LOOP");
     }
 
     @Override
@@ -469,7 +491,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(BinaryTree binaryTree) throws SemanticAnalysisException {
-
+        //binaryTree.getRoot().accept(this);
     }
 
     @Override
