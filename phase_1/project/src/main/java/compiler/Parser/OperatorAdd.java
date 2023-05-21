@@ -14,7 +14,7 @@ public class OperatorAdd extends Operator {
         this.allowed_types = new String[]{
                 Token.IntIdentifier.getName(), Token.NaturalNumber.getName(),
                 Token.RealNumber.getName(), Token.RealIdentifier.getName(),
-                Token.Strings.getName()};
+                Token.Strings.getName(), Token.StringIdentifier.getName()};
         this.operator = "+";
 
     }

@@ -12,7 +12,7 @@ public class OperatorEquality extends OperatorComparator {
                 Token.IntIdentifier.getName(), Token.NaturalNumber.getName(),
                 Token.RealNumber.getName(), Token.RealIdentifier.getName(),
                 Token.BooleanIdentifier.getName(), Token.Boolean.getName(),
-                Token.Strings.getName()
+                Token.Strings.getName(), Token.StringIdentifier.getName()
         };
         this.operator = "==";
     }
@@ -24,7 +24,7 @@ public class OperatorEquality extends OperatorComparator {
 
     @Override
     public String[] getAllowed_types() {
-        return this.getAllowed_types();
+        return this.allowed_types;
     }
 
     @Override

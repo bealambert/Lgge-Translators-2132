@@ -46,6 +46,7 @@ public class TestASMGenerator {
             Generator generator = new Generator(semantic.getRoot());
             generator.generateBytecode();
         } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
             fail();
         }
 

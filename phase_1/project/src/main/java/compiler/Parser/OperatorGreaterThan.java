@@ -24,7 +24,7 @@ public class OperatorGreaterThan extends OperatorComparator {
 
     @Override
     public String[] getAllowed_types() {
-        return this.getAllowed_types();
+        return this.allowed_types;
     }
 
     @Override
