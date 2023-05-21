@@ -57,7 +57,10 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         SymbolTable symbolTable = variable.getSymbolTable();
         Type type = treatSemanticCases.getFirstDeclarationInsideSymbolTable
                 (variable.getIdentifier(), symbolTable).accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        int mapped_type = asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD);
+        int mapped_type = ALOAD;
+        if (!(type instanceof ArrayType)) {
+            mapped_type = asmUtils.mapLoadType.getOrDefault(type.getAttribute(), ALOAD);
+        }
 
         // assumption -> only 2 storeTable (no function inside function but in java it is forbidden)
         if (pair.getStaticField()) {
@@ -341,7 +344,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         }
         // Make the function call
         SymbolTable symbolTable = functionCall.getSymbolTable();
-        CreateProcedure createProcedure = (CreateProcedure) symbolTable.getSymbolTable().get(functionCall.getIdentifier().getAttribute());
+        CreateProcedure createProcedure = (CreateProcedure) treatSemanticCases.getFirstDeclarationInsideSymbolTable(functionCall.getIdentifier(), symbolTable);//(CreateProcedure) symbolTable.getSymbolTable()(functionCall.getIdentifier().getAttribute());
         String desc = asmUtils.createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, functionCall.getIdentifier().getAttribute(), desc, false);
 
@@ -495,19 +498,15 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         Label startLabel = new Label();
         Label endLabel = new Label();
 
-        // Mark the start of the loop
         mv.visitLabel(startLabel);
 
-        // Generate loop condition
         whileLoop.getCondition().accept(this);
-        mv.visitJumpInsn(IFEQ, endLabel); // Jump to the end if condition is false
+        mv.visitJumpInsn(Opcodes.IFEQ, endLabel); // Branch to endLabel if condition is false (0)
 
         whileLoop.getBody().accept(this); // Generate loop body
 
-        // Jump back to the start of the loop
-        mv.visitJumpInsn(GOTO, startLabel);
+        mv.visitJumpInsn(Opcodes.GOTO, startLabel); // Go back to the start of the loop
 
-        // Mark the end of the loop
         mv.visitLabel(endLabel);
     }
 

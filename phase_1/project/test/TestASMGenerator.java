@@ -450,5 +450,28 @@ public class TestASMGenerator {
         }
     }
 
+    @Test
+    public void TestFunctionCall() {
+        String input = "proc square(a real, b real[]) real {\n" +
+                "return a + b[0];" +
+                "}" +
+                "proc azer(c real) real {" +
+                "var j real[] = real()[5];" +
+                "j[0] = 2.0;" +
+                "return square(c, j);" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
 
 }
