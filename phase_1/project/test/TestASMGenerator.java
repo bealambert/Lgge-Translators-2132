@@ -53,6 +53,49 @@ public class TestASMGenerator {
     }
 
     @Test
+    public void TestSimpleDeclarationLocalVariable() {
+        String input = "proc square() void { " +
+                "var azer int = 6266;" +
+                "var i int = 3 + 2; " +
+                "var j real = 1.5 * 4.2;" +
+                "var k real = (1.0 + 3.2) * (4.1 - 6.2);" +
+                "const empty bool = true;" +
+                "const s string = \"abc\" + \"123\" + \"zzz\";" +
+                "var comp bool = \"abc\" == \"def\";" +
+                "var notEqual bool = \"aaa\" <> \"aba\";" +
+                "var equalIntegers bool = 1.0 <> 2.4;" +
+                "var moduloIntegers int = 10 % 4;" +
+                "var lt1 bool = 4 < i;" +
+                "var lt2 bool = 4.2 < 7.3;" +
+                "var le1 bool = 7 <=2;" +
+                "var le2 bool = 7.4 <= 2.2;" +
+                "var gt1 bool = 5 >5;" +
+                "var gt2 bool = 5.4 > 7.2;" +
+                "var ge1 bool = 7 >=4;" +
+                "var ge2 bool = 7.1 >= 4.0;" +
+                "var comp2 bool = true == true;" +
+                "var comp3 bool = true <> true;" +
+                "var aaaa bool = (1 + 3 *2) > 5;" +
+                "}";
+
+        // add array
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
+    @Test
     public void TestExpression() {
         String input =
                 "proc square(v int, j int, r int) int {\n" +
@@ -353,6 +396,26 @@ public class TestASMGenerator {
                 "return a;" +
                 "}" +
                 "return b[0];\n" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestReassignment() {
+        String input = "proc square(a real, b real[]) real {\n" +
+                "var i bool = true;" +
+                //"i = 32;" +
+                "return a + b[0];" +
                 "}";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);

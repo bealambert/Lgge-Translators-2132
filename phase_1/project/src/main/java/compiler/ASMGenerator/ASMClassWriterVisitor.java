@@ -166,12 +166,12 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ArrayInitializer arrayInitializer) throws SemanticAnalysisException {
-
+        // no need to implement
     }
 
     @Override
     public void visit(ArrayType arrayType) throws SemanticAnalysisException {
-
+        // handled
     }
 
     @Override
@@ -318,22 +318,23 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ForLoop forLoop) throws SemanticAnalysisException {
-
+        // parent class
     }
 
     @Override
     public void visit(ForLoopAssignVariable forLoopAssignVariable) throws SemanticAnalysisException {
-
+        //  var i int;
+        // for i=1 to 100 by 2
     }
 
     @Override
     public void visit(ForLoopCreateVariable forLoopCreateVariable) throws SemanticAnalysisException {
-
+        // for var i i=1 to 100 by 2
     }
 
     @Override
     public void visit(FunctionCall functionCall) throws SemanticAnalysisException {
-
+        // to implement
     }
 
     @Override
@@ -375,12 +376,12 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(InitializeRecords initializeRecords) throws SemanticAnalysisException {
-
+        //
     }
 
     @Override
     public void visit(MethodCall methodCall) throws SemanticAnalysisException {
-
+        //
     }
 
     @Override
@@ -400,6 +401,25 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(Reassignment reassignment) throws SemanticAnalysisException {
+        // to implement
+        Pair pair = asmUtils.getFirstDeclarationInsideStoreStable(reassignment.getIdentifier(), storeTable);
+        Type type = reassignment.getArrayOfExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
+        if (pair.getStaticField()) {
+            String desc = "";
+            if (type instanceof ArrayType) {
+                desc = desc + "[";
+            }
+            desc = desc + asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
+            int access = ACC_PUBLIC | ACC_STATIC;
+            cw.visitField(access, reassignment.getIdentifier().getAttribute(), desc, null, null);
+            reassignment.getArrayOfExpression().accept(this);
+            mv.visitFieldInsn(flag, this.className, reassignment.getIdentifier().getAttribute(), desc);
+        } else {
+            reassignment.getArrayOfExpression().accept(this);
+            int store_type = asmUtils.mapStoreType.get(type.getAttribute());
+            mv.visitVarInsn(store_type, pair.getValue());
+        }
 
     }
 
@@ -445,11 +465,17 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         String typeAttribute = type.getAttribute();
 
         if (typeAttribute.equals(Token.IntIdentifier.getName()) || typeAttribute.equals(Token.NaturalNumber.getName())) {
-            mv.visitIntInsn(BIPUSH, (Integer) values.getSymbol().getAttribute());
+            int value = (int) values.getSymbol().getAttribute();
+            mv.visitLdcInsn(value);
         } else if (typeAttribute.equals(Token.RealIdentifier.getName()) || typeAttribute.equals(Token.RealNumber.getName())) {
             mv.visitLdcInsn(((Double) values.getSymbol().getAttribute()).floatValue());
         } else if (typeAttribute.equals(Token.Boolean.getName()) || typeAttribute.equals(Token.BooleanIdentifier.getName())) {
-            mv.visitLdcInsn(Boolean.parseBoolean((String) values.getSymbol().getAttribute()));
+            if (values.getSymbol().getAttribute().equals("0")) {
+                mv.visitInsn(ICONST_0);
+            } else {
+                mv.visitInsn(ICONST_1);
+            }
+
         } else if (typeAttribute.equals(Token.Strings.getName()) || typeAttribute.equals(Token.StringIdentifier.getName())) {
             mv.visitLdcInsn(values.getSymbol().getAttribute());
         }
