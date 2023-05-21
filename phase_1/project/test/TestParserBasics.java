@@ -1,13 +1,14 @@
+import compiler.ASMGenerator.Generator;
 import compiler.ASTNode;
 import compiler.Lexer.Lexer;
 import compiler.MyNode;
 import compiler.Parser.*;
+import compiler.SemanticAnalysisException;
 import org.junit.Test;
 
 import java.io.StringReader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestParserBasics {
 
@@ -155,6 +156,7 @@ public class TestParserBasics {
         ArrayOfExpression result = parser.parseArrayOfExpression();
         assertEquals(result.getMyTree().size(), sizeExpected);
     }
+
     @Test
     public void TestExpressionWithParenthesis() {
         //String input = "var a int = 2;";
@@ -168,6 +170,7 @@ public class TestParserBasics {
         ArrayOfExpression result = parser.parseArrayOfExpression();
         assertEquals(result.getMyTree().size(), sizeExpected);
     }
+
     @Test
     public void TestExpressionWithMoreParenthesis() {
         //String input = "var a int = 2;";
@@ -195,6 +198,7 @@ public class TestParserBasics {
         ArrayOfExpression result = parser.parseArrayOfExpression();
         assertEquals(result.getMyTree().size(), sizeExpected);
     }
+
     @Test
     public void TestExpressionBeginWithMoreParenthesis() {
         //String input = "var a int = 2;";
@@ -222,6 +226,7 @@ public class TestParserBasics {
         ArrayOfExpression result = parser.parseArrayOfExpression();
         assertEquals(result.getMyTree().size(), sizeExpected);
     }
+
     @Test
     public void TestExpressionBeginWithNegValueInParenthesis() {
         //String input = "var a int = 2;";
@@ -454,4 +459,5 @@ public class TestParserBasics {
         //assertTrue(root instanceof FunctionCall);
 
     }
+
 }

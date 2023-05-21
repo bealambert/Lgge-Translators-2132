@@ -8,6 +8,8 @@ import org.objectweb.asm.MethodVisitor;
 
 public class Operator extends Expression {
     int precedence_level;
+    String[] allowed_types = null;
+    String operator = null;
 
     public int getPrecedenceLevel() {
         return precedence_level;
@@ -19,6 +21,14 @@ public class Operator extends Expression {
 
     public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
         return typeCheckingVisitor.visit(this);
+    }
+
+    public String[] getAllowed_types() {
+        return allowed_types;
+    }
+
+    public String getOperator() {
+        return operator;
     }
 
     @Override

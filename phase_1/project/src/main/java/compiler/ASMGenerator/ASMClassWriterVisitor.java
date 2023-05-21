@@ -151,7 +151,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
         Pair pair = asmUtils.getFirstDeclarationInsideStoreStable(accessToIndexArray.getIdentifier(), storeTable);
         String name = accessToIndexArray.getIdentifier().getName();
-        Type type = accessToIndexArray.getArrayOfExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
         String desc = "[" + asmUtils.mapTypeToASMTypes.get(array_type.getAttribute());
         if (pair.getStaticField()) {
             mv.visitFieldInsn(GETSTATIC, this.className, name, desc);

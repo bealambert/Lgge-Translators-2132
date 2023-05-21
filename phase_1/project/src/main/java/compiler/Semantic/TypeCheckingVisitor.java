@@ -76,6 +76,7 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
         Type rightType = right.accept(this);
 
         treatSemanticCases.isEqual(leftType, rightType);
+        treatSemanticCases.isAllowed(leftType, rightType, (Operator) myNode.getValue());
         if (myNode.getValue() instanceof OperatorComparator) {
             return new Type(new Identifier("bool"));
         }

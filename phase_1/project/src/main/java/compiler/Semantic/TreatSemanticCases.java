@@ -1,11 +1,8 @@
 package compiler.Semantic;
 
-import compiler.ASTNode;
-import compiler.BinaryTree;
+import compiler.*;
 import compiler.Lexer.Identifier;
-import compiler.MyNode;
 import compiler.Parser.*;
-import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +13,10 @@ public class TreatSemanticCases {
 
     HashMap<String, String> mapping = new HashMap<>();
     TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor();
+    String[] allowedForIntegers = new String[]{"+", "-", "*", "/", "==", "<>", "<", "<=", ">", ">=", "%"};
+    String[] allowedForFloats = new String[]{"+", "-", "*", "/", "==", "<>", "<", "<=", ">", ">="};
+    String[] allowedForBoolean = new String[]{"and", "or", "==", "<>"};
+    String[] allowedForString = new String[]{"+", "==", "<>"};
 
 
     public TreatSemanticCases() {
@@ -108,6 +109,20 @@ public class TreatSemanticCases {
             throw new SemanticAnalysisException(
                     "Types do no match :  expected : " + expected.getAttribute() + "\t observed : " + observed.getAttribute());
         }
+    }
+
+    public void isAllowed(Type expected, Type observed, Operator operator) throws SemanticAnalysisException {
+        String expectations = mapping.getOrDefault(expected.getAttribute(), expected.getAttribute());
+        String reality = mapping.getOrDefault(observed.getAttribute(), observed.getAttribute());
+
+        String[] allowed_types = operator.getAllowed_types();
+        for (int i = 0; i < allowed_types.length; i++) {
+            if (allowed_types[i].equals(expectations) && allowed_types[i].equals(reality)) {
+                return;
+            }
+        }
+        throw new SemanticAnalysisException("operation not allowed : \"" + operator.getOperator() + "\" between " + expectations + " and " + reality);
+
     }
 
     public InitializeRecords getAccessToRecordDeclaration(Identifier identifier, SymbolTable symbolTable) throws SemanticAnalysisException {

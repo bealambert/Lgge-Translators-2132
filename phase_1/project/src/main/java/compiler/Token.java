@@ -1,5 +1,8 @@
 package compiler;
 
+import compiler.Parser.Operator;
+import compiler.Parser.OperatorAdd;
+
 public enum Token {
     // match the class name
     Boolean("Boolean"),
@@ -56,7 +59,21 @@ public enum Token {
     ClosingBracket("]"),
     Point("."),
     Semicolon(";"),
-    Comma(",");
+    Comma(","),
+
+    OperatorAdd("+"),
+    OperatorAnd("and"),
+    OperatorDivide("/"),
+    OperatorEquality("=="),
+    OperatorGreaterThan(">"),
+    OperatorGreaterThanOrEqual(">="),
+    OperatorLessThan("<"),
+    OperatorLessThanOrEqual("<="),
+    OperatorMinus("-"),
+    OperatorModulo("%"),
+    OperatorMultiply("*"),
+    OperatorNotEqual("<>"),
+    OperatorOr("or");
 
 
     private final String name;

@@ -493,5 +493,21 @@ public class TestSemanticAnalysis {
         }
     }
 
+    @Test
+    public void TestNotAllowedOperation() {
+        String input = "var x bool = true + false;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            fail();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+
+        }
+    }
+
 
 }
