@@ -144,24 +144,15 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(AccessToIndexArray accessToIndexArray) throws SemanticAnalysisException {
-        // 22: aload_3
-        // 23: iconst_2
-        // 24: iaload
-        // myArray[2];
-        // mv.visitInsn(Opcodes.DUP);
-        //
-        //        // Load index 2
-        //        mv.visitInsn(Opcodes.ICONST_2); // Index
-        //
-        //        // Retrieve the element value at index 2 from the array
-        //        mv.visitInsn(Opcodes.IALOAD);
-        //
-        //        // Return the element value
-        //        mv.visitInsn(Opcodes.IRETURN);
+
+        SymbolTable symbolTable = accessToIndexArray.getIdentifier().getSymbolTable();
+        ASTNode astNode = treatSemanticCases.getFirstDeclarationInsideSymbolTable(accessToIndexArray.getIdentifier(), symbolTable);
+        Type array_type = astNode.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
         Pair pair = asmUtils.getFirstDeclarationInsideStoreStable(accessToIndexArray.getIdentifier(), storeTable);
         String name = accessToIndexArray.getIdentifier().getName();
         Type type = accessToIndexArray.getArrayOfExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        String desc = "[" + asmUtils.mapTypeToASMTypes.get(type.getAttribute());
+        String desc = "[" + asmUtils.mapTypeToASMTypes.get(array_type.getAttribute());
         if (pair.getStaticField()) {
             mv.visitFieldInsn(GETSTATIC, this.className, name, desc);
         } else {
@@ -170,7 +161,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
             mv.visitVarInsn(mapLoadType, store_index);
         }
         accessToIndexArray.getArrayOfExpression().accept(this);
-        mv.visitInsn(IALOAD);
+        int load_instruction = asmUtils.mapLoadArray.getOrDefault(array_type.getAttribute(), AALOAD);
+        mv.visitInsn(load_instruction);
     }
 
     @Override

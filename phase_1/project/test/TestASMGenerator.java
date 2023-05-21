@@ -347,8 +347,8 @@ public class TestASMGenerator {
 
     @Test
     public void TestFunctionCallParameters() {
-        String input = "proc square(a int, b int[]) int {\n" +
-                "if a > 3 {" +
+        String input = "proc square(a real, b real[]) real {\n" +
+                "if a > 3.0{" +
                 "return a;" +
                 "}" +
                 "return b[0];\n" +

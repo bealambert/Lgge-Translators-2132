@@ -23,6 +23,7 @@ public class ASMUtils {
     HashMap<String, Integer> mapStoreType;
     HashMap<String, Integer> mapArrayType;
     HashMap<String, Integer> mapAssignToIndex;
+    HashMap<String, Integer> mapLoadArray;
 
     public ASMUtils() {
         mapTypeToASMTypes = new HashMap<>();
@@ -83,6 +84,14 @@ public class ASMUtils {
         mapAssignToIndex.put(Token.RealIdentifier.getName(), FASTORE);
         mapAssignToIndex.put(Token.Boolean.getName(), BASTORE);
         mapAssignToIndex.put(Token.BooleanIdentifier.getName(), BASTORE);
+
+        mapLoadArray = new HashMap<>();
+        mapLoadArray.put(Token.NaturalNumber.getName(), IALOAD);
+        mapLoadArray.put(Token.IntIdentifier.getName(), IALOAD);
+        mapLoadArray.put(Token.RealNumber.getName(), FALOAD);
+        mapLoadArray.put(Token.RealIdentifier.getName(), FALOAD);
+        mapLoadArray.put(Token.Boolean.getName(), BASTORE);
+        mapLoadArray.put(Token.BooleanIdentifier.getName(), BALOAD);
     }
 
     public int getAccess(String keyword) {
