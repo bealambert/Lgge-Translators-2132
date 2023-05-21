@@ -129,17 +129,17 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException {
-
+        // handled in the createProcedure
     }
 
     @Override
     public void visit(ArrayInitializerParameter arrayInitializerParameter) throws SemanticAnalysisException {
-
+        // handled in the createProcedure
     }
 
     @Override
     public void visit(FunctionCallParameter functionCallParameter) throws SemanticAnalysisException {
-
+        // handled in the createProcedure
     }
 
     @Override
@@ -264,9 +264,14 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         ArrayList<Param> params = createProcedure.getParams();
         for (int i = 0; i < params.size(); i++) {
             Param param = params.get(i);
-            int load_value = asmUtils.mapLoadType.getOrDefault(param.getType().getAttribute(), ALOAD);
+            Type paramType = param.getType();
+            int load_value = ALOAD;
+            int store_value = ASTORE;
+            if (!(paramType instanceof ArrayType)) {
+                load_value = asmUtils.mapLoadType.getOrDefault(param.getType().getAttribute(), ALOAD);
+                store_value = asmUtils.mapStoreType.getOrDefault(param.getType().getAttribute(), -1);
+            }
             mv.visitVarInsn(load_value, i);
-            int store_value = asmUtils.mapStoreType.getOrDefault(param.getType().getAttribute(), -1);
             mv.visitVarInsn(store_value, i);
             storeTable.storeTable.put(param.getIdentifier().getAttribute(), i);
         }

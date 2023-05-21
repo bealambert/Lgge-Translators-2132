@@ -108,7 +108,11 @@ public class ASMUtils {
         stringBuilder.append("(");
         for (int j = 0; j < params.size(); j++) {
             Type paramType = params.get(j).getType();
-            String asmParamType = mapTypeToASMTypes.getOrDefault(paramType.getAttribute(), "A");
+            String asmParamType = "";
+            if (paramType instanceof ArrayType) {
+                asmParamType = asmParamType + "[";
+            }
+            asmParamType = asmParamType + mapTypeToASMTypes.getOrDefault(paramType.getAttribute(), "A");
             stringBuilder.append(asmParamType);
             /*if (j < params.size() - 1) {
                 stringBuilder.append(";");
