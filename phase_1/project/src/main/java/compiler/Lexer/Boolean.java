@@ -1,12 +1,13 @@
 package compiler.Lexer;
 
-public class Boolean extends Token{
+public class Boolean extends GenericValue implements Symbol {
 
-    private String tokenName = "Boolean";
-    private final String[] acceptedAttributes = new String [] {"true", "false"};
+    private final String name = "Boolean";
+    private final String[] acceptedAttributes = new String[]{"true", "false"};
+
     private final String attribute;
-    public Boolean(Token token, String attribute) {
-        super("Boolean");
+
+    public Boolean(String attribute) {
         this.attribute = attribute;
     }
 
@@ -15,7 +16,17 @@ public class Boolean extends Token{
     }
 
     @Override
-    public String toString() {
-        return "<" + tokenName + ", " + this.getAttribute() + ">";
+    public String getName() {
+        return this.name;
     }
+
+    public String[] getAcceptedAttributes() {
+        return acceptedAttributes;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
+    }
+
 }

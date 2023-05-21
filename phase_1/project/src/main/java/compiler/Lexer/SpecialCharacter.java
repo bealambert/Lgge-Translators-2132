@@ -1,14 +1,36 @@
 package compiler.Lexer;
 
-public class SpecialCharacter extends Token{
+public class SpecialCharacter implements Symbol {
 
-    private final String specialCharacter;
+    private final String attribute;
+    private final String name = "SpecialCharacter";
+    private final String[] acceptedAttributes = new String[]{
+            "=", "+", "-", "*", "/", "%",
+            "==", "<>", "<", ">", "<=", ">="
+            , "(", ")", "{", "}", "[", "]",
+            ".", ";", ","
+    };
+
     public SpecialCharacter(String attribute) {
-        super("SpecialCharacter");
-        this.specialCharacter = attribute;
+        this.attribute = attribute;
     }
 
-    public String getSpecialCharacter() {
-        return specialCharacter;
+    @Override
+    public String getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    public String[] getAcceptedAttributes() {
+        return acceptedAttributes;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
 }

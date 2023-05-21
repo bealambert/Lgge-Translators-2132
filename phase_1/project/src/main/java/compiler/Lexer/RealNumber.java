@@ -1,14 +1,26 @@
 package compiler.Lexer;
 
-public class RealNumber extends Token{
+public class RealNumber extends GenericValue implements Symbol {
 
-    private final String real;
+    private final Double attribute;
+    private final String name = "RealNumber";
+
     public RealNumber(String attribute) {
-        super("RealNumber");
-        this.real = attribute;
+        this.attribute = Double.valueOf(attribute);
     }
 
-    public String getReal() {
-        return real;
+    @Override
+    public Double getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
 }

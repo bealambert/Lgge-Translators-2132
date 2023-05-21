@@ -9,7 +9,7 @@
 // Strings are immutable.
 // For int and real, available operations are
 //      +, -, * , /, - (unary).
-//      ==, <>, <, >, <=, >=
+//      ==, <>, <, <=>, , >=
 // For int:
 //      %
 // For boolean:
@@ -136,7 +136,7 @@ proc square(v int) int {
 }
 
 proc copyPoints(p Point[]) Point {
-     return Point(p[0].x+p[1].x, p[0].y+p[1].y)
+     return Point(p[0].x+p[1].x, p[0].y+p[1].y);
 }
                             
 proc main() void {
@@ -144,10 +144,10 @@ proc main() void {
     writeln(square(value));
     var i int;
     for i=1 to 100 by 2 {
-        while value!=3 {
-            // ....
+        while value <> 3 {
+            // ...
         }
     }
     
-    i = (i+2)*2
+    i = i+2*2;
 } 

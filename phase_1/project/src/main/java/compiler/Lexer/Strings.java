@@ -1,14 +1,26 @@
 package compiler.Lexer;
 
-public class Strings extends Token{
+public class Strings extends GenericValue implements Symbol {
 
-    private final String strings;
+    private final String attribute;
+    private final String name = "Strings";
+
     public Strings(String attribute) {
-        super("Strings");
-        this.strings = attribute;
+        this.attribute = attribute;
     }
 
-    public String getStrings() {
-        return strings;
+    @Override
+    public String getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
     }
 }

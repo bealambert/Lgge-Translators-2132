@@ -1,15 +1,36 @@
 package compiler.Lexer;
 
+public class Keyword implements Symbol {
 
-public class Keyword extends Token{
+    private final String attribute;
+    public final String[] acceptedAttributes = new String[]{
+            "const", "record", "var", "val", "proc",
+            "for", "to", "by", "while", "if", "else",
+            "return", "and", "or"
+    };
+    private final String name = "Keyword";
 
-    private final String keyword;
     public Keyword(String attribute) {
-        super("Keyword");
-        this.keyword = attribute;
+        this.attribute = attribute;
     }
 
-    public String getKeyword() {
-        return keyword;
+    @Override
+    public String getAttribute() {
+        return this.attribute;
     }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    public String[] getAcceptedAttributes() {
+        return acceptedAttributes;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
+    }
+
 }

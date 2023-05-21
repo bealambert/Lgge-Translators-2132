@@ -1,14 +1,47 @@
 package compiler.Lexer;
 
-public class Identifier extends Token{
+import compiler.ASTNode;
+import compiler.Parser.AccessToIndexArray;
+import compiler.Parser.Type;
+import compiler.Semantic.*;
+import compiler.SemanticAnalysisException;
 
-    private final String identifier;
+public class Identifier extends ASTNode implements Symbol, Visitable {
+
+    private final String attribute;
+    private final String name = "Identifier";
+
     public Identifier(String attribute) {
-        super("Identifier");
-        this.identifier = attribute;
+        this.attribute = attribute;
     }
 
-    public String getIdentifier() {
-        return this.identifier;
+    @Override
+    public String getAttribute() {
+        return this.attribute;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ", " + this.getAttribute() + ">";
+    }
+
+
+    @Override
+    public void accept(Visitor visitor, SymbolTable symbolTable) {
+        visitor.visit(this, symbolTable);
+    }
+
+    @Override
+    public void accept(SemanticVisitor semanticVisitor) throws SemanticAnalysisException {
+        semanticVisitor.visit(this);
+    }
+
+    public Type accept(TypeCheckingVisitor typeCheckingVisitor) throws SemanticAnalysisException {
+        return typeCheckingVisitor.visit(this);
     }
 }
