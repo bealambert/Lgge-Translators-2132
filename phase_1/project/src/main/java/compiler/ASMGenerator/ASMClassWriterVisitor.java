@@ -82,8 +82,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(ReturnVoid returnVoid) throws SemanticAnalysisException {
         mv.visitInsn(RETURN);
-        mv.visitMaxs(-1, -1);
-        mv.visitEnd();
     }
 
     @Override
