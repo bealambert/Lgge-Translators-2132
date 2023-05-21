@@ -411,10 +411,30 @@ public class TestASMGenerator {
     }
 
     @Test
-    public void TestReassignment() {
+    public void TestReassignmentLocally() {
         String input = "proc square(a real, b real[]) real {\n" +
-                "var i bool = true;" +
-                //"i = 32;" +
+                "var i int = 17;" +
+                "i = 6266;" +
+                "return a + b[0];" +
+                "}";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestReassignmentGlobally() {
+        String input = " var i int = 17;" +
+                "proc square(a real, b real[]) real {\n" +
+                "i = 6266;" +
                 "return a + b[0];" +
                 "}";
         StringReader reader = new StringReader(input);

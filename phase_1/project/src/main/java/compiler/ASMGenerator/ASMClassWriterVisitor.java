@@ -335,6 +335,16 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(FunctionCall functionCall) throws SemanticAnalysisException {
         // to implement
+        ArrayList<ArrayOfExpression> arrayOfExpressions = functionCall.getParams();
+        for (int i = 0; i < arrayOfExpressions.size(); i++) {
+            arrayOfExpressions.get(i).accept(this);
+        }
+        // Make the function call
+        SymbolTable symbolTable = functionCall.getSymbolTable();
+        CreateProcedure createProcedure = (CreateProcedure) symbolTable.getSymbolTable().get(functionCall.getIdentifier().getAttribute());
+        String desc = asmUtils.createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, functionCall.getIdentifier().getAttribute(), desc, false);
+
     }
 
     @Override
@@ -401,7 +411,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(Reassignment reassignment) throws SemanticAnalysisException {
-        // to implement
         Pair pair = asmUtils.getFirstDeclarationInsideStoreStable(reassignment.getIdentifier(), storeTable);
         Type type = reassignment.getArrayOfExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
 
@@ -411,10 +420,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                 desc = desc + "[";
             }
             desc = desc + asmUtils.mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A");
-            int access = ACC_PUBLIC | ACC_STATIC;
-            cw.visitField(access, reassignment.getIdentifier().getAttribute(), desc, null, null);
             reassignment.getArrayOfExpression().accept(this);
-            mv.visitFieldInsn(flag, this.className, reassignment.getIdentifier().getAttribute(), desc);
+            mv.visitFieldInsn(PUTSTATIC, className, reassignment.getIdentifier().getAttribute(), desc);
         } else {
             reassignment.getArrayOfExpression().accept(this);
             int store_type = asmUtils.mapStoreType.get(type.getAttribute());

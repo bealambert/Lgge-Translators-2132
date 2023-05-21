@@ -14,4 +14,12 @@ public class SymbolTable {
     public SymbolTable(SymbolTable previous) {
         this.previous = previous;
     }
+
+    public HashMap<String, ASTNode> getSymbolTable() {
+        return symbolTable;
+    }
+
+    public SymbolTable getPrevious() {
+        return previous;
+    }
 }
