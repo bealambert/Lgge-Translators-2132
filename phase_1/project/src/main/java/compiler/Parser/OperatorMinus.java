@@ -6,7 +6,7 @@ import compiler.Token;
 import org.objectweb.asm.MethodVisitor;
 
 public class OperatorMinus extends Operator {
-    OperatorMinus() {
+    public OperatorMinus() {
         super();
         this.setPrecedence_level(2);
         this.allowed_types = new String[]{

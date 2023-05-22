@@ -7,7 +7,7 @@ import compiler.SemanticAnalysisException;
 import org.objectweb.asm.MethodVisitor;
 
 public class OperatorComparator extends Operator {
-    OperatorComparator() {
+    public OperatorComparator() {
         super();
         this.setPrecedence_level(3);
     }

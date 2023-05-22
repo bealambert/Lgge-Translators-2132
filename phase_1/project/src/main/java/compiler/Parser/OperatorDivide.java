@@ -6,7 +6,7 @@ import compiler.Token;
 import org.objectweb.asm.MethodVisitor;
 
 public class OperatorDivide extends Operator {
-    OperatorDivide() {
+    public OperatorDivide() {
         super();
         this.setPrecedence_level(1);
         this.allowed_types = new String[]{

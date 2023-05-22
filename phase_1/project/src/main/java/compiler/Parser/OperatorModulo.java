@@ -6,7 +6,7 @@ import compiler.Token;
 import org.objectweb.asm.MethodVisitor;
 
 public class OperatorModulo extends Operator {
-    OperatorModulo() {
+    public OperatorModulo() {
         super();
         this.setPrecedence_level(1);
         this.allowed_types = new String[]{

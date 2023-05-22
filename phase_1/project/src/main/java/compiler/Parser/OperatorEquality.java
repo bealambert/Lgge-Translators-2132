@@ -7,7 +7,7 @@ import org.objectweb.asm.MethodVisitor;
 
 public class OperatorEquality extends OperatorComparator {
 
-    OperatorEquality() {
+    public OperatorEquality() {
         this.allowed_types = new String[]{
                 Token.IntIdentifier.getName(), Token.NaturalNumber.getName(),
                 Token.RealNumber.getName(), Token.RealIdentifier.getName(),

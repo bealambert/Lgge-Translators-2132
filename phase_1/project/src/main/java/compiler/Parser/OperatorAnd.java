@@ -6,7 +6,7 @@ import compiler.Token;
 import org.objectweb.asm.MethodVisitor;
 
 public class OperatorAnd extends OperatorComparator {
-    OperatorAnd() {
+    public OperatorAnd() {
         super();
         this.setPrecedence_level(4);
         this.allowed_types = new String[]{Token.Boolean.getName(), Token.BooleanIdentifier.getName()};

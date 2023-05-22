@@ -316,6 +316,32 @@ public class TestASMGenerator {
     }
 
     @Test
+    public void TestForLoop() {
+        String input =
+                // FUNCTION
+                "proc square(a int, b int) void {\n" +
+                        "var i int;" +
+                        "for i = 0  to 100 by 10 {" +
+                        "}" +
+                        "return;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+
+    @Test
     public void TestIfCondition() {
         String input =
                 // FUNCTION
@@ -471,6 +497,30 @@ public class TestASMGenerator {
         } catch (SemanticAnalysisException e) {
             fail();
         }
+    }
+
+    @Test
+    public void Test2121() {
+        String input =
+                // FUNCTION
+                "proc square(a int, b int) void {\n" +
+                        "var i int;" +
+                        "i = 3;" +
+                        "return;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
     }
 
 

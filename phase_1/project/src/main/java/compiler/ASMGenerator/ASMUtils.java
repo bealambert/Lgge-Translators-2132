@@ -24,6 +24,7 @@ public class ASMUtils {
     HashMap<String, Integer> mapArrayType;
     HashMap<String, Integer> mapAssignToIndex;
     HashMap<String, Integer> mapLoadArray;
+    HashMap<Integer, Integer> mapConstValues;
 
     public ASMUtils() {
         mapTypeToASMTypes = new HashMap<>();
@@ -92,6 +93,14 @@ public class ASMUtils {
         mapLoadArray.put(Token.RealIdentifier.getName(), FALOAD);
         mapLoadArray.put(Token.Boolean.getName(), BASTORE);
         mapLoadArray.put(Token.BooleanIdentifier.getName(), BALOAD);
+
+        mapConstValues = new HashMap<>();
+        mapConstValues.put(0, ICONST_0);
+        mapConstValues.put(1, ICONST_1);
+        mapConstValues.put(2, ICONST_2);
+        mapConstValues.put(3, ICONST_3);
+        mapConstValues.put(4, ICONST_4);
+        mapConstValues.put(5, ICONST_5);
     }
 
     public int getAccess(String keyword) {

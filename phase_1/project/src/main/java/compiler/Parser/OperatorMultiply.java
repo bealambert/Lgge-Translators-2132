@@ -7,7 +7,7 @@ import org.objectweb.asm.MethodVisitor;
 
 public class OperatorMultiply extends Operator {
 
-    OperatorMultiply() {
+    public OperatorMultiply() {
         super();
         this.setPrecedence_level(1);
         this.allowed_types = new String[]{

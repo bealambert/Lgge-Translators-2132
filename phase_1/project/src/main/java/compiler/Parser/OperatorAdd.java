@@ -8,7 +8,7 @@ import org.objectweb.asm.MethodVisitor;
 
 public class OperatorAdd extends Operator {
 
-    OperatorAdd() {
+    public OperatorAdd() {
         super();
         this.setPrecedence_level(2);
         this.allowed_types = new String[]{

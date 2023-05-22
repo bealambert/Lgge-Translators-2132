@@ -6,7 +6,7 @@ import compiler.Token;
 import org.objectweb.asm.MethodVisitor;
 
 public class OperatorOr extends OperatorComparator {
-    OperatorOr() {
+    public OperatorOr() {
         super();
         this.setPrecedence_level(4);
         this.allowed_types = new String[]{

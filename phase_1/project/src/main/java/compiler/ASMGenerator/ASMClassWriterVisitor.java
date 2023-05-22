@@ -300,16 +300,13 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         String desc = asmUtils.mapTypeToASMTypes.getOrDefault(createVoidVariable.getType().getAttribute(), "A");
 
         if (flag != PUTSTATIC) {
-            mv.visitInsn(ACONST_NULL);
-            int store = asmUtils.mapStoreType.get(createVoidVariable.getType().getAttribute());
-            mv.visitVarInsn(store, storeCount);
+            storeTable.storeTable.put(createVoidVariable.getVariableIdentifier().getIdentifier().getAttribute(), -1);
         } else {
             access |= ACC_STATIC;
             cw.visitField(access, variableName, desc, null, null);
             //mv.visitFieldInsn(flag, "Test", variableName, desc);
         }
-        storeTable.storeTable.put(createVoidVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
-        storeCount++;
+
     }
 
     @Override
@@ -324,8 +321,42 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ForLoopAssignVariable forLoopAssignVariable) throws SemanticAnalysisException {
-        //  var i int;
-        // for i=1 to 100 by 2
+
+        Label startLabel = new Label();
+        Label endLabel = new Label();
+
+        OperatorAdd operatorAdd = new OperatorAdd();
+        OperatorLessThan operatorLessThan = new OperatorLessThan();
+        Type type = forLoopAssignVariable.getStart().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+
+
+        forLoopAssignVariable.getStart().accept(this);
+        mv.visitVarInsn(ISTORE, storeCount);
+        storeTable.storeTable.put(forLoopAssignVariable.getIdentifier().getAttribute(), storeCount);
+        int loopIdentifierStoreCount = storeCount;
+        storeCount++;
+
+        mv.visitLabel(startLabel);
+
+        forLoopAssignVariable.getEnd().accept(this);
+        mv.visitVarInsn(ILOAD, loopIdentifierStoreCount);
+        operatorLessThan.accept(makeOperationVisitor, type, mv);
+
+
+        mv.visitJumpInsn(Opcodes.IFEQ, endLabel); // Branch to endLabel if condition is false (0)
+
+        forLoopAssignVariable.getBody().accept(this); // Generate loop body
+
+        mv.visitVarInsn(ILOAD, loopIdentifierStoreCount);
+        forLoopAssignVariable.getIncrementBy().accept(this);
+        //mv.visitIincInsn(loopIdentifierStoreCount, );
+        operatorAdd.accept(makeOperationVisitor, type, mv);
+        mv.visitVarInsn(ISTORE, loopIdentifierStoreCount);
+
+
+        mv.visitJumpInsn(Opcodes.GOTO, startLabel); // Go back to the start of the loop
+
+        mv.visitLabel(endLabel);
     }
 
     @Override
@@ -426,7 +457,17 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         } else {
             reassignment.getArrayOfExpression().accept(this);
             int store_type = asmUtils.mapStoreType.get(type.getAttribute());
-            mv.visitVarInsn(store_type, pair.getValue());
+            int index_storage = pair.getValue();
+            if (index_storage == -1) {
+                // create void variable didn't do anything because it's a local variable
+                // need to create the object
+                index_storage = storeCount;
+
+
+            }
+            mv.visitVarInsn(store_type, index_storage);
+            storeTable.storeTable.put(reassignment.getIdentifier().getAttribute(), storeCount);
+            storeCount++;
         }
 
     }
@@ -473,7 +514,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         String typeAttribute = type.getAttribute();
 
         if (typeAttribute.equals(Token.IntIdentifier.getName()) || typeAttribute.equals(Token.NaturalNumber.getName())) {
-            int value = (int) values.getSymbol().getAttribute();
+            Integer value = (Integer) values.getSymbol().getAttribute();
             mv.visitLdcInsn(value);
         } else if (typeAttribute.equals(Token.RealIdentifier.getName()) || typeAttribute.equals(Token.RealNumber.getName())) {
             mv.visitLdcInsn(((Double) values.getSymbol().getAttribute()).floatValue());
