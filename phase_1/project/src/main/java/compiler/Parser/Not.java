@@ -9,7 +9,7 @@ import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
-public class Not extends FunctionCall {
+public class Not extends BuiltIn {
 
 
     public Not(Identifier identifier, ArrayList<ArrayOfExpression> params) {

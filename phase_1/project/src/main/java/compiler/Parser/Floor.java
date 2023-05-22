@@ -9,7 +9,7 @@ import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
-public class Floor extends FunctionCall {
+public class Floor extends BuiltIn {
 
 
     public Floor(Identifier identifier, ArrayList<ArrayOfExpression> params) {

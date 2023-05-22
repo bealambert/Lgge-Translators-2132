@@ -78,7 +78,15 @@ public enum Token {
     Not("not"),
     Chr("chr"),
     Len("len"),
-    Floor("floor");
+    Floor("floor"),
+
+    ReadInt("readInt"),
+    ReadReal("readReal"),
+    ReadString("readString"),
+    Writeln("writeln"),
+    Write("write"),
+    WriteInt("writeInt"),
+    WriteReal("writeReal");
 
 
     private final String name;

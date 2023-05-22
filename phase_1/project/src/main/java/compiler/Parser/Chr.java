@@ -11,7 +11,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import java.util.ArrayList;
 
-public class Chr extends FunctionCall {
+public class Chr extends BuiltIn {
 
     public Chr(Identifier identifier, ArrayList<ArrayOfExpression> params) {
         super(identifier, params);

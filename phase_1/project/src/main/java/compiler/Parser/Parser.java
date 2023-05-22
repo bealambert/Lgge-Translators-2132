@@ -398,6 +398,7 @@ public class Parser {
         ArrayList<ArrayOfExpression> arrayList = new ArrayList<>();
         match(Token.OpeningParenthesis);
 
+        // Built-in functions
         if (identifier.getAttribute().equals(Token.Not.getName())) {
             ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
             arrayList.add(arrayOfExpression);
@@ -417,13 +418,51 @@ public class Parser {
             match(Token.ClosingParenthesis);
             return new Chr(identifier, arrayList);
         }
-
-        if (identifier.getAttribute().equals(Token.Floor.getName())) {
+        // Procedure - IO
+        if (identifier.getAttribute().equals(Token.ReadInt.getName())) {
             ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
             arrayList.add(arrayOfExpression);
             match(Token.ClosingParenthesis);
-            return new Floor(identifier, arrayList);
+            return new ReadInt(identifier, arrayList);
         }
+        if (identifier.getAttribute().equals(Token.ReadReal.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new ReadReal(identifier, arrayList);
+        }
+        if (identifier.getAttribute().equals(Token.ReadString.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new ReadString(identifier, arrayList);
+        }
+        if (identifier.getAttribute().equals(Token.Write.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new Write(identifier, arrayList);
+        }
+        if (identifier.getAttribute().equals(Token.Writeln.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new Writeln(identifier, arrayList);
+        }
+        if (identifier.getAttribute().equals(Token.WriteInt.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new WriteInt(identifier, arrayList);
+        }
+        if (identifier.getAttribute().equals(Token.WriteReal.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new WriteReal(identifier, arrayList);
+        }
+
+
         while (!isSymbol(Token.ClosingParenthesis)) {
             arrayList.add(parseArrayOfExpression());
             if (isSymbol(Token.Comma)) {

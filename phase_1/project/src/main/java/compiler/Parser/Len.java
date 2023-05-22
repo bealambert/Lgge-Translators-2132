@@ -9,7 +9,7 @@ import compiler.SemanticAnalysisException;
 
 import java.util.ArrayList;
 
-public class Len extends FunctionCall {
+public class Len extends BuiltIn {
 
     public Len(Identifier identifier, ArrayList<ArrayOfExpression> params) {
         super(identifier, params);

@@ -492,4 +492,18 @@ public class TestParserBasics {
 
     }
 
+
+    @Test
+    public void TestIO() {
+        String input = "write(\"aaa\");";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Parser parser = new Parser(lexer);
+        ASTNode root = parser.getAST();
+
+        assertTrue(root instanceof Write);
+
+    }
+
 }
