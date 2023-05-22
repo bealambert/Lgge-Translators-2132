@@ -75,6 +75,7 @@ public class Parser {
 
     public Expression parseExpression() {
         if (isSymbol(Token.Identifier)) {
+
             Identifier identifier = (Identifier) match(Token.Identifier);
             // is it an identifier or a function call ?
             if (isSymbol(Token.OpeningParenthesis)) {
@@ -393,8 +394,36 @@ public class Parser {
 
     public FunctionCall parseFunctionCall(Identifier identifier) {
 
+
         ArrayList<ArrayOfExpression> arrayList = new ArrayList<>();
         match(Token.OpeningParenthesis);
+
+        if (identifier.getAttribute().equals(Token.Not.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new Not(identifier, arrayList);
+        }
+        if (identifier.getAttribute().equals(Token.Len.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new Len(identifier, arrayList);
+        }
+
+        if (identifier.getAttribute().equals(Token.Chr.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new Chr(identifier, arrayList);
+        }
+
+        if (identifier.getAttribute().equals(Token.Floor.getName())) {
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            arrayList.add(arrayOfExpression);
+            match(Token.ClosingParenthesis);
+            return new Floor(identifier, arrayList);
+        }
         while (!isSymbol(Token.ClosingParenthesis)) {
             arrayList.add(parseArrayOfExpression());
             if (isSymbol(Token.Comma)) {
@@ -454,6 +483,7 @@ public class Parser {
     }
 
     public ASTNode parse() {
+
         if (isSymbol(Token.Keyword)) {
             // check creation of variable : var a int = 2 ;
             // it is the only case
@@ -637,6 +667,7 @@ public class Parser {
 
 
         if (isSymbol(Token.Identifier)) {
+            // check for built-in
             Identifier referenceOrTypeIdentifier = (Identifier) match(Token.Identifier);
             if (isSymbol(Token.Semicolon)) {
                 match(Token.Semicolon);

@@ -10,6 +10,10 @@ import java.util.ArrayList;
 public class TypeCheckingVisitor implements ExpressionTypeVisitor {
 
     Type voidType = new Type(new Identifier(Token.VoidIdentifier.getName()));
+    Type intType = new Type(new Identifier(Token.NaturalNumber.getName()));
+    Type stringType = new Type(new Identifier(Token.Strings.getName()));
+    /*Type voidType = new Type(new Identifier(Token.VoidIdentifier.getName()));
+    Type voidType = new Type(new Identifier(Token.VoidIdentifier.getName()));*/
 
     @Override
     public Type visit(Variable variable) throws SemanticAnalysisException {
@@ -139,6 +143,42 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(Type type) throws SemanticAnalysisException {
         return type;
+    }
+
+    @Override
+    public Type visit(Not not) throws SemanticAnalysisException {
+        Type type = not.getParams().get(0).accept(typeCheckingVisitor);
+        if (type.getAttribute().equals(Token.Boolean.getName()) || type.getAttribute().equals(Token.BooleanIdentifier.getName())) {
+            return type;
+        }
+        throw new SemanticAnalysisException("Expected expression of type boolean, observed : " + type.getAttribute());
+    }
+
+    @Override
+    public Type visit(Len len) throws SemanticAnalysisException {
+        Type type = len.getParams().get(0).accept(typeCheckingVisitor);
+        if (type instanceof ArrayType || type.getAttribute().equals(Token.Strings.getName()) || type.getAttribute().equals(Token.StringIdentifier.getName())) {
+            return intType;
+        }
+        throw new SemanticAnalysisException("Expected ArrayType or String, observed : " + type.getAttribute());
+    }
+
+    @Override
+    public Type visit(Chr chr) throws SemanticAnalysisException {
+        Type type = chr.getParams().get(0).accept(typeCheckingVisitor);
+        if (type.getAttribute().equals(Token.NaturalNumber.getName()) || type.getAttribute().equals(Token.IntIdentifier.getName())) {
+            return stringType;
+        }
+        throw new SemanticAnalysisException("Expected expression of type int, observed : " + type.getAttribute());
+    }
+
+    @Override
+    public Type visit(Floor floor) throws SemanticAnalysisException {
+        Type type = floor.getParams().get(0).accept(typeCheckingVisitor);
+        if (type.getAttribute().equals(Token.RealIdentifier.getName()) || type.getAttribute().equals(Token.RealNumber.getName())) {
+            return intType;
+        }
+        throw new SemanticAnalysisException("Expected expression of type real, observed : " + type.getAttribute());
     }
 
     @Override

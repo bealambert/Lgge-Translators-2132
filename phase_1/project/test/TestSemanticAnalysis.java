@@ -509,5 +509,20 @@ public class TestSemanticAnalysis {
         }
     }
 
+    @Test
+    public void TestBuiltInNot() {
+        String input = "var c bool = not(true and false);";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
 
 }

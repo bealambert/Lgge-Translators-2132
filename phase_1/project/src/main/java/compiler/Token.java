@@ -73,7 +73,12 @@ public enum Token {
     OperatorModulo("%"),
     OperatorMultiply("*"),
     OperatorNotEqual("<>"),
-    OperatorOr("or");
+    OperatorOr("or"),
+
+    Not("not"),
+    Chr("chr"),
+    Len("len"),
+    Floor("floor");
 
 
     private final String name;

@@ -1,6 +1,7 @@
 import compiler.ASMGenerator.Generator;
 import compiler.ASTNode;
 import compiler.Lexer.Lexer;
+import compiler.Lexer.Symbol;
 import compiler.MyNode;
 import compiler.Parser.*;
 import compiler.SemanticAnalysisException;
@@ -457,6 +458,39 @@ public class TestParserBasics {
         ASTNode root = parser.getAST();
         System.out.println(root);
         //assertTrue(root instanceof FunctionCall);
+
+    }
+
+    @Test
+    public void TestBuiltIn() {
+        String input = "var i bool = not(true);";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        /*boolean flag = true;
+        while (flag) {
+            Symbol symbol = lexer.getNextSymbol();
+            if (symbol == null){
+                flag = false;
+            }
+            System.out.println(symbol);
+        }*/
+
+        Parser parser = new Parser(lexer);
+        ASTNode root = parser.getAST();
+        ASTNode copy = root;
+        boolean flag = true;
+        while (flag) {
+            System.out.println(copy);
+
+            copy = copy.getNext();
+            if (copy == null) {
+                flag = false;
+            }
+
+        }
+
+
+        assertTrue(root instanceof CreateVariables);
 
     }
 

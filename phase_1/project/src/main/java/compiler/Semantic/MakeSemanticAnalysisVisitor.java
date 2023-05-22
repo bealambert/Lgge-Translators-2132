@@ -58,6 +58,26 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     }
 
     @Override
+    public void visit(Floor floor) throws SemanticAnalysisException {
+        floor.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+    }
+
+    @Override
+    public void visit(Len len) throws SemanticAnalysisException {
+        len.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+    }
+
+    @Override
+    public void visit(Chr chr) throws SemanticAnalysisException {
+        chr.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+    }
+
+    @Override
+    public void visit(Not not) throws SemanticAnalysisException {
+        not.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+    }
+
+    @Override
     public void visit(SubExpression subExpression) throws SemanticAnalysisException {
         ArrayOfExpression arrayOfExpression = subExpression.getSubExpression();
         arrayOfExpression.accept(this);

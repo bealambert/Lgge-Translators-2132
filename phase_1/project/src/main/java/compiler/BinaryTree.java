@@ -48,7 +48,6 @@ public class BinaryTree {
                 // it is a valid operation
                 if (i>0){
                     // 2+3
-                    System.out.println(current_elem);
                     if (resultingList.get(resultingList.size()-1) instanceof MyNode){
                         left = (MyNode) resultingList.get(resultingList.size()-1);
                     }else{

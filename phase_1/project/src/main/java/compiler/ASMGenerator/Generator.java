@@ -55,24 +55,6 @@ public class Generator {
         asmClassWriterVisitor.addMethodVisitor(mv, flag);
         mv.visitCode();
 
-        mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
-        mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-        /*mv.visitTypeInsn(NEW, className);
-        mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKESPECIAL, className, "<init>", "()V", false);*/
-
-        /*mv.visitIntInsn(BIPUSH, 3);
-        mv.visitIntInsn(NEWARRAY, T_INT);
-        mv.visitFieldInsn(flag, className, "y",
-                "[I");
-
-        mv.visitFieldInsn(GETSTATIC, "Test", "y", "[I");
-        mv.visitInsn(ICONST_2);
-        mv.visitInsn(ICONST_3);
-        mv.visitInsn(IASTORE);*/
-
-
         ASTNode astNode = this.root;
         while (astNode != null) {
             if (astNode instanceof CreateProcedure && flag == PUTSTATIC) {
@@ -144,9 +126,11 @@ public class Generator {
         mainMethodWriter.visitInsn(SWAP);
         mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);*/
 
+
         mainMethodWriter.visitInsn(RETURN);
         mainMethodWriter.visitMaxs(-1, -1);
         mainMethodWriter.visitEnd();
+
         cw.visitEnd();
 
         byte[] bytecode = cw.toByteArray();
