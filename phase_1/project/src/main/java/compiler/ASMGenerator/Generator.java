@@ -239,6 +239,19 @@ public class Generator {
         mainMethodWriter.visitLdcInsn((float) 3.14);
         mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeReal", "(F)V", false);
 
+        mainMethodWriter.visitLdcInsn("");
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
+
+        mainMethodWriter.visitLdcInsn("azer123");
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "len", "(Ljava/lang/String;)I", false);
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeInt", "(I)V", false);
+
+        mainMethodWriter.visitLdcInsn("");
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
+
+
+        //mainMethodWriter.visitLdcInsn(65);
+        //mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "chr", "(I)Ljava/lang/String;", false);
 
         mainMethodWriter.visitInsn(RETURN);
         mainMethodWriter.visitMaxs(-1, -1);
@@ -267,7 +280,9 @@ public class Generator {
         }
         try {
             test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
-
+            test.getMethod("writeln", String.class).invoke(null, "zzzzzzzzz");
+            test.getMethod("square", int.class, int.class).invoke(null, 1, 2);
+            test.getMethod("not", boolean.class).invoke(null, true);
 /*            Method squareMethod = test.getDeclaredMethod("square", int.class, int.class); // Retrieves the "square" method with two int parameters
             squareMethod.setAccessible(true); // If the method is private, make it accessible
 

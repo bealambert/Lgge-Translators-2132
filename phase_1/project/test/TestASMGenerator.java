@@ -555,6 +555,7 @@ public class TestASMGenerator {
                 // FUNCTION
                 "proc square(a int, b int) void {\n" +
                         "writeln(\"abc\")" +
+                        "var i bool = not(true);" +
                         "return;\n" +
                         "}";
 

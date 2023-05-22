@@ -114,22 +114,31 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(Floor floor) throws SemanticAnalysisException {
-
+        floor.getParams().get(0).accept(this);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "floor", "(F)I", false);
     }
 
     @Override
     public void visit(Len len) throws SemanticAnalysisException {
-
+        Type type = len.getParams().get(0).accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        len.getParams().get(0).accept(this);
+        if (type instanceof ArrayType) {
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "len", "([Ljava/lang/Object;)I", false);
+        } else {
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "len", "(Ljava/lang/String;)I", false);
+        }
     }
 
     @Override
     public void visit(Chr chr) throws SemanticAnalysisException {
-
+        chr.getParams().get(0).accept(this);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "chr", "(I)Ljava/lang/String;", false);
     }
 
     @Override
     public void visit(Not not) throws SemanticAnalysisException {
-
+        not.getParams().get(0).accept(this);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "not", "(Z)Z", false);
     }
 
     @Override
@@ -309,7 +318,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     public void visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
         storeTable.storeTable.clear();
         String desc = asmUtils.createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
-        MethodVisitor methodVisitor = cw.visitMethod(ACC_STATIC, createProcedure.getProcedureName().getAttribute(), desc, null, null);
+        MethodVisitor methodVisitor = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, createProcedure.getProcedureName().getAttribute(), desc, null, null);
         this.addMethodVisitor(methodVisitor, PUTFIELD);
         mv.visitCode();
         ArrayList<Param> params = createProcedure.getParams();
