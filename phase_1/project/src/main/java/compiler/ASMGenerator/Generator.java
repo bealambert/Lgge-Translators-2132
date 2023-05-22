@@ -35,10 +35,6 @@ public class Generator {
         this.root = root;
     }
 
-    public Generator() {
-
-    }
-
 
     public static void main(String[] args) {
 
@@ -189,7 +185,6 @@ public class Generator {
 
         createNecessaryMethods(cw);
 
-
         MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
         int flag = PUTSTATIC;
         asmClassWriterVisitor.addMethodVisitor(mv, flag);
@@ -220,32 +215,6 @@ public class Generator {
                 (ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
 
         mainMethodWriter.visitCode();
-/*        mainMethodWriter.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-
-        mainMethodWriter.visitFieldInsn(GETSTATIC, className, "s", "Ljava/lang/String;");
-        mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");*/
-
-
-/*        // Declare the variable
-        mainMethodWriter.visitInsn(Opcodes.ICONST_0); // Initialize variable to 0
-        mainMethodWriter.visitVarInsn(Opcodes.ISTORE, 1); // Store the variable in index 1 of local variables
-
-        // Loop condition
-        Label loopCondition = new Label();
-        mainMethodWriter.visitLabel(loopCondition);
-        mainMethodWriter.visitVarInsn(Opcodes.ILOAD, 1); // Load the variable
-        mainMethodWriter.visitIntInsn(Opcodes.BIPUSH, 10); // Push a constant value (10) onto the stack
-        Label exitLoop = new Label();
-        mainMethodWriter.visitJumpInsn(Opcodes.IF_ICMPGT, exitLoop); // Exit the loop if the variable is greater than 10
-
-        // Loop body
-        mainMethodWriter.visitIincInsn(1, 1); // Increment the variable by 1
-
-        // Jump back to the loop condition
-        mainMethodWriter.visitJumpInsn(Opcodes.GOTO, loopCondition);
-
-        // Exit label
-        mainMethodWriter.visitLabel(exitLoop);*/
 
 
         Label ifLabel = new Label();
@@ -257,14 +226,18 @@ public class Generator {
         mainMethodWriter.visitInsn(Opcodes.SWAP);
         mainMethodWriter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
         mainMethodWriter.visitLabel(ifLabel);
-        /*// Call the square method
-        mainMethodWriter.visitIntInsn(BIPUSH, 5); // Push the first argument
-        mainMethodWriter.visitIntInsn(BIPUSH, 7); // Push the second argument
-        mainMethodWriter.visitMethodInsn(INVOKESTATIC, "Test", "square", "(II)I", false);
 
-        mainMethodWriter.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mainMethodWriter.visitInsn(SWAP);
-        mainMethodWriter.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);*/
+        mainMethodWriter.visitLdcInsn("abc");
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
+
+        mainMethodWriter.visitLdcInsn("aezrar");
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "write", "(Ljava/lang/String;)V", false);
+
+        mainMethodWriter.visitLdcInsn(15);
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeInt", "(I)V", false);
+
+        mainMethodWriter.visitLdcInsn((float) 3.14);
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeReal", "(F)V", false);
 
 
         mainMethodWriter.visitInsn(RETURN);

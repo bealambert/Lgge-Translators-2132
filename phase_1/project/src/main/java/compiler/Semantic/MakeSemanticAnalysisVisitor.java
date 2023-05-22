@@ -103,7 +103,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     public void visit(Writeln writeln) throws SemanticAnalysisException {
         assert writeln.getParams().size() == 1;
         Type type = writeln.getParams().get(0).accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        if (!(type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()))) {
+        if (!(type.getAttribute().equals(Token.Strings.getName()) || type.getAttribute().equals(Token.StringIdentifier.getName()))) {
             throw new SemanticAnalysisException("Expected a string as parameter of the writeln function, observed : " + type.getAttribute());
         }
     }

@@ -75,37 +75,41 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ReadInt readInt) throws SemanticAnalysisException {
-
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "readInt", "()I", false);
     }
 
     @Override
     public void visit(ReadReal readReal) throws SemanticAnalysisException {
-
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "readReal", "()F", false);
     }
 
     @Override
     public void visit(ReadString readString) throws SemanticAnalysisException {
-
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "readString", "()Ljava/lang/String;", false);
     }
 
     @Override
     public void visit(WriteInt writeInt) throws SemanticAnalysisException {
-
+        writeInt.getParams().get(0).accept(this);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeInt", "(I)V", false);
     }
 
     @Override
     public void visit(WriteReal writeReal) throws SemanticAnalysisException {
-
+        writeReal.getParams().get(0).accept(this);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeReal", "(F)V", false);
     }
 
     @Override
     public void visit(Write write) throws SemanticAnalysisException {
-
+        write.getParams().get(0).accept(this);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "write", "(Ljava/lang/String;)V", false);
     }
 
     @Override
     public void visit(Writeln writeln) throws SemanticAnalysisException {
-
+        writeln.getParams().get(0).accept(this);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
     }
 
     @Override
