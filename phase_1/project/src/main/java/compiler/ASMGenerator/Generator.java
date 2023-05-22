@@ -50,7 +50,59 @@ public class Generator {
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null);
         asmClassWriterVisitor.setCw(cw, className);
 
-        MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+        MethodVisitor mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "floor", "(F)I", null, null);
+
+        mv.visitCode();
+        mv.visitVarInsn(FLOAD, 0);
+        mv.visitInsn(Opcodes.F2D);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", "floor", "(D)D", false);
+        mv.visitInsn(Opcodes.D2I);
+        mv.visitInsn(Opcodes.IRETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "not", "(Z)Z", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ILOAD, 0);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.IXOR);
+        mv.visitInsn(Opcodes.IRETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "chr", "(I)Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ILOAD, 0);
+        mv.visitInsn(Opcodes.I2C);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(C)Ljava/lang/String;", false);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "len", "(Ljava/lang/String;)I", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "length", "()I", false);
+        mv.visitInsn(Opcodes.IRETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "len", "([Ljava/lang/Object;)I", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ARRAYLENGTH);
+        mv.visitInsn(Opcodes.IRETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+
+        mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
         int flag = PUTSTATIC;
         asmClassWriterVisitor.addMethodVisitor(mv, flag);
         mv.visitCode();

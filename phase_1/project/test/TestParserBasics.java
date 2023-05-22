@@ -488,8 +488,6 @@ public class TestParserBasics {
             }
 
         }
-
-
         assertTrue(root instanceof CreateVariables);
 
     }
