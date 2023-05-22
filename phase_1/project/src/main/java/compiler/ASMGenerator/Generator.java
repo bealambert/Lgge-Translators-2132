@@ -44,12 +44,7 @@ public class Generator {
 
     }
 
-    public void generateBytecode() throws SemanticAnalysisException {
-
-        cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null);
-        asmClassWriterVisitor.setCw(cw, className);
-
+    public void createNecessaryMethods(ClassWriter cw) {
         MethodVisitor mv = cw.visitMethod
                 (ACC_PUBLIC | ACC_STATIC, "floor", "(F)I", null, null);
 
@@ -102,7 +97,61 @@ public class Generator {
         mv.visitEnd();
 
 
-        mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "write", "(Ljava/lang/String;)V", null, null);
+        mv.visitCode();
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"); // Load System.out
+        mv.visitVarInsn(ALOAD, 0); // Load the integer from index 0
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "print", "(Ljava/lang/String;)V", false); // Invoke println method
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "writeInt", "(I)V", null, null);
+        mv.visitCode();
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"); // Load System.out
+        mv.visitVarInsn(Opcodes.ILOAD, 0); // Load the integer from index 0
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false); // Invoke valueOf method to convert integer to string
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "print", "(Ljava/lang/String;)V", false); // Invoke println method
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "writeReal", "(F)V", null, null);
+        mv.visitCode();
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"); // Load System.out
+        mv.visitVarInsn(FLOAD, 0); // Load the integer from index 0
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String", "valueOf", "(F)Ljava/lang/String;", false); // Invoke valueOf method to convert integer to string
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "print", "(Ljava/lang/String;)V", false); // Invoke println method
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+        mv = cw.visitMethod
+                (ACC_PUBLIC | ACC_STATIC, "writeln", "(Ljava/lang/String;)V", null, null);
+        mv.visitCode();
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"); // Load System.out
+        mv.visitVarInsn(ALOAD, 0); // Load the integer from index 0
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false); // Invoke println method
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+
+    }
+
+    public void generateBytecode() throws SemanticAnalysisException {
+
+        cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null);
+        asmClassWriterVisitor.setCw(cw, className);
+
+        createNecessaryMethods(cw);
+
+
+        MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
         int flag = PUTSTATIC;
         asmClassWriterVisitor.addMethodVisitor(mv, flag);
         mv.visitCode();
