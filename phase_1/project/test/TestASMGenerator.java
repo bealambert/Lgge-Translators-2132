@@ -316,12 +316,38 @@ public class TestASMGenerator {
     }
 
     @Test
-    public void TestForLoop() {
+    public void TestForLoopAssignVariable() {
         String input =
                 // FUNCTION
                 "proc square(a int, b int) void {\n" +
                         "var i int;" +
                         "for i = 0  to 100 by 10 {" +
+                        "}" +
+                        "return;\n" +
+                        "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestForLoopCreateVariable() {
+        String input =
+                // FUNCTION
+                "proc square(a int, b int) void {\n" +
+                        "for var i int = 0  to 100 by 10 {" +
+                        "var j int = 3;" +
+                        "var result int = a * j +b;" +
                         "}" +
                         "return;\n" +
                         "}";

@@ -256,15 +256,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         ArrayList<Param> params = createProcedure.getParams();
         for (int i = 0; i < params.size(); i++) {
             Param param = params.get(i);
-            Type paramType = param.getType();
-            int load_value = ALOAD;
-            int store_value = ASTORE;
-            if (!(paramType instanceof ArrayType)) {
-                load_value = asmUtils.mapLoadType.getOrDefault(param.getType().getAttribute(), ALOAD);
-                store_value = asmUtils.mapStoreType.getOrDefault(param.getType().getAttribute(), -1);
-            }
-            mv.visitVarInsn(load_value, i);
-            mv.visitVarInsn(store_value, i);
+
             storeTable.storeTable.put(param.getIdentifier().getAttribute(), i);
         }
         storeCount = params.size();
@@ -362,6 +354,34 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(ForLoopCreateVariable forLoopCreateVariable) throws SemanticAnalysisException {
         // for var i i=1 to 100 by 2
+        Label startLabel = new Label();
+        Label endLabel = new Label();
+
+        OperatorAdd operatorAdd = new OperatorAdd();
+        OperatorLessThan operatorLessThan = new OperatorLessThan();
+        Type type = forLoopCreateVariable.getCreateVariables().getType();
+
+        forLoopCreateVariable.getCreateVariables().accept(this);
+
+        mv.visitLabel(startLabel);
+        forLoopCreateVariable.getEnd().accept(this);
+        // newly created variable -> can only be in this scope
+        int store_variable = storeTable.storeTable.get(forLoopCreateVariable.getCreateVariables().getVariableIdentifier().getIdentifier().getAttribute());
+        mv.visitVarInsn(ILOAD, store_variable);
+        operatorLessThan.accept(makeOperationVisitor, type, mv);
+
+        mv.visitJumpInsn(Opcodes.IFEQ, endLabel);
+
+        forLoopCreateVariable.getBody().accept(this);
+
+        mv.visitVarInsn(ILOAD, store_variable);
+        forLoopCreateVariable.getIncrementBy().accept(this);
+        operatorAdd.accept(makeOperationVisitor, type, mv);
+        mv.visitVarInsn(ISTORE, store_variable);
+
+        mv.visitJumpInsn(Opcodes.GOTO, startLabel);
+
+        mv.visitLabel(endLabel);
     }
 
     @Override
