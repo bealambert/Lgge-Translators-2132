@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class AssignSymbolTableVisitor implements Visitor {
 
-
     @Override
     public void visit(SubExpression subExpression, SymbolTable symbolTable) {
         subExpression.setSymbolTable(symbolTable);

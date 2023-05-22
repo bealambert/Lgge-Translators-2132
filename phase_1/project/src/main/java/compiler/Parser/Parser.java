@@ -420,20 +420,14 @@ public class Parser {
         }
         // Procedure - IO
         if (identifier.getAttribute().equals(Token.ReadInt.getName())) {
-            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
-            arrayList.add(arrayOfExpression);
             match(Token.ClosingParenthesis);
             return new ReadInt(identifier, arrayList);
         }
         if (identifier.getAttribute().equals(Token.ReadReal.getName())) {
-            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
-            arrayList.add(arrayOfExpression);
             match(Token.ClosingParenthesis);
             return new ReadReal(identifier, arrayList);
         }
         if (identifier.getAttribute().equals(Token.ReadString.getName())) {
-            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
-            arrayList.add(arrayOfExpression);
             match(Token.ClosingParenthesis);
             return new ReadString(identifier, arrayList);
         }

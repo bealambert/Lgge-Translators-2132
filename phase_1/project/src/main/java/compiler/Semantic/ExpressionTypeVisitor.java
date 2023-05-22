@@ -12,6 +12,21 @@ public interface ExpressionTypeVisitor {
     TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor();
     MakeSemanticAnalysisVisitor makeSemanticAnalysisVisitor = new MakeSemanticAnalysisVisitor();
 
+    public Type visit(ReadInt readInt) throws SemanticAnalysisException;
+
+    public Type visit(ReadReal readReal) throws SemanticAnalysisException;
+
+    public Type visit(ReadString readString) throws SemanticAnalysisException;
+
+    public Type visit(Write write) throws SemanticAnalysisException;
+
+    public Type visit(Writeln writeln) throws SemanticAnalysisException;
+
+    public Type visit(WriteInt writeInt) throws SemanticAnalysisException;
+
+    public Type visit(WriteReal writeReal) throws SemanticAnalysisException;
+
+
     public Type visit(Not not) throws SemanticAnalysisException;
 
     public Type visit(Len len) throws SemanticAnalysisException;

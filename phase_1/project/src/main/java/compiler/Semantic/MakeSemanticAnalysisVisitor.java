@@ -58,6 +58,57 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     }
 
     @Override
+    public void visit(ReadInt readInt) throws SemanticAnalysisException {
+        // nothing to do
+    }
+
+    @Override
+    public void visit(ReadReal readReal) throws SemanticAnalysisException {
+        // nothing to do
+    }
+
+    @Override
+    public void visit(ReadString readString) throws SemanticAnalysisException {
+        // nothing to do
+    }
+
+    @Override
+    public void visit(WriteInt writeInt) throws SemanticAnalysisException {
+        assert writeInt.getParams().size() == 1;
+        Type type = writeInt.getParams().get(0).accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (!(type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()))) {
+            throw new SemanticAnalysisException("Expected an int as parameter of the writeInt function, observed : " + type.getAttribute());
+        }
+    }
+
+    @Override
+    public void visit(WriteReal writeReal) throws SemanticAnalysisException {
+        assert writeReal.getParams().size() == 1;
+        Type type = writeReal.getParams().get(0).accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (!(type.getAttribute().equals(Token.RealNumber.getName()) || type.getAttribute().equals(Token.RealIdentifier.getName()))) {
+            throw new SemanticAnalysisException("Expected a real as parameter of the writeReal function, observed : " + type.getAttribute());
+        }
+    }
+
+    @Override
+    public void visit(Write write) throws SemanticAnalysisException {
+        assert write.getParams().size() == 1;
+        Type type = write.getParams().get(0).accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (!(type.getAttribute().equals(Token.Strings.getName()) || type.getAttribute().equals(Token.StringIdentifier.getName()))) {
+            throw new SemanticAnalysisException("Expected a string as parameter of the write function, observed : " + type.getAttribute());
+        }
+    }
+
+    @Override
+    public void visit(Writeln writeln) throws SemanticAnalysisException {
+        assert writeln.getParams().size() == 1;
+        Type type = writeln.getParams().get(0).accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        if (!(type.getAttribute().equals(Token.IntIdentifier.getName()) || type.getAttribute().equals(Token.NaturalNumber.getName()))) {
+            throw new SemanticAnalysisException("Expected a string as parameter of the writeln function, observed : " + type.getAttribute());
+        }
+    }
+
+    @Override
     public void visit(Floor floor) throws SemanticAnalysisException {
         floor.accept(ExpressionTypeVisitor.typeCheckingVisitor);
     }

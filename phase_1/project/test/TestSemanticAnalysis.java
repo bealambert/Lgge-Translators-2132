@@ -524,5 +524,20 @@ public class TestSemanticAnalysis {
         }
     }
 
+    @Test
+    public void TestIO() {
+        String input = "var c int = 3 + readInt();";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
 
 }

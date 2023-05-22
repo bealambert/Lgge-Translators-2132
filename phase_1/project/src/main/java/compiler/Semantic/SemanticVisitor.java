@@ -16,6 +16,20 @@ public interface SemanticVisitor {
     Stack<Identifier> functionNameStack = new Stack<>();
     MakeOperationVisitor makeOperationVisitor = new MakeOperationVisitor();
 
+    void visit(ReadInt readInt) throws SemanticAnalysisException;
+
+    void visit(ReadReal readReal) throws SemanticAnalysisException;
+
+    void visit(ReadString readString) throws SemanticAnalysisException;
+
+    void visit(WriteInt writeInt) throws SemanticAnalysisException;
+
+    void visit(WriteReal writeReal) throws SemanticAnalysisException;
+
+    void visit(Write write) throws SemanticAnalysisException;
+
+    void visit(Writeln writeln) throws SemanticAnalysisException;
+
     void visit(Floor floor) throws SemanticAnalysisException;
 
     void visit(Len len) throws SemanticAnalysisException;

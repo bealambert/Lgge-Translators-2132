@@ -6,7 +6,6 @@ import compiler.Parser.*;
 import compiler.SemanticAnalysisException;
 
 public interface Visitor {
-
     void visit(SubExpression subExpression, SymbolTable symbolTable);
 
     void visit(Variable variable, SymbolTable symbolTable);

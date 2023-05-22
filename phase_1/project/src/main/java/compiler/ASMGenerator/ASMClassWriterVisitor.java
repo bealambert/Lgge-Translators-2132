@@ -74,6 +74,41 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     }
 
     @Override
+    public void visit(ReadInt readInt) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(ReadReal readReal) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(ReadString readString) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(WriteInt writeInt) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(WriteReal writeReal) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(Write write) throws SemanticAnalysisException {
+
+    }
+
+    @Override
+    public void visit(Writeln writeln) throws SemanticAnalysisException {
+
+    }
+
+    @Override
     public void visit(Floor floor) throws SemanticAnalysisException {
 
     }

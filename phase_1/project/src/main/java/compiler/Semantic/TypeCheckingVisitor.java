@@ -12,8 +12,8 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     Type voidType = new Type(new Identifier(Token.VoidIdentifier.getName()));
     Type intType = new Type(new Identifier(Token.NaturalNumber.getName()));
     Type stringType = new Type(new Identifier(Token.Strings.getName()));
-    /*Type voidType = new Type(new Identifier(Token.VoidIdentifier.getName()));
-    Type voidType = new Type(new Identifier(Token.VoidIdentifier.getName()));*/
+    Type realType = new Type(new Identifier(Token.RealNumber.getName()));
+
 
     @Override
     public Type visit(Variable variable) throws SemanticAnalysisException {
@@ -143,6 +143,41 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
     @Override
     public Type visit(Type type) throws SemanticAnalysisException {
         return type;
+    }
+
+    @Override
+    public Type visit(ReadInt readInt) throws SemanticAnalysisException {
+        return intType;
+    }
+
+    @Override
+    public Type visit(ReadReal readReal) throws SemanticAnalysisException {
+        return realType;
+    }
+
+    @Override
+    public Type visit(ReadString readString) throws SemanticAnalysisException {
+        return stringType;
+    }
+
+    @Override
+    public Type visit(Write write) throws SemanticAnalysisException {
+        return voidType;
+    }
+
+    @Override
+    public Type visit(Writeln writeln) throws SemanticAnalysisException {
+        return voidType;
+    }
+
+    @Override
+    public Type visit(WriteInt writeInt) throws SemanticAnalysisException {
+        return voidType;
+    }
+
+    @Override
+    public Type visit(WriteReal writeReal) throws SemanticAnalysisException {
+        return voidType;
     }
 
     @Override
