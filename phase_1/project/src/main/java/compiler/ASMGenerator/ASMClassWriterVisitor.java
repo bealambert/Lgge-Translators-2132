@@ -190,7 +190,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         assignToIndexArray.getAccessToIndexArray().getArrayOfExpression().accept(this);
         assignToIndexArray.getAssignmentExpression().accept(this);
 
-        int array_store = asmUtils.mapAssignToIndex.getOrDefault(type.getAttribute(), -1);
+        int array_store = asmUtils.mapAssignToIndex.getOrDefault(type.getAttribute(), AASTORE);
         mv.visitInsn(array_store);
     }
 
@@ -203,36 +203,57 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         mv.visitVarInsn(mapLoadType, store_index);
 
         assignToRecordAttribute.getAssignmentExpression().accept(this);
-        try {
-            SymbolTable symbolTable = assignToRecordAttribute.getSymbolTable();
 
-            InitializeRecords initializeRecords = (InitializeRecords) treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
-            Class<?> recordClass = this.recordClasses.get(initializeRecords.getRecords().getIdentifier().getAttribute());
+        SymbolTable symbolTable = assignToRecordAttribute.getSymbolTable();
 
-            ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
-            StringBuilder desc = new StringBuilder("");
-            for (int i = 0; i < recordParameters.size(); i++) {
-                RecordParameter recordParameter = recordParameters.get(i);
-                String attribute = recordParameter.getIdentifier().getAttribute();
-                if (methodIdentifier.getAttribute().equals(attribute)) {
-                    if (recordParameters.get(i).getType() instanceof ArrayType) {
-                        desc.append("[");
-                    }
-                    desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
-                    break;
+        InitializeRecords initializeRecords = (InitializeRecords) treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        StringBuilder desc = new StringBuilder("");
+        for (int i = 0; i < recordParameters.size(); i++) {
+            RecordParameter recordParameter = recordParameters.get(i);
+            String attribute = recordParameter.getIdentifier().getAttribute();
+            if (methodIdentifier.getAttribute().equals(attribute)) {
+                if (recordParameters.get(i).getType() instanceof ArrayType) {
+                    desc.append("[");
                 }
+                desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
+                break;
             }
-
-            mv.visitFieldInsn(Opcodes.PUTFIELD, recordClass.getName().replace('.', '/'), methodIdentifier.getAttribute(), desc.toString());
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        mv.visitFieldInsn(Opcodes.PUTFIELD, initializeRecords.getRecords().getIdentifier().getAttribute(), methodIdentifier.getAttribute(), desc.toString());
     }
 
     @Override
     public void visit(AssignToRecordAttributeAtIndex assignToRecordAttributeAtIndex) throws SemanticAnalysisException {
 
+        Identifier objectIdentifier = assignToRecordAttributeAtIndex.getMethodCallFromIndexArray().getAccessToIndexArray().getIdentifier();
+        Identifier methodIdentifier = assignToRecordAttributeAtIndex.getMethodCallFromIndexArray().getMethodIdentifier();
+        int mapLoadType = ALOAD;
+        int store_index = storeTable.storeTable.get(objectIdentifier.getAttribute());
+        mv.visitVarInsn(mapLoadType, store_index);
+
+        assignToRecordAttributeAtIndex.getMethodCallFromIndexArray().getAccessToIndexArray().getArrayOfExpression().accept(this);
+        assignToRecordAttributeAtIndex.getAssignmentExpression().accept(this);
+
+        SymbolTable symbolTable = assignToRecordAttributeAtIndex.getSymbolTable();
+
+        InitializeRecords initializeRecords = (InitializeRecords) treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        StringBuilder desc = new StringBuilder("");
+        for (int i = 0; i < recordParameters.size(); i++) {
+            RecordParameter recordParameter = recordParameters.get(i);
+            String attribute = recordParameter.getIdentifier().getAttribute();
+            if (methodIdentifier.getAttribute().equals(attribute)) {
+                if (recordParameters.get(i).getType() instanceof ArrayType) {
+                    desc.append("[");
+                }
+                desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
+                break;
+            }
+        }
+
+        mv.visitFieldInsn(Opcodes.PUTFIELD, initializeRecords.getRecords().getIdentifier().getAttribute(), methodIdentifier.getAttribute(), desc.toString());
     }
 
     @Override
@@ -307,17 +328,18 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         createArrayVariable.getArrayInitializer().getArraySize().accept(this);
         int newArrayValue = asmUtils.mapArrayType.getOrDefault(createArrayVariable.getType().getAttribute(), -1);
         if (newArrayValue == -1) {
-            // check type
+            mv.visitTypeInsn(ANEWARRAY, createArrayVariable.getType().getAttribute());
+            desc = "[L" + createArrayVariable.getType().getAttribute() + ";";
         } else {
             mv.visitIntInsn(NEWARRAY, newArrayValue);
-            if (flag == PUTSTATIC) {
-                mv.visitFieldInsn(flag, this.className,
-                        name,
-                        desc);
-            } else {
-                int array_store = asmUtils.mapStoreType.get(createArrayVariable.getType().getAttribute());
-                mv.visitVarInsn(ASTORE, storeCount);
-            }
+        }
+        if (flag == PUTSTATIC) {
+            mv.visitFieldInsn(flag, this.className,
+                    name,
+                    desc);
+        } else {
+            //int array_store = asmUtils.mapStoreType.get(createArrayVariable.getType().getAttribute());
+            mv.visitVarInsn(ASTORE, storeCount);
         }
 
         storeTable.storeTable.put(createArrayVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);

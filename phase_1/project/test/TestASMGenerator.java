@@ -595,7 +595,7 @@ public class TestASMGenerator {
     }
 
     @Test
-    public void TestRecords() {
+    public void TestAssignFieldRecord() {
         String input =
                 // FUNCTION
                 "const i int = 2;" +
@@ -608,8 +608,47 @@ public class TestASMGenerator {
                         "writeln(\"abc\")" +
                         "var i bool = not(true);" +
                         "var d Point = Point(10, 20, 30);" +
+                        "var r Point = Point(30, 20, 10);" +
                         "d.x = 5;" +
                         "d.z = 100;" +
+                        "r.y = 22;" +
+                        "return;\n" +
+                        "}";
+
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestAssignFieldArrayRecord() {
+        String input =
+                // FUNCTION
+                "const i int = 2;" +
+                        "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "    z int;\n" +
+                        "}" +
+                        "proc square(a int, b int) void {\n" +
+                        "writeln(\"abc\")" +
+                        "var i bool = not(true);" +
+                        "var myArray Point[] = Point() [2];" +
+                        "var d Point = Point(10, 20, 30);" +
+                        "var r Point = Point(30, 20, 10);" +
+                        "myArray[0] = d;" +
+                        "myArray[1] = r;" +
                         "return;\n" +
                         "}";
 
