@@ -4,6 +4,7 @@ import compiler.ASTNode;
 import compiler.Lexer.Identifier;
 import compiler.MyNode;
 import compiler.Parser.*;
+import compiler.Semantic.ExpressionTypeVisitor;
 import compiler.Semantic.SymbolTable;
 import compiler.SemanticAnalysisException;
 import compiler.Token;
@@ -119,6 +120,17 @@ public class ASMUtils {
         myNode.getLeft().accept(this);
         myNode.getRight().accept(this);
     }*/
+
+    public void makeConversionIntReal(Type expectedType, Type leftType, MethodVisitor mv) {
+
+        boolean real = expectedType.getAttribute().equals(Token.RealNumber.getName()) || expectedType.getAttribute().equals(Token.RealIdentifier.getName());
+        boolean integerToconvert = leftType.getAttribute().equals(Token.IntIdentifier.getName()) || leftType.getAttribute().equals(Token.NaturalNumber.getName());
+        boolean applyConversion = real && integerToconvert;
+
+        if (applyConversion) {
+            mv.visitInsn(I2F);
+        }
+    }
 
 
     public String createDescFromParam(ArrayList<Param> params, Type returnType) {

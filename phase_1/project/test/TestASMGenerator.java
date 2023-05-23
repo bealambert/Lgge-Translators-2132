@@ -14,9 +14,9 @@ public class TestASMGenerator {
 
     @Test
     public void TestSimpleDeclarationVariable() {
-        String input = "var i int = 3 + 2; " +
-                "var j real = 1.5 * 4.2;" +
-                "var k real = (1.0 + 3.2) * (4.1 - 6.2);" +
+        String input = "const i int = 3 + 2; " +
+                "const j real = 1.5 * 4.2;" +
+                "const k real = (1.0 + 3.2) * (4.1 - 6.2);" +
                 "const empty bool = true;" +
                 "const s string = \"abc\" + \"123\" + \"zzz\";" +
                 "var comp bool = \"abc\" == \"def\";" +
@@ -59,8 +59,8 @@ public class TestASMGenerator {
                 "var i int = 3 + 2; " +
                 "var j real = 1.5 * 4.2;" +
                 "var k real = (1.0 + 3.2) * (4.1 - 6.2);" +
-                "const empty bool = true;" +
-                "const s string = \"abc\" + \"123\" + \"zzz\";" +
+                "var empty bool = true;" +
+                "var s string = \"abc\" + \"123\" + \"zzz\";" +
                 "var comp bool = \"abc\" == \"def\";" +
                 "var notEqual bool = \"aaa\" <> \"aba\";" +
                 "var equalIntegers bool = 1.0 <> 2.4;" +
@@ -558,6 +558,27 @@ public class TestASMGenerator {
                         "var i bool = not(true);" +
                         "return;\n" +
                         "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestConversion() {
+        String input =
+                // FUNCTION
+                "const i real = 2 + 3.5;";
 
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);

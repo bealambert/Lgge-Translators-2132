@@ -653,10 +653,25 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
             myNode.getValue().accept(this);
         } else {
             // IF ELSE
-            myNode.getLeft().accept(this);
-            myNode.getRight().accept(this);
+            Type expectedType = myNode.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+            Type leftType = myNode.getLeft().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+            Type rightType = myNode.getRight().accept(ExpressionTypeVisitor.typeCheckingVisitor);
 
-            myNode.getValue().accept(makeOperationVisitor, myNode.getLeft().accept(ExpressionTypeVisitor.typeCheckingVisitor), mv);
+            myNode.getLeft().accept(this);
+            if (myNode.getValue() instanceof OperatorModulo) {
+                myNode.getRight().accept(this);
+            } else {
+                asmUtils.makeConversionIntReal(expectedType, leftType, mv);
+                myNode.getRight().accept(this);
+                asmUtils.makeConversionIntReal(expectedType, rightType, mv);
+            }
+            boolean leftIsReal = expectedType.getAttribute().equals(Token.RealNumber.getName()) || expectedType.getAttribute().equals(Token.RealIdentifier.getName());
+            boolean rightIsReal = leftType.getAttribute().equals(Token.IntIdentifier.getName()) || leftType.getAttribute().equals(Token.NaturalNumber.getName());
+            if (rightIsReal) {
+                myNode.getValue().accept(makeOperationVisitor, rightType, mv);
+            } else {
+                myNode.getValue().accept(makeOperationVisitor, leftType, mv);
+            }
         }
     }
 
