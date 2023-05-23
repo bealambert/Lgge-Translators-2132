@@ -338,7 +338,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                     name,
                     desc);
         } else {
-            //int array_store = asmUtils.mapStoreType.get(createArrayVariable.getType().getAttribute());
             mv.visitVarInsn(ASTORE, storeCount);
         }
 
@@ -401,7 +400,6 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     @Override
     public void visit(CreateRecordVariables createRecordVariables) throws SemanticAnalysisException {
         String recordName = createRecordVariables.getType().getAttribute();
-        Class<?> recordclass = this.recordClasses.get(recordName);
 
         ArrayList<FunctionCallParameter> functionCallParameters = createRecordVariables.getRecordCall().getFunctionCallParameters();
         String desc = asmUtils.createDescriptionFromFunctionCallParamaters(functionCallParameters);
@@ -595,7 +593,31 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(MethodCallFromIdentifier methodCallFromIdentifier) throws SemanticAnalysisException {
-        //
+
+        Identifier objectIdentifier = methodCallFromIdentifier.getObjectIdentifier();
+        Identifier methodIdentifier = methodCallFromIdentifier.getMethodIdentifier();
+        int mapLoadType = ALOAD; //asmUtils.mapLoadType.get(type.getAttribute());
+        int store_index = storeTable.storeTable.get(objectIdentifier.getAttribute());
+        mv.visitVarInsn(mapLoadType, store_index);
+
+        SymbolTable symbolTable = methodCallFromIdentifier.getSymbolTable();
+        InitializeRecords initializeRecords = (InitializeRecords) treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        StringBuilder desc = new StringBuilder("");
+        for (int i = 0; i < recordParameters.size(); i++) {
+            RecordParameter recordParameter = recordParameters.get(i);
+            String attribute = recordParameter.getIdentifier().getAttribute();
+            if (methodIdentifier.getAttribute().equals(attribute)) {
+                if (recordParameters.get(i).getType() instanceof ArrayType) {
+                    desc.append("[");
+                }
+                desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
+                break;
+            }
+        }
+
+        mv.visitFieldInsn(GETFIELD, initializeRecords.getRecords().getIdentifier().getAttribute(), methodIdentifier.getAttribute(), desc.toString());
+
     }
 
     @Override

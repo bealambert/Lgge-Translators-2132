@@ -1,15 +1,12 @@
-import compiler.ASMGenerator.Generator;
 import compiler.ASTNode;
 import compiler.Lexer.Lexer;
-import compiler.Lexer.Symbol;
-import compiler.MyNode;
 import compiler.Parser.*;
-import compiler.SemanticAnalysisException;
 import org.junit.Test;
 
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestParserBasics {
 
@@ -503,6 +500,20 @@ public class TestParserBasics {
         ASTNode root = parser.getAST();
 
         assertTrue(root instanceof Write);
+
+    }
+
+    @Test
+    public void TestAccessToIndexArrayAsExpression() {
+        String input = "var z int[] = int()[5];" +
+                "var value int = z[0] + 3;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+
+        Parser parser = new Parser(lexer);
+        ASTNode root = parser.getAST();
+
+        assertTrue(root instanceof CreateVariables);
 
     }
 

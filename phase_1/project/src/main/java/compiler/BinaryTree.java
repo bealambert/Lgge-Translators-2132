@@ -1,14 +1,11 @@
 package compiler;
 
-import compiler.Lexer.Symbol;
 import compiler.Parser.Expression;
 import compiler.Parser.Operator;
-import compiler.MyNode;
 import compiler.Parser.Type;
 import compiler.Semantic.ExpressionTypeVisitor;
 
 import java.util.ArrayList;
-import java.util.RandomAccess;
 
 public class BinaryTree {
     MyNode root;
@@ -31,7 +28,7 @@ public class BinaryTree {
             ArrayList<Expression> secondP = BinaryTreeHelper(firstP, 2);
             ArrayList<Expression> thirdP = BinaryTreeHelper(secondP, 3);
             ArrayList<Expression> fourthP = BinaryTreeHelper(thirdP, 4);
-            return (MyNode) fourthP.get(0);
+            return new MyNode(fourthP.get(0));
         }
 
     }

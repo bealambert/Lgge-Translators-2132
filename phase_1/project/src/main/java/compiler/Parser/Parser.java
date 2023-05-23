@@ -1,10 +1,15 @@
 package compiler.Parser;
 
 import compiler.*;
-import compiler.Lexer.*;
+import compiler.Lexer.Identifier;
+import compiler.Lexer.Keyword;
+import compiler.Lexer.Lexer;
+import compiler.Lexer.Symbol;
 
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class Parser {
 
@@ -711,6 +716,23 @@ public class Parser {
             }
             if (isSymbol(Token.OpeningBracket)) {
                 match(Token.OpeningBracket);
+                if (!isSymbol(Token.ClosingBracket)) {
+                    ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+                    match(Token.ClosingBracket);
+                    ArrayList<Expression> arrayList = new ArrayList();
+                    if (isSymbol(Token.Point)) {
+                        match(Token.Point);
+                        Identifier method = (Identifier) match(Token.Identifier);
+                        AccessToIndexArray accessToIndexArray = new AccessToIndexArray(referenceOrTypeIdentifier, arrayOfExpression);
+                        MethodCallFromIndexArray methodCallFromIndexArray = new MethodCallFromIndexArray(accessToIndexArray, method);
+
+                        arrayList.add(methodCallFromIndexArray);
+                        return extendCreateExpressionVariable(create_variable_identifier, identifier, type, arrayList);
+                    }
+                    AccessToIndexArray access = new AccessToIndexArray(referenceOrTypeIdentifier, arrayOfExpression);
+                    arrayList.add(access);
+                    return extendCreateExpressionVariable(create_variable_identifier, identifier, type, arrayList);
+                }
                 match(Token.ClosingBracket);
                 ArrayType arrayType = new ArrayType(referenceOrTypeIdentifier);
                 if (isSymbol(Token.OpeningParenthesis)) {
@@ -776,5 +798,23 @@ public class Parser {
             return new CreateExpressionVariable(create_variable_identifier, identifier, type, arrayOfExpression);
         }
         return null;
+    }
+
+    private CreateVariables extendCreateExpressionVariable(Keyword create_variable_identifier, Identifier identifier, Type type, ArrayList<Expression> expressions) {
+        Symbol operatorSymbol = whichSymbol(operatorValues);
+        if (operatorSymbol != null) {
+            pop();
+            ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+            Operator operator = parseOperator((String) operatorSymbol.getAttribute());
+
+
+            expressions.add(expressions.size(), operator);
+            for (int i = 0; i < arrayOfExpression.expressions.size(); i++) {
+                expressions.add(expressions.size(), arrayOfExpression.expressions.get(i));
+            }
+            ArrayOfExpression toReturn = new ArrayOfExpression(expressions);
+            return new CreateExpressionVariable(create_variable_identifier, identifier, type, toReturn);
+        }
+        return new CreateExpressionVariable(create_variable_identifier, identifier, type, new ArrayOfExpression(expressions));
     }
 }
