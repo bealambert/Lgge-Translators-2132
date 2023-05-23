@@ -79,12 +79,12 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
         Type leftType = left.accept(this);
         Type rightType = right.accept(this);
 
-        treatSemanticCases.isEqual(leftType, rightType);
-        treatSemanticCases.isAllowed(leftType, rightType, (Operator) myNode.getValue());
+        //treatSemanticCases.isEqual(leftType, rightType);
+        Type returnType = treatSemanticCases.isAllowed(leftType, rightType, (Operator) myNode.getValue());
         if (myNode.getValue() instanceof OperatorComparator) {
             return new Type(new Identifier("bool"));
         }
-        return leftType;
+        return returnType;
     }
 
     @Override
@@ -104,10 +104,16 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
         Type expectedType = createExpressionVariable.getType();
         ArrayOfExpression arrayOfExpression = createExpressionVariable.getArrayOfExpression();
         Type observed = arrayOfExpression.accept(this);
-        treatSemanticCases.isEqual(expectedType, observed);
 
+        if (expectedType.getAttribute().equals(Token.RealIdentifier.getName()) &&
+                observed.getAttribute().equals(Token.NaturalNumber.getName())) {
+            return expectedType;
+        }
+
+        treatSemanticCases.isEqual(expectedType, observed);
         return expectedType;
     }
+
 
     @Override
     public Type visit(CreateFunctionCallParameterVariable createFunctionCallParameterVariable) throws SemanticAnalysisException {
@@ -275,6 +281,10 @@ public class TypeCheckingVisitor implements ExpressionTypeVisitor {
         Type expected = astNode.accept(typeCheckingVisitor);
         Type observed = reassignment.getArrayOfExpression().accept(typeCheckingVisitor);
 
+        if (expected.getAttribute().equals(Token.RealIdentifier.getName()) &&
+                observed.getAttribute().equals(Token.NaturalNumber.getName())) {
+            return expected;
+        }
         treatSemanticCases.isEqual(expected, observed);
         return observed;
     }

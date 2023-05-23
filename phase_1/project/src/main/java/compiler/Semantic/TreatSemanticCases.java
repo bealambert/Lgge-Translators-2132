@@ -5,7 +5,9 @@ import compiler.Lexer.Identifier;
 import compiler.Parser.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static compiler.Semantic.ExpressionTypeVisitor.*;
 
@@ -130,17 +132,24 @@ public class TreatSemanticCases {
         }
     }
 
-    public void isAllowed(Type expected, Type observed, Operator operator) throws SemanticAnalysisException {
+
+    public Type isAllowed(Type expected, Type observed, Operator operator) throws SemanticAnalysisException {
         String expectations = mapping.getOrDefault(expected.getAttribute(), expected.getAttribute());
         String reality = mapping.getOrDefault(observed.getAttribute(), observed.getAttribute());
 
         String[] allowed_types = operator.getAllowed_types();
-        for (int i = 0; i < allowed_types.length; i++) {
-            if (allowed_types[i].equals(expectations) && allowed_types[i].equals(reality)) {
-                return;
-            }
+        List<String> allowedOperationArray = Arrays.asList(allowed_types);
+        boolean allowedOperation = allowedOperationArray.contains(expectations) && allowedOperationArray.contains(reality);
+        if (!allowedOperation) {
+            throw new SemanticAnalysisException("operation not allowed : \"" + operator.getOperator() + "\" between " + expectations + " and " + reality);
         }
-        throw new SemanticAnalysisException("operation not allowed : \"" + operator.getOperator() + "\" between " + expectations + " and " + reality);
+        if (expectations.equals(Token.IntIdentifier.getName()) && reality.equals(Token.RealIdentifier.getName())) {
+            return observed;
+        } else if (reality.equals(Token.IntIdentifier.getName()) && expectations.equals(Token.RealIdentifier.getName())) {
+            return expected;
+        }
+        isEqual(expected, observed);
+        return expected;
 
     }
 

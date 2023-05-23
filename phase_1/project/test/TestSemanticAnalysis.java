@@ -652,5 +652,38 @@ public class TestSemanticAnalysis {
         }
     }
 
+    @Test
+    public void TestTypeConversionFromIntToReal() {
+        String input = "var x real = 2;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void TestOperationWithRealAndInt() {
+        String input = "var x real = 2 + 3.5;" +
+                "var i real;" +
+                "i = 3;" +
+                "var j int = 2;";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
 
 }

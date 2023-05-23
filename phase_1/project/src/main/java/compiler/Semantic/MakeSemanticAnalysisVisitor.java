@@ -272,10 +272,17 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         Type expectedType = createExpressionVariable.getType();
         treatSemanticCases.TypeExists(expectedType);
         Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getArrayOfExpression());
-        treatSemanticCases.isEqual(expectedType, observedType);
 
-        createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
-        createExpressionVariable.getArrayOfExpression().accept(this);
+        if (expectedType.getAttribute().equals(Token.RealIdentifier.getName()) &&
+                observedType.getAttribute().equals(Token.NaturalNumber.getName())) {
+            createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+            createExpressionVariable.getArrayOfExpression().accept(this);
+        } else {
+            treatSemanticCases.isEqual(expectedType, observedType);
+            createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+            createExpressionVariable.getArrayOfExpression().accept(this);
+        }
+
     }
 
     @Override
