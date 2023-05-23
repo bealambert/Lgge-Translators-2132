@@ -8,10 +8,16 @@ import compiler.Semantic.ExpressionTypeVisitor;
 import compiler.Semantic.SymbolTable;
 import compiler.SemanticAnalysisException;
 import compiler.Token;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -166,6 +172,72 @@ public class ASMUtils {
         }
 
         throw new SemanticAnalysisException("Could not find identifier : " + identifier + " in this scope");
+
+    }
+
+    public void generateRecordBytecode(InitializeRecords initializeRecords, ByteArrayClassLoader loader) {
+
+        int access = ACC_PUBLIC | ACC_STATIC;
+        String recordName = initializeRecords.getRecords().getIdentifier().getAttribute();
+        ASMClassWriterVisitor asmClassWriterVisitor = new ASMClassWriterVisitor();
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        cw.visit(V1_8, Opcodes.ACC_PUBLIC, recordName, null, "java/lang/Object", null);
+
+
+        StringBuilder constructorDescription = new StringBuilder("(");
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        for (int i = 0; i < recordParameters.size(); i++) {
+            Identifier fieldName = recordParameters.get(i).getIdentifier();
+            Type fieldType = recordParameters.get(i).getType();
+            String desc = "";
+            if (fieldType instanceof ArrayType) {
+                desc += "[";
+            }
+            desc += mapTypeToASMTypes.getOrDefault(fieldType.getAttribute(), "A");
+            constructorDescription.append(desc);
+            cw.visitField(access, fieldName.getAttribute(), desc, null, null).visitEnd();
+        }
+        constructorDescription.append(")V");
+
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", constructorDescription.toString(), null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        for (int i = 0; i < recordParameters.size(); i++) {
+            createFieldInConstructorWithRecordParameter(recordParameters.get(i), i + 1, mv, recordName);
+        }
+
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+        cw.visitEnd();
+
+        byte[] bytecode = cw.toByteArray();
+        Class<?> test = loader.defineClass(recordName, bytecode);
+        asmClassWriterVisitor.recordClasses.put(recordName, test);
+        try (FileOutputStream outputStream = new FileOutputStream(recordName + ".class")) {
+            outputStream.write(bytecode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void createFieldInConstructorWithRecordParameter(RecordParameter recordParameter, int store_index, MethodVisitor mv, String recordName) {
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        int loadType = ALOAD;
+        if (!(recordParameter.getType() instanceof ArrayType)) {
+            loadType = mapLoadType.getOrDefault(recordParameter.getType().getAttribute(), ALOAD);
+        }
+
+        String desc = "";
+        if (recordParameter.getType() instanceof ArrayType) {
+            desc += "[";
+        }
+        desc += mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A");
+        mv.visitVarInsn(loadType, store_index);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, recordName, recordParameter.getIdentifier().getAttribute(), desc);
 
     }
 }

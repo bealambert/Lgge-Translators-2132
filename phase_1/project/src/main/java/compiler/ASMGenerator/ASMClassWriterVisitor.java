@@ -27,6 +27,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     ASMUtils asmUtils;
     StoreTable storeTable;
     String className;
+    ByteArrayClassLoader loader;
+    HashMap<String, Class<?>> recordClasses;
 
     public ASMClassWriterVisitor() {
         storeCount = 1;
@@ -34,11 +36,16 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         flags = new Stack<>();
         asmUtils = new ASMUtils();
         storeTable = new StoreTable(null);
+        recordClasses = new HashMap<>();
     }
 
     public void setCw(ClassWriter cw, String className) {
         this.cw = cw;
         this.className = className;
+    }
+
+    public void setLoader(ByteArrayClassLoader loader) {
+        this.loader = loader;
     }
 
 
@@ -506,7 +513,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(InitializeRecords initializeRecords) throws SemanticAnalysisException {
-        //
+        asmUtils.generateRecordBytecode(initializeRecords, this.loader);
     }
 
     @Override
@@ -665,7 +672,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                 myNode.getRight().accept(this);
                 asmUtils.makeConversionIntReal(expectedType, rightType, mv);
             }
-            boolean leftIsReal = expectedType.getAttribute().equals(Token.RealNumber.getName()) || expectedType.getAttribute().equals(Token.RealIdentifier.getName());
+            //boolean leftIsReal = expectedType.getAttribute().equals(Token.RealNumber.getName()) || expectedType.getAttribute().equals(Token.RealIdentifier.getName());
             boolean rightIsReal = leftType.getAttribute().equals(Token.IntIdentifier.getName()) || leftType.getAttribute().equals(Token.NaturalNumber.getName());
             if (rightIsReal) {
                 myNode.getValue().accept(makeOperationVisitor, rightType, mv);

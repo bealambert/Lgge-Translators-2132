@@ -1,6 +1,7 @@
 package compiler.ASMGenerator;
 
 import compiler.ASTNode;
+import compiler.BinaryTree;
 import compiler.Lexer.Strings;
 import compiler.Parser.CreateProcedure;
 import compiler.Parser.Parser;
@@ -30,9 +31,11 @@ public class Generator {
 
     ASMClassWriterVisitor asmClassWriterVisitor = new ASMClassWriterVisitor();
     ASMVisitorMethod asmVisitorMethod = new ASMVisitorMethod();
+    ByteArrayClassLoader loader;
 
     public Generator(ASTNode root) {
         this.root = root;
+        this.loader = new ByteArrayClassLoader();
     }
 
 
@@ -182,6 +185,7 @@ public class Generator {
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null);
         asmClassWriterVisitor.setCw(cw, className);
+        asmClassWriterVisitor.setLoader(loader);
 
         createNecessaryMethods(cw);
 
@@ -250,6 +254,7 @@ public class Generator {
         mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
 
 
+
         //mainMethodWriter.visitLdcInsn(65);
         //mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "chr", "(I)Ljava/lang/String;", false);
 
@@ -260,8 +265,7 @@ public class Generator {
         cw.visitEnd();
 
         byte[] bytecode = cw.toByteArray();
-        ByteArrayClassLoader loader = new ByteArrayClassLoader();
-        Class<?> test = loader.defineClass(className, bytecode);
+        Class<?> test = this.loader.defineClass(className, bytecode);
         try {
             try (FileOutputStream outputStream = new FileOutputStream("./Test.class")) {
                 outputStream.write(bytecode);
@@ -281,7 +285,7 @@ public class Generator {
         try {
             test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
             test.getMethod("writeln", String.class).invoke(null, "zzzzzzzzz");
-            test.getMethod("square", int.class, int.class).invoke(null, 1, 2);
+            //test.getMethod("square", int.class, int.class).invoke(null, 1, 2);
             test.getMethod("not", boolean.class).invoke(null, true);
 /*            Method squareMethod = test.getDeclaredMethod("square", int.class, int.class); // Retrieves the "square" method with two int parameters
             squareMethod.setAccessible(true); // If the method is private, make it accessible

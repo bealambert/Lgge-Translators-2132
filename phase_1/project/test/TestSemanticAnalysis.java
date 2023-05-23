@@ -168,7 +168,7 @@ public class TestSemanticAnalysis {
     public void TestCreateRecordDefinedNewTypes() {
         String input = "record Person {\n" +
                 "    name string;\n" +
-                "    location int[];\n" +   // changed Point object to int
+                "    location int[];\n" +
                 "    history int[];\n" +
                 "}";
         StringReader reader = new StringReader(input);

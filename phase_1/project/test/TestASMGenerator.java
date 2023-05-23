@@ -578,7 +578,11 @@ public class TestASMGenerator {
     public void TestConversion() {
         String input =
                 // FUNCTION
-                "const i real = 2 + 3.5;";
+                "const i real = 2 + 3.5;" +
+                        "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "}";
 
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
