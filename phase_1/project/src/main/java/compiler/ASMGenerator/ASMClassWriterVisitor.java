@@ -622,7 +622,34 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(MethodCallFromIndexArray methodCallFromIndexArray) throws SemanticAnalysisException {
-        //
+        Identifier objectIdentifier = methodCallFromIndexArray.getAccessToIndexArray().getIdentifier();
+        Identifier methodIdentifier = methodCallFromIndexArray.getMethodIdentifier();
+        int mapLoadType = ALOAD; //asmUtils.mapLoadType.get(type.getAttribute());
+        int store_index = storeTable.storeTable.get(objectIdentifier.getAttribute());
+        mv.visitVarInsn(mapLoadType, store_index);
+
+        methodCallFromIndexArray.getAccessToIndexArray().getArrayOfExpression().accept(this);
+        int arrayLoadType = AALOAD;
+        mv.visitInsn(arrayLoadType);
+
+        SymbolTable symbolTable = methodCallFromIndexArray.getSymbolTable();
+        InitializeRecords initializeRecords = (InitializeRecords) treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
+        ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+        StringBuilder desc = new StringBuilder("");
+        for (int i = 0; i < recordParameters.size(); i++) {
+            RecordParameter recordParameter = recordParameters.get(i);
+            String attribute = recordParameter.getIdentifier().getAttribute();
+            if (methodIdentifier.getAttribute().equals(attribute)) {
+                if (recordParameters.get(i).getType() instanceof ArrayType) {
+                    desc.append("[");
+                }
+                desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
+                break;
+            }
+        }
+
+        mv.visitFieldInsn(GETFIELD, initializeRecords.getRecords().getIdentifier().getAttribute(), methodIdentifier.getAttribute(), desc.toString());
+
     }
 
     @Override

@@ -700,5 +700,37 @@ public class TestASMGenerator {
 
     }
 
+    @Test
+    public void TestRetrieveValueFromMethodCallRecordArray() {
+        String input =
+                // FUNCTION
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "    z int;\n" +
+                        "}" +
+                        "proc square(a int, b int) void {\n" +
+                        "var d Point = Point(10, 20, 30);" +
+                        "var z int[] = int()[5];" +
+                        "var j int = d.x + 3;" +
+                        "return;\n" +
+                        "}";
+
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
 
 }

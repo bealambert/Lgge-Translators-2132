@@ -707,6 +707,16 @@ public class Parser {
         if (isSymbol(Token.Identifier)) {
             // check for built-in
             Identifier referenceOrTypeIdentifier = (Identifier) match(Token.Identifier);
+
+            if (isSymbol(Token.Point)) {
+                match(Token.Point);
+                Identifier method = (Identifier) match(Token.Identifier);
+                MethodCallFromIdentifier methodCallFromIdentifier = new MethodCallFromIdentifier(referenceOrTypeIdentifier, method);
+                ArrayList<Expression> arrayList = new ArrayList();
+                arrayList.add(methodCallFromIdentifier);
+                return extendCreateExpressionVariable(create_variable_identifier, identifier, type, arrayList);
+            }
+
             if (isSymbol(Token.Semicolon)) {
                 match(Token.Semicolon);
                 ArrayList<Expression> expressions = new ArrayList<>();
