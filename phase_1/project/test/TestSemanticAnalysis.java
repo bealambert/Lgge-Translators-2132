@@ -396,7 +396,6 @@ public class TestSemanticAnalysis {
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {
-            System.out.println(e.getMessage());
             fail();
         }
     }
@@ -463,7 +462,6 @@ public class TestSemanticAnalysis {
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {
-            System.out.println(e.getMessage());
             fail();
         }
     }
@@ -488,7 +486,6 @@ public class TestSemanticAnalysis {
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {
-            System.out.println(e.getMessage());
             fail();
         }
     }
@@ -504,8 +501,7 @@ public class TestSemanticAnalysis {
             semantic.makeSemanticAnalysis();
             fail();
         } catch (SemanticAnalysisException e) {
-            System.out.println(e.getMessage());
-
+            //
         }
     }
 
@@ -519,7 +515,6 @@ public class TestSemanticAnalysis {
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {
-            System.out.println(e.getMessage());
             fail();
         }
     }
@@ -534,7 +529,125 @@ public class TestSemanticAnalysis {
         try {
             semantic.makeSemanticAnalysis();
         } catch (SemanticAnalysisException e) {
-            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void TestPrecedenceConstInsideFunction() {
+        String input = "const a int = 3;" +
+                "const b int = 32; " +
+                "record Person {\n" +
+                "    name string;\n" +
+                "    location int[];\n" +
+                "    history int[];\n" +
+                "}" +
+                "proc square(v int) int {\n" +
+                "const c bool = true;" +
+                "    return v*v;\n" +
+                "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+    @Test
+    public void TestPrecedenceConstAfterRecord() {
+        String input = "const a int = 3;" +
+                "const b int = 32; " +
+                "record Person {\n" +
+                "    name string;\n" +
+                "    location int[];\n" +
+                "    history int[];\n" +
+                "}" +
+                "const c bool = true;" +
+
+                "proc square(v int) int {\n" +
+                "    return v*v;\n" +
+                "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+
+    @Test
+    public void TestPrecedenceRecordBeforeConst() {
+        String input = "record Person {\n" +
+                "    name string;\n" +
+                "    location int[];\n" +
+                "    history int[];\n" +
+                "}" +
+                "const a int = 3;" +
+                "const b int = 32; " +
+                "const c bool = true;" +
+
+                "proc square(v int) int {\n" +
+                "    return v*v;\n" +
+                "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+    @Test
+    public void TestPrecedenceRecordInsideFunction() {
+        String input = "const a int = 3;" +
+                "const b int = 32; " +
+                "const c bool = true;" +
+
+                "proc square(v int) int {\n" +
+                "record Person {\n" +
+                "    name string;\n" +
+                "    location int[];\n" +
+                "    history int[];\n" +
+                "}" +
+                "    return v*v;\n" +
+                "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
+    }
+
+    @Test
+    public void TestPrecedenceRespected() {
+        String input = "const a int = 3;" +
+                "const b int = 32; " +
+                "const c bool = true;" +
+                "record Person {\n" +
+                "    name string;\n" +
+                "    location int[];\n" +
+                "    history int[];\n" +
+                "}" +
+
+                "proc square(v int) int {\n" +
+
+                "    return v*v;\n" +
+                "}";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
             fail();
         }
     }

@@ -17,7 +17,9 @@ public class TreatSemanticCases {
     String[] allowedForFloats = new String[]{"+", "-", "*", "/", "==", "<>", "<", "<=", ">", ">="};
     String[] allowedForBoolean = new String[]{"and", "or", "==", "<>"};
     String[] allowedForString = new String[]{"+", "==", "<>"};
-
+    public int CONST = 0;
+    public int RECORD = 1;
+    public int OTHER = 2;
 
     public TreatSemanticCases() {
         mapping.put("NaturalNumber", "int");
@@ -29,6 +31,23 @@ public class TreatSemanticCases {
         mapping.put("real", "real");
         mapping.put("bool", "bool");
         mapping.put("string", "string");
+    }
+
+    public int ensuresStateRespected(CreateVariables createVariables, int state) throws SemanticAnalysisException {
+        if (createVariables.getStateKeyword().getAttribute().equals(Token.ConstKeyword.getName()) && state != CONST) {
+            throw new SemanticAnalysisException("Constant values should be initialized at the start of the program");
+        }
+        if (!(createVariables.getStateKeyword().getAttribute().equals(Token.ConstKeyword.getName()))) {
+            return OTHER;
+        }
+        return state;
+    }
+
+    public void ensuresStateRespected(InitializeRecords initializeRecords, int state) throws SemanticAnalysisException {
+        if (state > RECORD) {
+            throw new SemanticAnalysisException("Record initialization should be initialized after the constant and " +
+                    "before any functions");
+        }
     }
 
     public Type treatExpression(ArrayOfExpression arrayOfExpression) throws SemanticAnalysisException {

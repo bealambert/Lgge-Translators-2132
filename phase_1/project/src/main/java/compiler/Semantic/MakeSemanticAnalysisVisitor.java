@@ -10,6 +10,16 @@ import java.util.Stack;
 
 public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
+    public int CONST = 0;
+    public int RECORD = 1;
+    public int OTHER = 2;
+
+    int state;
+
+    public MakeSemanticAnalysisVisitor() {
+        this.state = CONST;
+    }
+
 
     @Override
     public void visit(ForLoop forLoop) throws SemanticAnalysisException {
@@ -248,8 +258,8 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateArrayVariable createArrayVariable) throws SemanticAnalysisException {
+        this.state = treatSemanticCases.ensuresStateRespected(createArrayVariable, this.state);
         ArrayInitializer arrayInitializer = createArrayVariable.getArrayInitializer();
-
         ArrayType left = (ArrayType) createArrayVariable.getType();
         treatSemanticCases.TypeExists(left);
         ArrayType right = arrayInitializer.getType();
@@ -258,6 +268,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateExpressionVariable createExpressionVariable) throws SemanticAnalysisException {
+        this.state = treatSemanticCases.ensuresStateRespected(createExpressionVariable, this.state);
         Type expectedType = createExpressionVariable.getType();
         treatSemanticCases.TypeExists(expectedType);
         Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getArrayOfExpression());
@@ -270,6 +281,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     @Override
     public void visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
         // need to check the return value
+        this.state = OTHER;
         functionNameStack.push(createProcedure.getProcedureName());
         Block body = createProcedure.getBody();
         body.accept(this);
@@ -282,7 +294,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
     public void visit(CreateRecordVariables createRecordVariables) throws SemanticAnalysisException {
 
         // var d Person = Person(\"me\", Point(3,7), int[](a*2));  // new record";
-
+        this.state = treatSemanticCases.ensuresStateRespected(createRecordVariables, this.state);
         SymbolTable symbolTable = createRecordVariables.getSymbolTable();
         Identifier identifier = createRecordVariables.getType();
         // Person - Person
@@ -297,6 +309,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateReferencedVariable createReferencedVariable) throws SemanticAnalysisException {
+        this.state = treatSemanticCases.ensuresStateRespected(createReferencedVariable, this.state);
         Identifier referencedIdentifier = createReferencedVariable.getReferencedIdentifier();
         SymbolTable symbolTable = createReferencedVariable.getSymbolTable();
         CreateVariables createVariables = (CreateVariables) treatSemanticCases.getFirstDeclarationInsideSymbolTable(referencedIdentifier, symbolTable);
@@ -373,6 +386,9 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
     @Override
     public void visit(InitializeRecords initializeRecords) throws SemanticAnalysisException {
+        treatSemanticCases.ensuresStateRespected(initializeRecords, this.state);
+        // function above throws error if state is "OTHER" so we can safely assign it to RECORD
+        state = RECORD;
         Records records = initializeRecords.getRecords();
         SymbolTable symbolTable = initializeRecords.getSymbolTable();
         treatSemanticCases.getFirstDeclarationInsideSymbolTable(records.getIdentifier(), symbolTable);
