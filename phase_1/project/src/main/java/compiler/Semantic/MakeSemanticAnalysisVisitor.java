@@ -2,11 +2,9 @@ package compiler.Semantic;
 
 import compiler.*;
 import compiler.Lexer.Identifier;
-import compiler.Lexer.Symbol;
 import compiler.Parser.*;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
 
@@ -272,16 +270,15 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         Type expectedType = createExpressionVariable.getType();
         treatSemanticCases.TypeExists(expectedType);
         Type observedType = treatSemanticCases.treatExpression(createExpressionVariable.getArrayOfExpression());
+        boolean expectedIsReal = expectedType.getAttribute().equals(Token.RealNumber.getName()) || expectedType.getAttribute().equals(Token.RealIdentifier.getName());
+        boolean observedIsInt = observedType.getAttribute().equals(Token.IntIdentifier.getName()) || observedType.getAttribute().equals(Token.NaturalNumber.getName());
 
-        if ((expectedType.getAttribute().equals(Token.RealIdentifier.getName()) || expectedType.getAttribute().equals(Token.RealNumber.getName())) &&
-                (observedType.getAttribute().equals(Token.NaturalNumber.getName())) || observedType.getAttribute().equals(Token.IntIdentifier.getName())) {
-            createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
-            createExpressionVariable.getArrayOfExpression().accept(this);
-        } else {
+        if (!(expectedIsReal && observedIsInt)) {
             treatSemanticCases.isEqual(expectedType, observedType);
-            createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
-            createExpressionVariable.getArrayOfExpression().accept(this);
         }
+        createExpressionVariable.accept(ExpressionTypeVisitor.typeCheckingVisitor);
+        createExpressionVariable.getArrayOfExpression().accept(this);
+
 
     }
 
@@ -420,7 +417,7 @@ public class MakeSemanticAnalysisVisitor implements SemanticVisitor {
         SymbolTable symbolTable = methodCallFromIdentifier.getSymbolTable();
         Identifier objectIdentifier = methodCallFromIdentifier.getObjectIdentifier();
         //treatSemanticCases.getFirstDeclarationInsideSymbolTable(objectIdentifier, symbolTable);
-        InitializeRecords initializeRecords = treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
+        InitializeRecords initializeRecords = (InitializeRecords) treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
         // Initialize Records or ArrayInitializer :'(
 
         // Do I have to check if the function can be applied on that object?

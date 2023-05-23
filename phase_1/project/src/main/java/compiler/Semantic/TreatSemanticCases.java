@@ -1,15 +1,19 @@
 package compiler.Semantic;
 
-import compiler.*;
+import compiler.ASTNode;
 import compiler.Lexer.Identifier;
+import compiler.MyNode;
 import compiler.Parser.*;
+import compiler.SemanticAnalysisException;
+import compiler.Token;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static compiler.Semantic.ExpressionTypeVisitor.*;
+import static compiler.Semantic.ExpressionTypeVisitor.makeSemanticAnalysisVisitor;
+import static compiler.Semantic.ExpressionTypeVisitor.treatSemanticCases;
 
 public class TreatSemanticCases {
 
@@ -169,6 +173,10 @@ public class TreatSemanticCases {
 
         if (astNode instanceof InitializeRecords) {
             return (InitializeRecords) astNode;
+        }
+        if (astNode instanceof CreateRecordVariables) {
+            CreateRecordVariables createRecordVariables = (CreateRecordVariables) astNode;
+            return (InitializeRecords) getFirstDeclarationInsideSymbolTable(createRecordVariables.getType(), createRecordVariables.getSymbolTable());
         }
 
         if (symbolTable.previous != null) {

@@ -3,12 +3,13 @@ package compiler.ASMGenerator;
 import compiler.*;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
-import compiler.Parser.Type;
 import compiler.Semantic.ExpressionTypeVisitor;
 import compiler.Semantic.SemanticVisitor;
 import compiler.Semantic.SymbolTable;
-import org.checkerframework.checker.units.qual.A;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -195,7 +196,38 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(AssignToRecordAttribute assignToRecordAttribute) throws SemanticAnalysisException {
+        Identifier objectIdentifier = assignToRecordAttribute.getMethodCallFromIdentifier().getObjectIdentifier();
+        Identifier methodIdentifier = assignToRecordAttribute.getMethodCallFromIdentifier().getMethodIdentifier();
+        int mapLoadType = ALOAD; //asmUtils.mapLoadType.get(type.getAttribute());
+        int store_index = storeTable.storeTable.get(objectIdentifier.getAttribute());
+        mv.visitVarInsn(mapLoadType, store_index);
 
+        assignToRecordAttribute.getAssignmentExpression().accept(this);
+        try {
+            SymbolTable symbolTable = assignToRecordAttribute.getSymbolTable();
+
+            InitializeRecords initializeRecords = (InitializeRecords) treatSemanticCases.getAccessToRecordDeclaration(objectIdentifier, symbolTable);
+            Class<?> recordClass = this.recordClasses.get(initializeRecords.getRecords().getIdentifier().getAttribute());
+
+            ArrayList<RecordParameter> recordParameters = initializeRecords.getRecordVariable();
+            StringBuilder desc = new StringBuilder("");
+            for (int i = 0; i < recordParameters.size(); i++) {
+                RecordParameter recordParameter = recordParameters.get(i);
+                String attribute = recordParameter.getIdentifier().getAttribute();
+                if (methodIdentifier.getAttribute().equals(attribute)) {
+                    if (recordParameters.get(i).getType() instanceof ArrayType) {
+                        desc.append("[");
+                    }
+                    desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
+                    break;
+                }
+            }
+
+            mv.visitFieldInsn(Opcodes.PUTFIELD, recordClass.getName().replace('.', '/'), methodIdentifier.getAttribute(), desc.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -205,12 +237,12 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(ExpressionParameter expressionParameter) throws SemanticAnalysisException {
-        // handled in the createProcedure
+        expressionParameter.getExpression().accept(this);
     }
 
     @Override
     public void visit(ArrayInitializerParameter arrayInitializerParameter) throws SemanticAnalysisException {
-        // handled in the createProcedure
+        arrayInitializerParameter.getArrayInitializer().accept(this);
     }
 
     @Override
@@ -346,7 +378,22 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(CreateRecordVariables createRecordVariables) throws SemanticAnalysisException {
-        // if enough time
+        String recordName = createRecordVariables.getType().getAttribute();
+        Class<?> recordclass = this.recordClasses.get(recordName);
+
+        ArrayList<FunctionCallParameter> functionCallParameters = createRecordVariables.getRecordCall().getFunctionCallParameters();
+        String desc = asmUtils.createDescriptionFromFunctionCallParamaters(functionCallParameters);
+        mv.visitTypeInsn(Opcodes.NEW, recordName);
+        mv.visitInsn(Opcodes.DUP);
+        for (int i = 0; i < functionCallParameters.size(); i++) {
+            functionCallParameters.get(i).accept(this);
+        }
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, recordName, "<init>", desc, false);
+
+        // Store Point object in a variable
+        mv.visitVarInsn(ASTORE, storeCount);
+        storeTable.storeTable.put(createRecordVariables.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
+        storeCount++;
     }
 
     @Override
@@ -378,7 +425,9 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(Expression expression) throws SemanticAnalysisException {
-        //
+        ArrayList<Expression> arrayList = new ArrayList<>();
+        arrayList.add(expression);
+        new ArrayOfExpression(arrayList).accept(this);
     }
 
     @Override
@@ -513,7 +562,8 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(InitializeRecords initializeRecords) throws SemanticAnalysisException {
-        asmUtils.generateRecordBytecode(initializeRecords, this.loader);
+        Class<?> newClass = asmUtils.generateRecordBytecode(initializeRecords, this.loader);
+        this.recordClasses.put(initializeRecords.getRecords().getIdentifier().getAttribute(), newClass);
     }
 
     @Override
@@ -569,7 +619,20 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
 
     @Override
     public void visit(RecordCall recordCall) throws SemanticAnalysisException {
-        //
+        String recordName = recordCall.getRecords().getIdentifier().getAttribute();
+
+        mv.visitTypeInsn(Opcodes.NEW, recordName);
+        mv.visitInsn(Opcodes.DUP);
+        ArrayList<FunctionCallParameter> functionCallParameters = recordCall.getFunctionCallParameters();
+        String desc = asmUtils.createDescriptionFromFunctionCallParamaters(functionCallParameters);
+        mv.visitTypeInsn(Opcodes.NEW, recordName);
+        mv.visitInsn(Opcodes.DUP);
+        for (int i = 0; i < functionCallParameters.size(); i++) {
+            functionCallParameters.get(i).accept(this);
+        }
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, recordName, "<init>", desc, false);
+
+
     }
 
     @Override
@@ -673,7 +736,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                 asmUtils.makeConversionIntReal(expectedType, rightType, mv);
             }
             //boolean leftIsReal = expectedType.getAttribute().equals(Token.RealNumber.getName()) || expectedType.getAttribute().equals(Token.RealIdentifier.getName());
-            boolean rightIsReal = leftType.getAttribute().equals(Token.IntIdentifier.getName()) || leftType.getAttribute().equals(Token.NaturalNumber.getName());
+            boolean rightIsReal = rightType.getAttribute().equals(Token.RealNumber.getName()) || rightType.getAttribute().equals(Token.RealIdentifier.getName());
             if (rightIsReal) {
                 myNode.getValue().accept(makeOperationVisitor, rightType, mv);
             } else {

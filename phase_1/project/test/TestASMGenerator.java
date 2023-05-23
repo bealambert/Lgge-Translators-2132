@@ -1,5 +1,4 @@
 import compiler.ASMGenerator.Generator;
-import compiler.ASMGenerator.Properinit;
 import compiler.Lexer.Lexer;
 import compiler.Parser.Parser;
 import compiler.Semantic.Semantic;
@@ -578,11 +577,42 @@ public class TestASMGenerator {
     public void TestConversion() {
         String input =
                 // FUNCTION
-                "const i real = 2 + 3.5;" +
+                "const i real = 2 + 3.5;";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestRecords() {
+        String input =
+                // FUNCTION
+                "const i int = 2;" +
                         "record Point {\n" +
                         "    x int;\n" +
                         "    y int;\n" +
+                        "    z int;\n" +
+                        "}" +
+                        "proc square(a int, b int) void {\n" +
+                        "writeln(\"abc\")" +
+                        "var i bool = not(true);" +
+                        "var d Point = Point(10, 20, 30);" +
+                        "d.x = 5;" +
+                        "d.z = 100;" +
+                        "return;\n" +
                         "}";
+
 
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);

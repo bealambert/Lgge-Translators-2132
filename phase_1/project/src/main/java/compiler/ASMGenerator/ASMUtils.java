@@ -1,23 +1,17 @@
 package compiler.ASMGenerator;
 
-import compiler.ASTNode;
 import compiler.Lexer.Identifier;
-import compiler.MyNode;
 import compiler.Parser.*;
 import compiler.Semantic.ExpressionTypeVisitor;
-import compiler.Semantic.SymbolTable;
 import compiler.SemanticAnalysisException;
 import compiler.Token;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -175,14 +169,14 @@ public class ASMUtils {
 
     }
 
-    public void generateRecordBytecode(InitializeRecords initializeRecords, ByteArrayClassLoader loader) {
+    public Class<?> generateRecordBytecode(InitializeRecords initializeRecords, ByteArrayClassLoader loader) {
 
-        int access = ACC_PUBLIC | ACC_STATIC;
+        int access = ACC_PUBLIC;
         String recordName = initializeRecords.getRecords().getIdentifier().getAttribute();
         ASMClassWriterVisitor asmClassWriterVisitor = new ASMClassWriterVisitor();
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        cw.visit(V1_8, Opcodes.ACC_PUBLIC, recordName, null, "java/lang/Object", null);
+        cw.visit(V1_8, ACC_PUBLIC, recordName, null, "java/lang/Object", null);
 
 
         StringBuilder constructorDescription = new StringBuilder("(");
@@ -215,12 +209,12 @@ public class ASMUtils {
 
         byte[] bytecode = cw.toByteArray();
         Class<?> test = loader.defineClass(recordName, bytecode);
-        asmClassWriterVisitor.recordClasses.put(recordName, test);
         try (FileOutputStream outputStream = new FileOutputStream(recordName + ".class")) {
             outputStream.write(bytecode);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return test;
 
     }
 
@@ -239,5 +233,25 @@ public class ASMUtils {
         mv.visitVarInsn(loadType, store_index);
         mv.visitFieldInsn(Opcodes.PUTFIELD, recordName, recordParameter.getIdentifier().getAttribute(), desc);
 
+    }
+
+    public String createDescriptionFromFunctionCallParamaters(ArrayList<FunctionCallParameter> functionCallParameters) throws SemanticAnalysisException {
+        StringBuilder desc = new StringBuilder("(");
+        for (int i = 0; i < functionCallParameters.size(); i++) {
+            FunctionCallParameter functionCallParameter = functionCallParameters.get(i);
+            if (functionCallParameter instanceof ArrayInitializerParameter) {
+                ArrayInitializerParameter arrayInitializerParameter = (ArrayInitializerParameter) functionCallParameter;
+                Type type = arrayInitializerParameter.getArrayInitializer().getType();
+                desc.append("[").append(mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A"));
+            } else if (functionCallParameter instanceof ExpressionParameter) {
+                ExpressionParameter expressionParameter = (ExpressionParameter) functionCallParameter;
+                Type type = expressionParameter.getExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
+                desc.append(mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A"));
+            } else if (functionCallParameter instanceof RecordCall) {
+                desc.append("A");
+            }
+        }
+        desc.append(")V");
+        return desc.toString();
     }
 }
