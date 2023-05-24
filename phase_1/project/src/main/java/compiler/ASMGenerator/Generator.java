@@ -4,7 +4,6 @@ import compiler.ASTNode;
 import compiler.Parser.CreateProcedure;
 import compiler.SemanticAnalysisException;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -17,21 +16,17 @@ import static org.objectweb.asm.Opcodes.*;
 
 public class Generator {
 
-    static final String className = "Test";
+    public String className;
     private static ClassWriter cw;
     ASTNode root;
 
     ASMVisitor asmVisitor = new ASMVisitor();
     ByteArrayClassLoader loader;
 
-    public Generator(ASTNode root) {
+    public Generator(ASTNode root, String className) {
         this.root = root;
         this.loader = new ByteArrayClassLoader();
-    }
-
-
-    public static void main(String[] args) {
-
+        this.className = className;
     }
 
     public void createNecessaryMethods(ClassWriter cw) {
@@ -206,94 +201,24 @@ public class Generator {
             mv.visitMaxs(-1, -1);
             mv.visitEnd();
         }
-        MethodVisitor mainMethodWriter = cw.visitMethod
-                (ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
-
-        mainMethodWriter.visitCode();
-
-
-        Label ifLabel = new Label();
-        mainMethodWriter.visitIntInsn(Opcodes.BIPUSH, 3);
-        mainMethodWriter.visitIntInsn(Opcodes.BIPUSH, 2);
-        mainMethodWriter.visitJumpInsn(Opcodes.IF_ICMPLE, ifLabel); // Jump if 3 <= 2
-        mainMethodWriter.visitLdcInsn("3 is greater than 2"); // Instruction to execute if the condition is true
-        mainMethodWriter.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mainMethodWriter.visitInsn(Opcodes.SWAP);
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-        mainMethodWriter.visitLabel(ifLabel);
-
-        mainMethodWriter.visitLdcInsn("abc");
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
-
-        mainMethodWriter.visitLdcInsn("aezrar");
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "write", "(Ljava/lang/String;)V", false);
-
-        mainMethodWriter.visitLdcInsn(15);
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeInt", "(I)V", false);
-
-        mainMethodWriter.visitLdcInsn((float) 3.14);
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeReal", "(F)V", false);
-
-        mainMethodWriter.visitLdcInsn("");
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
-
-        mainMethodWriter.visitLdcInsn("azer123");
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "len", "(Ljava/lang/String;)I", false);
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeInt", "(I)V", false);
-
-        mainMethodWriter.visitLdcInsn("");
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
-
-        mainMethodWriter.visitLdcInsn(100);
-        mainMethodWriter.visitLdcInsn(200);
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "square", "(II)I", false);
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeInt", "(I)V", false);
-        mainMethodWriter.visitLdcInsn("");
-        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
-
-
-        mainMethodWriter.visitInsn(RETURN);
-        mainMethodWriter.visitMaxs(-1, -1);
-        mainMethodWriter.visitEnd();
 
         cw.visitEnd();
 
         byte[] bytecode = cw.toByteArray();
-        Class<?> test = this.loader.defineClass(className, bytecode);
-        try {
-            try (FileOutputStream outputStream = new FileOutputStream("./Test.class")) {
-                outputStream.write(bytecode);
-                StringBuilder hexCode = new StringBuilder();
-                for (byte b : bytecode) {
-                    String hex = Integer.toHexString(b & 0xFF);
-                    if (hex.length() == 1) {
-                        hexCode.append('0'); // Pad single digit hexadecimal values with a leading zero
-                    }
-                    hexCode.append(hex);
-                }
-                System.out.println(hexCode.toString());
-            }
+        try (FileOutputStream outputStream = new FileOutputStream("./" + className + ".class")) {
+            outputStream.write(bytecode);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try {
-            test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
-            //test.getMethod("writeln", String.class).invoke(null, "zzzzzzzzz");
-            //test.getMethod("square", int.class, int.class).invoke(null, 1, 2);
-            test.getMethod("not", boolean.class).invoke(null, true);
-/*            Method squareMethod = test.getDeclaredMethod("square", int.class, int.class); // Retrieves the "square" method with two int parameters
-            squareMethod.setAccessible(true); // If the method is private, make it accessible
 
-            int var0 = 8; // Provide the value for var0
-            int var1 = 3; // Provide the value for var1
+        if (asmVisitor.hasMainMethod) {
+            Class<?> test = this.loader.defineClass(className, bytecode);
+            try {
+                test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
 
-            int result = (int) squareMethod.invoke(null, var0, var1); // Invokes the square method with the provided int arguments
-
-            // Process the result as needed
-            System.out.println("Result: " + result);*/
-
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
 
     }

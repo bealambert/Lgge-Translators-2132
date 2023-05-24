@@ -30,6 +30,8 @@ public class ASMVisitor implements SemanticVisitor {
     String className;
     ByteArrayClassLoader loader;
     HashMap<String, Class<?>> recordClasses;
+    String mainDescription;
+    boolean hasMainMethod;
 
     public ASMVisitor() {
         storeCount = 1;
@@ -38,6 +40,9 @@ public class ASMVisitor implements SemanticVisitor {
         asmUtils = new ASMUtils();
         storeTable = new StoreTable(null);
         recordClasses = new HashMap<>();
+        mainDescription = "([Ljava/lang/String;)V";
+        hasMainMethod = false;
+
     }
 
     public void setCw(ClassWriter cw, String className) {
@@ -384,8 +389,12 @@ public class ASMVisitor implements SemanticVisitor {
     @Override
     public void visit(CreateProcedure createProcedure) throws SemanticAnalysisException {
         storeTable.storeTable.clear();
+        String procedureName = createProcedure.getProcedureName().getAttribute();
         String desc = asmUtils.createDescFromParam(createProcedure.getParams(), createProcedure.getReturnType());
-        MethodVisitor methodVisitor = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, createProcedure.getProcedureName().getAttribute(), desc, null, null);
+        MethodVisitor methodVisitor = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, procedureName, desc, null, null);
+        if (procedureName.equals("main") && desc.equals(this.mainDescription)) {
+            this.hasMainMethod = true;
+        }
         this.addMethodVisitor(methodVisitor, PUTFIELD);
         mv.visitCode();
         ArrayList<Param> params = createProcedure.getParams();
@@ -400,6 +409,7 @@ public class ASMVisitor implements SemanticVisitor {
         mv.visitInsn(asmUtils.mapReturnType.getOrDefault(createProcedure.getReturnType().getAttribute(), ARETURN));
         mv.visitMaxs(-1, -1);
         mv.visitEnd();
+
         methodVisitorStack.pop();
         flags.pop();
     }
