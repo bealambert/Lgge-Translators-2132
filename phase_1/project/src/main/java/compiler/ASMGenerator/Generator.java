@@ -1,23 +1,17 @@
 package compiler.ASMGenerator;
 
 import compiler.ASTNode;
-import compiler.BinaryTree;
-import compiler.Lexer.Strings;
 import compiler.Parser.CreateProcedure;
 import compiler.Parser.Parser;
 import compiler.SemanticAnalysisException;
-import jdk.nashorn.internal.codegen.types.Type;
-import org.objectweb.asm.*;
-import org.objectweb.asm.util.CheckClassAdapter;
-import org.objectweb.asm.util.TraceClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Stack;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -253,10 +247,13 @@ public class Generator {
         mainMethodWriter.visitLdcInsn("");
         mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
 
+        mainMethodWriter.visitLdcInsn(100);
+        mainMethodWriter.visitLdcInsn(200);
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "square", "(II)I", false);
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeInt", "(I)V", false);
+        mainMethodWriter.visitLdcInsn("");
+        mainMethodWriter.visitMethodInsn(Opcodes.INVOKESTATIC, className, "writeln", "(Ljava/lang/String;)V", false);
 
-
-        //mainMethodWriter.visitLdcInsn(65);
-        //mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, "chr", "(I)Ljava/lang/String;", false);
 
         mainMethodWriter.visitInsn(RETURN);
         mainMethodWriter.visitMaxs(-1, -1);
@@ -284,7 +281,7 @@ public class Generator {
         }
         try {
             test.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
-            test.getMethod("writeln", String.class).invoke(null, "zzzzzzzzz");
+            //test.getMethod("writeln", String.class).invoke(null, "zzzzzzzzz");
             //test.getMethod("square", int.class, int.class).invoke(null, 1, 2);
             test.getMethod("not", boolean.class).invoke(null, true);
 /*            Method squareMethod = test.getDeclaredMethod("square", int.class, int.class); // Retrieves the "square" method with two int parameters

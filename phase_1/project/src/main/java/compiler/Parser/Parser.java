@@ -206,6 +206,13 @@ public class Parser {
             } else if (isSymbol(Token.OpeningBracket)) {
                 ArrayType arrayType = new ArrayType(currValue);
                 match(Token.OpeningBracket);
+                if (!isSymbol(Token.ClosingBracket)) {
+                    ArrayOfExpression arrayOfExpression = parseArrayOfExpression();
+                    match(Token.ClosingBracket);
+                    AccessToIndexArray accessToIndexArray = new AccessToIndexArray(arrayType, arrayOfExpression);
+                    return new ExpressionParameter(accessToIndexArray);
+                }
+
                 match(Token.ClosingBracket);
                 match(Token.OpeningParenthesis);
                 ArrayOfExpression arrayOfExpression = parseArrayOfExpression();

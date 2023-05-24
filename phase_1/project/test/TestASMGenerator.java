@@ -732,5 +732,108 @@ public class TestASMGenerator {
 
     }
 
+    @Test
+    public void Test() {
+        String input =
+                // FUNCTION
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "    z int;\n" +
+                        "}" +
+                        "proc square(a int, b int) int {\n" +
+                        "var d Point = Point(10, 20, 30);" +
+                        "var z int[] = int()[5];" +
+                        "var j int = d.x + 3;" +
+                        "return d.x + d.y + d.z;\n" +
+                        "}";
+
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestRecordIndex() {
+        String input =
+                // FUNCTION
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "    z int;\n" +
+                        "}" +
+                        "proc square(a int, b int) int {\n" +
+                        "var d Point = Point(10, 20, 30);" +
+                        "var z Point[] = Point()[5];" +
+                        "z[0] = d;" +
+                        "return z[0].x + a;\n" +
+                        "}";
+
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
+    @Test
+    public void TestRecordAssignmentWithIndexArray() {
+        String input =
+                // FUNCTION
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "    z int;\n" +
+                        "}" +
+                        "proc square(a int, b int) int {\n" +
+                        "var myArray int[] = int()[5];" +
+                        "myArray[0] = 2;" +
+                        "myArray[1] = 3;" +
+                        "myArray[2] = 4;" +
+                        "myArray[3] = 5" +
+                        "myArray[4] = 6;" +
+
+                        "var d Point = Point(myArray[0], 20, 30);" +
+                        "var z Point[] = Point()[5];" +
+                        "z[0] = d;" +
+                        "return z[0].x + a;\n" +
+                        "}";
+
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
 
 }
