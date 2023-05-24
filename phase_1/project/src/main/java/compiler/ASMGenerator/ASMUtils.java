@@ -3,6 +3,8 @@ package compiler.ASMGenerator;
 import compiler.Lexer.Identifier;
 import compiler.Parser.*;
 import compiler.Semantic.ExpressionTypeVisitor;
+import compiler.Semantic.SymbolTable;
+import compiler.Semantic.TreatSemanticCases;
 import compiler.SemanticAnalysisException;
 import compiler.Token;
 import org.objectweb.asm.ClassWriter;
@@ -26,10 +28,11 @@ public class ASMUtils {
     HashMap<String, Integer> mapAssignToIndex;
     HashMap<String, Integer> mapLoadArray;
     HashMap<Integer, Integer> mapConstValues;
+    TreatSemanticCases treatSemanticCases;
 
     public ASMUtils() {
         mapTypeToASMTypes = new HashMap<>();
-        mapTypeToASMTypes.put(Token.Strings.getName(), "Ljava/lang/String");
+        mapTypeToASMTypes.put(Token.Strings.getName(), "Ljava/lang/String;");
         mapTypeToASMTypes.put(Token.StringIdentifier.getName(), "Ljava/lang/String;");
         mapTypeToASMTypes.put(Token.NaturalNumber.getName(), "I");
         mapTypeToASMTypes.put(Token.IntIdentifier.getName(), "I");
@@ -102,6 +105,8 @@ public class ASMUtils {
         mapConstValues.put(3, ICONST_3);
         mapConstValues.put(4, ICONST_4);
         mapConstValues.put(5, ICONST_5);
+
+        treatSemanticCases = new TreatSemanticCases();
     }
 
     public int getAccess(String keyword) {
@@ -173,7 +178,6 @@ public class ASMUtils {
 
         int access = ACC_PUBLIC;
         String recordName = initializeRecords.getRecords().getIdentifier().getAttribute();
-        ASMClassWriterVisitor asmClassWriterVisitor = new ASMClassWriterVisitor();
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         cw.visit(V1_8, ACC_PUBLIC, recordName, null, "java/lang/Object", null);
@@ -188,7 +192,13 @@ public class ASMUtils {
             if (fieldType instanceof ArrayType) {
                 desc += "[";
             }
-            desc += mapTypeToASMTypes.getOrDefault(fieldType.getAttribute(), "A");
+            try {
+                SymbolTable symbolTable = initializeRecords.getSymbolTable();
+                InitializeRecords parameterRecord = treatSemanticCases.getAccessToRecordDeclaration(fieldType, symbolTable);
+                desc += "L" + parameterRecord.getRecords().getIdentifier().getAttribute() + ";";
+            } catch (SemanticAnalysisException e) {
+                desc += mapTypeToASMTypes.getOrDefault(fieldType.getAttribute(), "A");
+            }
             constructorDescription.append(desc);
             cw.visitField(access, fieldName.getAttribute(), desc, null, null).visitEnd();
         }
@@ -229,7 +239,13 @@ public class ASMUtils {
         if (recordParameter.getType() instanceof ArrayType) {
             desc += "[";
         }
-        desc += mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A");
+        try {
+            SymbolTable symbolTable = recordParameter.getSymbolTable();
+            InitializeRecords parameterRecord = treatSemanticCases.getAccessToRecordDeclaration(recordParameter.getType(), symbolTable);
+            desc += "L" + parameterRecord.getRecords().getIdentifier().getAttribute() + ";";
+        } catch (SemanticAnalysisException e) {
+            desc += mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A");
+        }
         mv.visitVarInsn(loadType, store_index);
         mv.visitFieldInsn(Opcodes.PUTFIELD, recordName, recordParameter.getIdentifier().getAttribute(), desc);
 
@@ -246,9 +262,23 @@ public class ASMUtils {
             } else if (functionCallParameter instanceof ExpressionParameter) {
                 ExpressionParameter expressionParameter = (ExpressionParameter) functionCallParameter;
                 Type type = expressionParameter.getExpression().accept(ExpressionTypeVisitor.typeCheckingVisitor);
-                desc.append(mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A"));
+                if (type instanceof ArrayType && (!(expressionParameter.getExpression() instanceof AccessToIndexArray))) {
+                    desc.append("[");
+                }
+                try {
+                    SymbolTable st = expressionParameter.getSymbolTable();
+                    InitializeRecords parameterRecord = treatSemanticCases.getAccessToRecordDeclaration(type, st);
+                    desc.append("L");
+                    desc.append(parameterRecord.getRecords().getIdentifier().getAttribute());
+                    desc.append(";");
+                } catch (SemanticAnalysisException e) {
+                    desc.append(mapTypeToASMTypes.getOrDefault(type.getAttribute(), "A"));
+                }
             } else if (functionCallParameter instanceof RecordCall) {
-                desc.append("A");
+                RecordCall recordCall = (RecordCall) functionCallParameter;
+                desc.append("L");
+                desc.append(recordCall.getRecords().getIdentifier().getAttribute());
+                desc.append(";");
             }
         }
         desc.append(")V");

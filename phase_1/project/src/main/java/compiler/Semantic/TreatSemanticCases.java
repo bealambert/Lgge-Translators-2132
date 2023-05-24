@@ -181,7 +181,11 @@ public class TreatSemanticCases {
         if (astNode instanceof CreateArrayVariable) {
             CreateArrayVariable createArrayVariable = (CreateArrayVariable) astNode;
             return (InitializeRecords) getFirstDeclarationInsideSymbolTable(createArrayVariable.getType(), symbolTable);
-
+        }
+        if (astNode instanceof CreateExpressionVariable) {
+            CreateExpressionVariable createExpressionVariable = (CreateExpressionVariable) astNode;
+            Type type = createExpressionVariable.getType();
+            return (InitializeRecords) getFirstDeclarationInsideSymbolTable(type, symbolTable);
         }
 
         if (symbolTable.previous != null) {

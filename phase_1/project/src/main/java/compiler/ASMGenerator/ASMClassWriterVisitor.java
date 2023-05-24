@@ -352,20 +352,27 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
         String keyword = createExpressionVariable.getStateKeyword().getAttribute();
         int access = asmUtils.getAccess(keyword);
         String variableName = createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute();
-        String desc = asmUtils.mapTypeToASMTypes.getOrDefault(createExpressionVariable.getType().getAttribute(), "A");
+        StringBuilder desc = new StringBuilder("");
+        try {
+            SymbolTable symbolTable = createExpressionVariable.getSymbolTable();
+            InitializeRecords parameterRecord = treatSemanticCases.getAccessToRecordDeclaration(createExpressionVariable.getType(), symbolTable);
+            desc.append("L").append(parameterRecord.getRecords().getIdentifier().getAttribute()).append(";");
+        } catch (SemanticAnalysisException e) {
+            desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(createExpressionVariable.getType().getAttribute(), "A"));
+        }
 
         if (flag != PUTSTATIC) {
             BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
             binaryTree.getRoot().accept(this);
             Type type = binaryTree.accept(ExpressionTypeVisitor.typeCheckingVisitor);
-            int store_type = asmUtils.mapStoreType.get(type.getAttribute());
+            int store_type = asmUtils.mapStoreType.getOrDefault(type.getAttribute(), ASTORE);
             mv.visitVarInsn(store_type, storeCount);
         } else {
             access |= ACC_STATIC;
-            cw.visitField(access, variableName, desc, null, null);
+            cw.visitField(access, variableName, desc.toString(), null, null);
             BinaryTree binaryTree = createExpressionVariable.getArrayOfExpression().getMyTree();
             binaryTree.getRoot().accept(this);
-            mv.visitFieldInsn(flag, this.className, variableName, desc);
+            mv.visitFieldInsn(flag, this.className, variableName, desc.toString());
 
         }
         storeTable.storeTable.put(createExpressionVariable.getVariableIdentifier().getIdentifier().getAttribute(), storeCount);
@@ -611,7 +618,15 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
                 if (recordParameters.get(i).getType() instanceof ArrayType) {
                     desc.append("[");
                 }
-                desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
+                try {
+                    SymbolTable st = initializeRecords.getSymbolTable();
+                    InitializeRecords parameterRecord = treatSemanticCases.getAccessToRecordDeclaration(recordParameter.getType(), st);
+                    desc.append("L");
+                    desc.append(parameterRecord.getRecords().getIdentifier().getAttribute());
+                    desc.append(";");
+                } catch (SemanticAnalysisException e) {
+                    desc.append(asmUtils.mapTypeToASMTypes.getOrDefault(recordParameter.getType().getAttribute(), "A"));
+                }
                 break;
             }
         }

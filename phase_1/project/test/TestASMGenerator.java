@@ -836,4 +836,49 @@ public class TestASMGenerator {
     }
 
 
+    @Test
+    public void TestRecordWithCallToConstructorWithRecordField() {
+        String input =
+                // FUNCTION
+                "record Point {\n" +
+                        "    x int;\n" +
+                        "    y int;\n" +
+                        "    z int;\n" +
+                        "}" +
+                        "record Person {\n" +
+                        "    name string;\n" +
+                        "    location Point;\n" +
+                        "    history int[];\n" +
+                        "}" +
+
+                        "proc square(a int, b int) int {\n" +
+                        "var myArray int[] = int()[5];" +
+                        "myArray[0] = 2;" +
+                        "myArray[1] = 3;" +
+                        "myArray[2] = 4;" +
+                        "myArray[3] = 5" +
+                        "myArray[4] = 6;" +
+
+                        "var d Point = Point(myArray[0], 20, 30);" +
+                        "var loic Person = Person(\"loic\", d, myArray);" +
+                        "var myLocation Point = loic.location;" +
+                        "return myLocation.x;\n" +
+                        "}";
+
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+            Generator generator = new Generator(semantic.getRoot());
+            generator.generateBytecode();
+        } catch (SemanticAnalysisException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+
+    }
+
 }
