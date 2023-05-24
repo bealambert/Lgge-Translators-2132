@@ -2,7 +2,6 @@ package compiler.ASMGenerator;
 
 import compiler.ASTNode;
 import compiler.Parser.CreateProcedure;
-import compiler.Parser.Parser;
 import compiler.SemanticAnalysisException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -20,11 +19,9 @@ public class Generator {
 
     static final String className = "Test";
     private static ClassWriter cw;
-    Parser parser;
     ASTNode root;
 
-    ASMClassWriterVisitor asmClassWriterVisitor = new ASMClassWriterVisitor();
-    ASMVisitorMethod asmVisitorMethod = new ASMVisitorMethod();
+    ASMVisitor asmVisitor = new ASMVisitor();
     ByteArrayClassLoader loader;
 
     public Generator(ASTNode root) {
@@ -178,33 +175,33 @@ public class Generator {
 
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null);
-        asmClassWriterVisitor.setCw(cw, className);
-        asmClassWriterVisitor.setLoader(loader);
+        asmVisitor.setCw(cw, className);
+        asmVisitor.setLoader(loader);
 
         createNecessaryMethods(cw);
 
         MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
         int flag = PUTSTATIC;
-        asmClassWriterVisitor.addMethodVisitor(mv, flag);
+        asmVisitor.addMethodVisitor(mv, flag);
         mv.visitCode();
 
         ASTNode astNode = this.root;
         while (astNode != null) {
             if (astNode instanceof CreateProcedure && flag == PUTSTATIC) {
-                if (!asmClassWriterVisitor.methodVisitorStack.isEmpty()) {
-                    asmClassWriterVisitor.methodVisitorStack.pop();
-                    asmClassWriterVisitor.flags.pop();
+                if (!asmVisitor.methodVisitorStack.isEmpty()) {
+                    asmVisitor.methodVisitorStack.pop();
+                    asmVisitor.flags.pop();
                     mv.visitInsn(RETURN);
                     mv.visitMaxs(-1, -1);
                     mv.visitEnd();
                     flag = PUTFIELD;
-                    asmClassWriterVisitor.storeTable = new StoreTable(asmClassWriterVisitor.storeTable);
+                    asmVisitor.storeTable = new StoreTable(asmVisitor.storeTable);
                 }
             }
-            astNode.accept(asmClassWriterVisitor);
+            astNode.accept(asmVisitor);
             astNode = astNode.getNext();
         }
-        if (!asmClassWriterVisitor.methodVisitorStack.isEmpty()) {
+        if (!asmVisitor.methodVisitorStack.isEmpty()) {
             mv.visitInsn(RETURN);
             mv.visitMaxs(-1, -1);
             mv.visitEnd();

@@ -17,7 +17,7 @@ import java.util.Stack;
 
 import static org.objectweb.asm.Opcodes.*;
 
-public class ASMClassWriterVisitor implements SemanticVisitor {
+public class ASMVisitor implements SemanticVisitor {
 
     Stack<MethodVisitor> methodVisitorStack;
     Stack<Integer> flags;
@@ -31,7 +31,7 @@ public class ASMClassWriterVisitor implements SemanticVisitor {
     ByteArrayClassLoader loader;
     HashMap<String, Class<?>> recordClasses;
 
-    public ASMClassWriterVisitor() {
+    public ASMVisitor() {
         storeCount = 1;
         methodVisitorStack = new Stack<>();
         flags = new Stack<>();

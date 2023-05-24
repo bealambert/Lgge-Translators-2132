@@ -1,8 +1,6 @@
 package compiler.Parser;
 
-import compiler.ASMGenerator.ASMClassWriterVisitor;
 import compiler.ASMGenerator.MakeOperationVisitor;
-import compiler.ASMGenerator.OperatorVisitor;
 import compiler.Token;
 import org.objectweb.asm.MethodVisitor;
 

@@ -1,6 +1,5 @@
-import compiler.ASTNode;
 import compiler.Lexer.Lexer;
-import compiler.Parser.*;
+import compiler.Parser.Parser;
 import compiler.Semantic.Semantic;
 import compiler.SemanticAnalysisException;
 import org.junit.Assert;
@@ -8,7 +7,7 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 public class TestSemanticAnalysis {
 
@@ -64,17 +63,6 @@ public class TestSemanticAnalysis {
     @Test
     public void TestWrongTypeIntReal() {
         String input = "var x int = 2.14;";
-        StringReader reader = new StringReader(input);
-        Lexer lexer = new Lexer(reader);
-        Parser parser = new Parser(lexer);
-        Semantic semantic = new Semantic(parser);
-        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
-    }
-
-
-    @Test
-    public void TestWrongTypeRealInt() {
-        String input = "var x real = 2;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(lexer);
@@ -683,6 +671,33 @@ public class TestSemanticAnalysis {
             System.out.println(e.getMessage());
             fail();
         }
+    }
+
+    @Test
+    public void TestModuloOnIntegerType() {
+        String input = "var value int = 5 % 3;";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        try {
+            semantic.makeSemanticAnalysis();
+        } catch (SemanticAnalysisException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void TestNoConversionForModuloOperation() {
+        String input = "var a int = 5.0 % 3;";
+
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
+        Semantic semantic = new Semantic(parser);
+        Assert.assertThrows(SemanticAnalysisException.class, semantic::makeSemanticAnalysis);
+
     }
 
 

@@ -1,8 +1,10 @@
 package compiler.Parser;
 
-import compiler.ASMGenerator.ASMClassWriterVisitor;
 import compiler.Lexer.Identifier;
-import compiler.Semantic.*;
+import compiler.Semantic.SemanticVisitor;
+import compiler.Semantic.SymbolTable;
+import compiler.Semantic.TypeCheckingVisitor;
+import compiler.Semantic.Visitor;
 import compiler.SemanticAnalysisException;
 
 public class Variable extends Expression {
